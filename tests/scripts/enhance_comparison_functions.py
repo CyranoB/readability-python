@@ -19,10 +19,11 @@ from pathlib import Path
 import datetime
 
 # Path to conftest.py
-CONFTEST_PATH = Path("tests/conftest.py")
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+CONFTEST_PATH = PROJECT_ROOT / "tests/conftest.py"
 
 # Backup path
-BACKUP_DIR = Path("tests/backups")
+BACKUP_DIR = PROJECT_ROOT / "tests/backups"
 BACKUP_PATH = BACKUP_DIR / f"conftest_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.py.bak"
 
 # New normalize_html function

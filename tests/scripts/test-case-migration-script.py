@@ -22,8 +22,10 @@ import argparse
 import json
 
 # Path definitions
-GO_TEST_DIR = Path("go-readability/test-pages")
-PYTHON_TEST_DIR = Path("tests/test-pages")
+# Adjust paths to be relative to the project root
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+GO_TEST_DIR = PROJECT_ROOT / "go-readability/test-pages"
+PYTHON_TEST_DIR = PROJECT_ROOT / "tests/test-pages"
 
 # List of test cases to ignore (if they should not be migrated)
 IGNORE_LIST = []
@@ -82,7 +84,7 @@ def update_parameterized_tests(migrated_cases):
     if not migrated_cases:
         return
         
-    test_file_path = Path("tests/test_readability.py")
+    test_file_path = PROJECT_ROOT / "tests/test_readability.py"
     if not test_file_path.exists():
         print(f"Warning: Test file not found: {test_file_path}")
         print("Please manually update the parameterized test list.")

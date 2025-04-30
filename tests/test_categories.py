@@ -217,6 +217,7 @@ def verify_test_case_existence():
     """Verify that all categorized test cases exist in the test directory."""
     from pathlib import Path
     
+    # Use the correct path to the test-pages directory
     test_dir = Path(__file__).parent / "test-pages"
     missing_cases = []
     

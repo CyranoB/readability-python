@@ -57,7 +57,32 @@ We've migrated test cases from the Go implementation to the Python implementatio
 
 ## Next Steps
 
-### 1. Create New Test Cases
+### 1. Project Reorganization
+
+We've reorganized the project structure to improve maintainability:
+
+1. **Test Documentation**: Moved all test documentation files to `tests/docs/` directory:
+   - test-verification-plan.md
+   - test-case-comparison.md
+   - test-function-analysis.md
+   - comparison-function-analysis.md
+   - debug-tools-analysis.md
+   - test-improvement-plan.md
+   - test-infrastructure-assessment.md
+   - test-case-categorization.md
+   - testing-README.md
+
+2. **Test Scripts**: Moved all test utility scripts to `tests/scripts/` directory:
+   - verify_test_cases.py
+   - test-case-migration-script.py
+   - enhance_comparison_functions.py
+
+3. **Test Fixtures**: Moved test fixtures to `tests/fixtures/` directory:
+   - test.html
+
+4. **Path Updates**: Updated paths in scripts to reflect the new directory structure.
+
+### 2. Create New Test Cases
 
 We've successfully fixed the failing test cases and migrated all the medium and low priority test cases. Now we should focus on creating new test cases to fill the identified gaps:
 
@@ -80,7 +105,7 @@ Based on our gap analysis, we should create new test cases to fill the identifie
 4. **Visibility Detection**:
    - css-visibility (P1): Test handling of CSS visibility properties.
 
-### 2. Package for Distribution
+### 3. Package for Distribution
 
 Prepare the library for distribution on PyPI by finalizing the packaging configuration in pyproject.toml.
 

@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 # Add the project root to the path so we can import the test categories
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from tests.test_categories import (
     FunctionalArea, Criticality, TestType, TEST_CASE_CATEGORIES,
