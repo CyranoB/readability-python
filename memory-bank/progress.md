@@ -78,8 +78,16 @@ The following test cases are passing:
 
 ### Core Functionality
 
-1. **CLI Tool**: The command-line interface for the library still needs to be implemented.
-2. **Packaging**: The library needs to be packaged for distribution on PyPI.
+1. **Packaging**: The library needs to be packaged for distribution on PyPI.
+
+### Completed Functionality
+
+1. **CLI Tool**: Implemented a command-line interface for the library that supports:
+   - Processing HTML from URLs, files, or stdin
+   - Multiple output formats (HTML, text, JSON)
+   - Writing output to files or stdout
+   - Custom user agent and timeout for HTTP requests
+   - Debug mode for troubleshooting
 
 ### Test Cases
 
@@ -87,12 +95,16 @@ The following test cases are passing:
 
 ### Documentation
 
-1. **API Documentation**: The API documentation needs to be updated to reflect the latest changes.
-
 ### Completed Documentation
 
 1. **README.md**: Created a comprehensive README with project overview, installation instructions, usage examples, testing approach, and development setup.
 2. **CONTRIBUTING.md**: Created detailed guidelines for contributors covering code style, test case addition, and pull request process.
+3. **API Documentation**: Enhanced docstrings throughout the codebase:
+   - Added comprehensive module-level docstrings explaining the purpose and usage of each module
+   - Improved class docstrings with detailed explanations and examples
+   - Enhanced method docstrings with detailed parameter descriptions, return value explanations, and usage examples
+   - Added explanations of algorithm steps for complex methods
+   - Documented edge cases and error handling
 
 ## Current Status
 
@@ -138,6 +150,4 @@ The Python implementation is likely slower than the Go implementation due to the
 ## Next Steps
 
 1. **Create new test cases**: Create new test cases to fill identified gaps in test coverage.
-2. **Update API documentation**: Add comprehensive docstrings to all public functions, classes, and methods.
-3. **Implement CLI tool**: Implement the command-line interface for the library.
-4. **Package for distribution**: Package the library for distribution on PyPI.
+2. **Package for distribution**: Package the library for distribution on PyPI.

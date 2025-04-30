@@ -1,6 +1,34 @@
 """Parser for Python Readability.
 
-This module contains the main Readability class that orchestrates the parsing process.
+This module contains the main Readability class that orchestrates the parsing process
+for extracting the main content from HTML pages. It implements a port of the Mozilla
+Readability algorithm, which is also used by Firefox's Reader View feature.
+
+The parser works by analyzing the HTML structure, scoring different parts of the page
+based on content quality heuristics, and then extracting the highest-scoring section
+as the main article content. It also extracts metadata such as title, author, and
+publication date.
+
+Example:
+    ```python
+    from readability import Readability
+    
+    # Create a parser instance
+    parser = Readability()
+    
+    # Parse HTML content
+    with open('article.html', 'r') as f:
+        html_content = f.read()
+    
+    # Extract the article
+    article, error = parser.parse(html_content, url='https://example.com/article')
+    
+    if error:
+        print(f"Error: {error}")
+    else:
+        print(f"Title: {article.title}")
+        print(f"Content: {article.content[:100]}...")  # First 100 chars
+    ```
 """
 
 import math
@@ -78,7 +106,22 @@ class ScoreTracker:
 class Readability:
     """Main class for extracting content from HTML pages.
 
-    This class mirrors the Parser struct from the Go implementation.
+    This class is responsible for parsing HTML content and extracting the main
+    article content and metadata. It implements the core algorithm of the
+    Readability library and mirrors the Parser struct from the Go implementation
+    to maintain compatibility.
+    
+    The extraction process involves several steps:
+    1. Parsing the HTML document
+    2. Preprocessing the document (removing scripts, styles, etc.)
+    3. Extracting metadata (title, author, publication date, etc.)
+    4. Identifying and scoring content nodes
+    5. Selecting the best candidate for the main content
+    6. Post-processing the content (cleaning up, fixing links, etc.)
+    
+    The parser uses a scoring algorithm to identify the main content, which
+    considers factors like the amount of text, presence of commas, link density,
+    and class/ID names.
     """
 
     def __init__(
@@ -93,18 +136,41 @@ class Readability:
         disable_jsonld: bool = False,
         allowed_video_regex: str = None,
     ):
-        """Initialize a new Readability parser.
+        """Initialize a new Readability parser with configuration options.
 
         Args:
-            max_elems_to_parse: Max number of nodes to parse (0 for no limit)
-            n_top_candidates: Number of top candidates to consider
-            char_thresholds: Minimum number of chars for an article
-            classes_to_preserve: CSS classes to preserve
-            keep_classes: Whether to keep classes or strip them
-            tags_to_score: Element tags to score
-            debug: Whether to print debug logs
-            disable_jsonld: Whether to disable JSON-LD metadata extraction
-            allowed_video_regex: Regex for allowed video URLs
+            max_elems_to_parse: Maximum number of nodes to parse (0 for no limit).
+                Use this to limit processing time for very large documents.
+            n_top_candidates: Number of top candidates to consider when selecting
+                the main content container. Higher values may improve accuracy but
+                increase processing time.
+            char_thresholds: Minimum number of characters required for an article
+                to be considered valid. If the extracted content is shorter than
+                this threshold, the parser will retry with different settings.
+            classes_to_preserve: List of CSS class names to preserve in the output.
+                By default, most class names are removed to clean up the HTML.
+            keep_classes: Whether to keep all CSS classes in the output HTML.
+                If True, all classes will be preserved. If False, only classes
+                specified in classes_to_preserve will be kept.
+            tags_to_score: List of HTML tag names to consider when scoring content.
+                These tags are used as starting points for content identification.
+            debug: Whether to print debug logs during parsing.
+            disable_jsonld: Whether to disable JSON-LD metadata extraction.
+                JSON-LD is a structured data format that can provide rich metadata.
+            allowed_video_regex: Regular expression pattern for allowed video URLs.
+                Videos matching this pattern will be preserved in the output.
+                
+        Example:
+            ```python
+            # Create a parser that preserves specific classes
+            parser = Readability(
+                classes_to_preserve=["highlight", "code"],
+                keep_classes=False
+            )
+            
+            # Create a parser with debug output
+            parser = Readability(debug=True)
+            ```
         """
         self.max_elems_to_parse = max_elems_to_parse
         self.n_top_candidates = n_top_candidates
@@ -143,13 +209,41 @@ class Readability:
 
         This is the main entry point for the Readability parser. It orchestrates
         the parsing process and returns either an Article object or an error.
+        
+        The method follows the Go implementation's error handling pattern by
+        returning a tuple of (result, error) where one is always None. This
+        makes error handling explicit and avoids raising exceptions for expected
+        failure cases.
 
         Args:
-            html_content: HTML content as string or bytes
-            url: Optional URL for the HTML content
+            html_content: HTML content as string or bytes. If bytes are provided,
+                the encoding will be automatically detected by BeautifulSoup/lxml.
+            url: Optional URL for the HTML content. This is used for resolving
+                relative links in the document and for extracting the base URL
+                for metadata.
 
         Returns:
-            A tuple of (article, error) where one is None
+            A tuple of (article, error) where one is None. If successful, the
+            first element will be an Article object containing the extracted
+            content and metadata. If unsuccessful, the second element will be
+            an Exception describing the error.
+            
+        Example:
+            ```python
+            # Parse HTML from a string
+            article, error = parser.parse("<html><body><p>Content</p></body></html>")
+            
+            # Parse HTML from a file with a URL for resolving relative links
+            with open("article.html", "r") as f:
+                html_content = f.read()
+            article, error = parser.parse(html_content, url="https://example.com/article")
+            
+            # Handle errors explicitly
+            if error:
+                print(f"Failed to parse: {error}")
+            else:
+                print(f"Extracted article: {article.title}")
+            ```
         """
         try:
             # Parse HTML content with BeautifulSoup

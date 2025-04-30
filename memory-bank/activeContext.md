@@ -80,11 +80,7 @@ Based on our gap analysis, we should create new test cases to fill the identifie
 4. **Visibility Detection**:
    - css-visibility (P1): Test handling of CSS visibility properties.
 
-### 2. Implement CLI Tool
-
-Now that we have comprehensive documentation and a solid test suite, we should implement the CLI tool to make the library usable from the command line.
-
-### 3. Package for Distribution
+### 2. Package for Distribution
 
 Prepare the library for distribution on PyPI by finalizing the packaging configuration in pyproject.toml.
 
@@ -117,6 +113,26 @@ These documentation updates will make it easier for users to understand and use 
 ### Testing Infrastructure Improvements
 
 1. **Fixed Pytest Warnings**: Created a `pytest.ini` file to register all custom marks used in our tests. This eliminates the warnings that were previously shown when running the tests, making the test output cleaner and easier to read.
+
+### CLI Implementation
+
+We've implemented a command-line interface for the library in `cli/main.py` that provides the following features:
+
+1. **Input Options**:
+   - URL input: Fetch content from a URL
+   - File input: Read content from a local file
+   - STDIN input: Read content from standard input (if no URL or file is provided)
+
+2. **Output Options**:
+   - Format selection: HTML (default), text (plain text), or JSON (including metadata)
+   - Output destination: File (with specified path) or stdout (default)
+
+3. **Additional Options**:
+   - Debug flag: Enable debug output
+   - User-agent: Custom user-agent for HTTP requests
+   - Timeout: HTTP request timeout
+
+The CLI follows the same error handling pattern as the library, using explicit error returns rather than exceptions for the main API. It also provides helpful error messages and a clean, intuitive interface.
 
 ## Active Decisions and Considerations
 
