@@ -54,3 +54,7 @@ poetry.lock  # Comment this line if you want to commit the lock file
 
 # Project specific
 .cache/
+extracted.html
+*.html.out
+*.json.out
+*.txt.out

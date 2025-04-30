@@ -69,6 +69,8 @@ python -m readability https://example.com/article --format json --output article
 python -m readability https://example.com/article --format text --output article.txt
 ```
 
+> **Note**: When specifying output files, it's recommended to use either absolute paths or paths within a dedicated output directory (e.g., `output/article.html`) to avoid cluttering your project directory. Output files in the root directory (like `extracted.html`) are automatically added to `.gitignore`.
+
 ## Testing
 
 The library includes a comprehensive test suite to ensure compatibility with the original Go implementation. The tests are categorized by:
@@ -198,4 +200,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the Apache 2.0 License - see the LICENSE file for details.
