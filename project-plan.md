@@ -83,38 +83,45 @@ The goal of this project is to implement a python version of the go-readability 
     * [X] Calculate final length (`len(Article.text_content)`). Store in `Article.length`.
 3.  **Final Return (`Readability.parse`):** [COMPLETED: 4/28/2025] Return the completed `(article, None)`.
 
-**Phase 6: Testing Infrastructure (`tests/`)**
+**Phase 6: Testing Infrastructure (`tests/`)** [COMPLETED: 4/29/2025]
 
-1.  **Setup:** Configure `pytest`. Copy the `test-pages/` directory from the Go project into the `tests/` directory.
-2.  **Test Loader (`tests/conftest.py` or helpers):**
-    * [ ] Write functions to automatically discover all test case directories inside `tests/test-pages/`.
-    * [ ] For each case, load `source.html`, `expected.html`, and `expected-metadata.json`.
-3.  **Test Implementation (`tests/test_readability.py`):**
-    * [ ] Use `pytest.mark.parametrize` to create tests for each discovered test case.
-    * [ ] Inside the test function:
+1.  **Setup:** [COMPLETED: 4/29/2025] Configure `pytest`. Copy the `test-pages/` directory from the Go project into the `tests/` directory.
+2.  **Test Loader (`tests/conftest.py` or helpers):** [COMPLETED: 4/29/2025]
+    * [X] Write functions to automatically discover all test case directories inside `tests/test-pages/`.
+    * [X] For each case, load `source.html`, `expected.html`, and `expected-metadata.json`.
+3.  **Test Implementation (`tests/test_readability.py`):** [COMPLETED: 4/29/2025]
+    * [X] Use `pytest.mark.parametrize` to create tests for each discovered test case.
+    * [X] Inside the test function:
         * Instantiate `Readability`.
         * Call `readability.parse(source_html_content, url=case_url)`. Assert no error was returned.
         * Compare `Article` fields against loaded `expected-metadata.json` (use helpers for date/numeric comparisons).
         * Compare the generated `Article.content` HTML with `expected.html`. Start with normalized string comparison; consider semantic (tree) comparison if needed for robustness.
-4.  **Iteration:** Run `pytest` frequently. Debug failures by comparing Python code execution flow and intermediate values against the Go version's logic for the failing test case.
+4.  **Iteration:** [COMPLETED: 4/29/2025] Run `pytest` frequently. Debug failures by comparing Python code execution flow and intermediate values against the Go version's logic for the failing test case.
+5.  **Project Reorganization:** [COMPLETED: 4/29/2025]
+    * [X] Create directory structure for better organization:
+        * `tests/docs/` for test documentation
+        * `tests/scripts/` for test utility scripts
+        * `tests/fixtures/` for test fixtures
+    * [X] Move test-related files to appropriate directories
+    * [X] Update path references in scripts to reflect new directory structure
 
-**Phase 7: CLI Implementation (`cli/`)**
+**Phase 7: CLI Implementation (`cli/`)** [COMPLETED: 4/29/2025]
 
-1.  **Framework:** Choose `argparse` (built-in) or `click`/`typer`.
-2.  **Arguments:** Define CLI arguments (input file/URL, output file, output format (HTML/JSON), debug/verbosity flags).
-3.  **Logic (`cli/main.py`):**
-    * [ ] Parse arguments.
-    * [ ] If URL input, use `requests.get()` to fetch content (handle errors). If file input, read the file.
-    * [ ] Instantiate `Readability`.
-    * [ ] Call `readability.parse()`.
-    * [ ] Check the returned `(result, error)`. Print error to `stderr` and exit if error.
-    * [ ] Format the `Article` object (e.g., print content HTML, or dump metadata as JSON) based on flags. Print to `stdout` or output file.
-4.  **Entry Point:** Define entry point in `pyproject.toml` for the CLI script.
+1.  **Framework:** [COMPLETED: 4/29/2025] Choose `argparse` (built-in) or `click`/`typer`. (Selected `argparse`)
+2.  **Arguments:** [COMPLETED: 4/29/2025] Define CLI arguments (input file/URL, output file, output format (HTML/JSON), debug/verbosity flags).
+3.  **Logic (`cli/main.py`):** [COMPLETED: 4/29/2025]
+    * [X] Parse arguments.
+    * [X] If URL input, use `requests.get()` to fetch content (handle errors). If file input, read the file.
+    * [X] Instantiate `Readability`.
+    * [X] Call `readability.parse()`.
+    * [X] Check the returned `(result, error)`. Print error to `stderr` and exit if error.
+    * [X] Format the `Article` object (e.g., print content HTML, or dump metadata as JSON) based on flags. Print to `stdout` or output file.
+4.  **Entry Point:** [COMPLETED: 4/29/2025] Define entry point in `pyproject.toml` for the CLI script.
 
-**Phase 8: Documentation & Packaging**
+**Phase 8: Documentation & Packaging** [PARTIALLY COMPLETED: 4/29/2025]
 
-1.  **README:** Write `README.md` covering installation, library usage examples, CLI usage, comparison to upstream, known differences (if any).
-2.  **Docstrings:** Add comprehensive docstrings (PEP 257) to all classes, methods, and functions.
+1.  **README:** [COMPLETED: 4/29/2025] Write `README.md` covering installation, library usage examples, CLI usage, comparison to upstream, known differences (if any).
+2.  **Docstrings:** [COMPLETED: 4/29/2025] Add comprehensive docstrings (PEP 257) to all classes, methods, and functions.
 3.  **Packaging:** Finalize `pyproject.toml`, build distributions (`python -m build`).
 4.  **Optional:** Publish to PyPI.
 
