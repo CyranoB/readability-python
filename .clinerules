@@ -1,0 +1,50 @@
+# Python Readability Project Intelligence
+
+## Project Patterns
+
+### Code Style
+- Follow PEP 8 style guidelines
+- Use Black for code formatting
+- Use Ruff or Flake8 for linting
+- Use type hints throughout the codebase
+- Use docstrings for all public functions, classes, and methods
+
+### Naming Conventions
+- Use snake_case for variables, functions, and methods
+- Use PascalCase for classes
+- Use UPPER_CASE for constants
+- Prefix private methods and variables with underscore (_)
+
+### Implementation Patterns
+- Use dataclasses for data models
+- Use explicit error returns at API boundaries
+- Use exceptions internally for control flow
+- Follow the original Go implementation's logic closely
+- Map Go DOM traversal methods to BeautifulSoup equivalents
+
+### Testing Patterns
+- Use pytest for testing
+- Use parameterized tests for running the same test logic against multiple test cases
+- Reuse test cases from the original Go implementation
+- Test both success and error cases
+
+## Critical Implementation Paths
+- Scoring algorithm is the heart of the readability algorithm
+- Regular expression translation from Go to Python
+- DOM traversal mapping from Go to BeautifulSoup
+
+## Known Challenges
+- Go uses explicit error returns, Python typically uses exceptions
+- Go uses RE2 regular expression syntax, Python uses a different regex syntax
+- Small differences in scoring can lead to different extraction results
+
+## Project Evolution
+- Starting with a direct port of the Go implementation
+- May evolve to be more Pythonic over time
+- Focus on maintaining compatibility with the original Go implementation
+
+## Tool Usage Patterns
+- Use Poetry for dependency management
+- Use pytest for testing
+- Use Black for formatting
+- Use Ruff or Flake8 for linting
