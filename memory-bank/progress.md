@@ -123,23 +123,15 @@ The project is in the testing and refinement phase. The core functionality is im
 
 ## Known Issues
 
-### 1. Pytest Marks Warning
-
-When running the tests, there are warnings about unknown pytest marks. This is because we're dynamically creating marks based on the category enumerations. We need to configure pytest to recognize these marks.
-
-```
-tests/test_readability.py:107: PytestUnknownMarkWarning: Unknown pytest.mark.area_content_identification - is this a typo?
-```
-
-### 2. DOM Traversal Mapping
+### 1. DOM Traversal Mapping
 
 There might be some inconsistencies in how we map Go's DOM traversal methods to BeautifulSoup's methods. This could lead to differences in behavior between the Go and Python implementations. We need to carefully review and test this mapping.
 
-### 3. Regular Expression Translation
+### 2. Regular Expression Translation
 
 Some of the regular expressions from the Go implementation might not have been translated correctly to Python's re syntax. This could lead to differences in behavior between the Go and Python implementations. We need to carefully review and test these translations.
 
-### 4. Performance Optimization
+### 3. Performance Optimization
 
 The Python implementation is likely slower than the Go implementation due to the nature of the languages. We need to identify and optimize performance bottlenecks.
 

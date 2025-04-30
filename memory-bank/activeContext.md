@@ -88,7 +88,9 @@ Now that we have comprehensive documentation and a solid test suite, we should i
 
 Prepare the library for distribution on PyPI by finalizing the packaging configuration in pyproject.toml.
 
-## Recent Documentation Updates
+## Recent Updates
+
+### Documentation Updates
 
 We've created comprehensive documentation for the project:
 
@@ -111,6 +113,10 @@ We've created comprehensive documentation for the project:
    - Issue reporting guidelines
 
 These documentation updates will make it easier for users to understand and use the library, and for contributors to help improve it.
+
+### Testing Infrastructure Improvements
+
+1. **Fixed Pytest Warnings**: Created a `pytest.ini` file to register all custom marks used in our tests. This eliminates the warnings that were previously shown when running the tests, making the test output cleaner and easier to read.
 
 ## Active Decisions and Considerations
 
