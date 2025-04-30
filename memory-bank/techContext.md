@@ -1,108 +1,212 @@
-# Technical Context: Python Readability
+# Technical Context for Python Readability
 
 ## Technologies Used
 
 ### Core Technologies
-- **Python 3.8+**: Base language for implementation
-- **BeautifulSoup4**: HTML parsing and manipulation
-- **lxml**: XML/HTML parser (used as BeautifulSoup's parser)
-- **python-dateutil**: For parsing and handling dates in metadata
-- **requests** (optional): For fetching URLs in CLI mode
 
-### Development Tools
-- **Poetry**: Dependency management and packaging
-- **pytest**: Testing framework
-- **black**: Code formatting
-- **ruff/flake8**: Linting
-- **Git**: Version control
+1. **Python 3.6+**: The library is implemented in Python 3.6+ to ensure compatibility with modern Python projects.
+2. **BeautifulSoup4**: Used for HTML parsing and DOM manipulation, with the lxml parser for performance.
+3. **lxml**: Used as the HTML parser backend for BeautifulSoup.
+4. **python-dateutil**: Used for parsing and handling dates in metadata extraction.
+5. **requests**: Used in the CLI tool for fetching HTML content from URLs.
+
+### Development Technologies
+
+1. **Poetry**: Used for dependency management and packaging.
+2. **pytest**: Used for testing.
+3. **Black**: Used for code formatting.
+4. **Ruff/Flake8**: Used for linting.
+5. **mypy**: Used for static type checking.
+6. **tox**: Used for testing across multiple Python versions.
 
 ## Development Setup
 
+### Environment Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/username/python-readability.git
+   cd python-readability
+   ```
+
+2. **Install Poetry**:
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   poetry install
+   ```
+
+4. **Activate the virtual environment**:
+   ```bash
+   poetry shell
+   ```
+
 ### Project Structure
+
 ```
 python-readability/
-├── readability/           # Main library code
-│   ├── __init__.py        # Package exports
-│   ├── models.py          # Data models (Article class)
-│   ├── parser.py          # Core parsing logic
-│   ├── regexps.py         # Regular expressions
-│   └── utils.py           # Utility functions
-├── cli/                   # Command-line interface
+├── readability/
 │   ├── __init__.py
-│   └── main.py            # CLI entry point
-├── tests/                 # Test suite
-│   ├── conftest.py        # Test configuration
-│   ├── test_readability.py # Main tests
-│   └── test-pages/        # Test cases from go-readability
-├── pyproject.toml         # Project configuration
-└── README.md              # Documentation
+│   ├── models.py
+│   ├── parser.py
+│   ├── regexps.py
+│   └── utils.py
+├── cli/
+│   └── __init__.py
+├── tests/
+│   ├── conftest.py
+│   ├── test_readability.py
+│   └── test-pages/
+│       ├── 001/
+│       │   ├── source.html
+│       │   ├── expected.html
+│       │   └── expected-metadata.json
+│       └── ...
+├── pyproject.toml
+├── README.md
+└── LICENSE
 ```
 
-### Environment Setup
-1. Python 3.8+ installed
-2. Poetry installed for dependency management
-3. Development dependencies installed via `poetry install`
+### Development Workflow
+
+1. **Run tests**:
+   ```bash
+   pytest
+   ```
+
+2. **Format code**:
+   ```bash
+   black readability tests
+   ```
+
+3. **Lint code**:
+   ```bash
+   ruff readability tests
+   ```
+
+4. **Type check**:
+   ```bash
+   mypy readability
+   ```
+
+5. **Build package**:
+   ```bash
+   poetry build
+   ```
 
 ## Technical Constraints
 
-### Compatibility
-- Must maintain behavioral compatibility with the original Go implementation
-- Must pass all test cases from the original Go implementation
-- Should support the same input formats and options as the Go version
+### Python Version Compatibility
 
-### Performance
-- Should have comparable performance to the Go implementation
-- Should handle large HTML documents efficiently
+The library is designed to be compatible with Python 3.6 and above. This ensures broad compatibility while still allowing the use of modern Python features like f-strings, type hints, and dataclasses.
 
-### Dependencies
-- Minimize external dependencies to keep the library lightweight
-- Core dependencies:
-  - beautifulsoup4: HTML parsing
-  - lxml: Parser backend for BeautifulSoup
-  - python-dateutil: Date parsing for metadata
+### Performance Considerations
 
-### API Design
-- Should provide a Pythonic API while maintaining compatibility with Go version
-- Should use Python idioms and best practices (dataclasses, type hints, etc.)
-- Should follow PEP 8 style guidelines
+While Python is generally slower than Go, we aim to optimize the library for performance where possible:
 
-## Technical Challenges
+1. **Use lxml parser**: The lxml parser is significantly faster than the default HTML parser in BeautifulSoup.
+2. **Minimize DOM traversal**: DOM traversal is expensive, so we minimize it where possible.
+3. **Use compiled regular expressions**: We compile regular expressions once and reuse them.
+4. **Avoid unnecessary string operations**: String operations can be expensive, so we minimize them.
 
-### DOM Traversal Mapping
-- Go implementation uses specific DOM traversal methods
-- Need to map these to BeautifulSoup equivalents
-- Ensure consistent behavior across different HTML structures
+### Memory Usage
 
-### Regular Expression Translation
-- Go uses RE2 regular expression syntax
-- Need to translate these to Python's re syntax
-- Ensure pattern matching behavior is consistent
+The library is designed to be memory-efficient:
 
-### Scoring Algorithm
-- Complex heuristics for scoring content nodes
-- Need to ensure Python implementation produces the same scores
-- Small differences in scoring can lead to different extraction results
+1. **Stream processing**: Where possible, we process HTML in a streaming fashion to avoid loading the entire document into memory.
+2. **Garbage collection**: We explicitly remove references to large objects when they are no longer needed.
+3. **Avoid unnecessary copies**: We avoid making unnecessary copies of large strings or DOM trees.
+
+## Dependencies
+
+### Runtime Dependencies
+
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| beautifulsoup4 | >=4.9.0 | HTML parsing and DOM manipulation |
+| lxml | >=4.5.0 | HTML parser backend for BeautifulSoup |
+| python-dateutil | >=2.8.0 | Date parsing for metadata extraction |
+| requests | >=2.23.0 | HTTP requests for CLI tool |
+
+### Development Dependencies
+
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| pytest | >=6.0.0 | Testing |
+| black | >=20.8b1 | Code formatting |
+| ruff | >=0.0.1 | Linting |
+| mypy | >=0.800 | Static type checking |
+| tox | >=3.20.0 | Testing across multiple Python versions |
+
+## API Design
+
+### Public API
+
+The public API is designed to be simple and intuitive:
+
+```python
+from readability import Readability
+
+# Parse HTML content
+parser = Readability()
+article, error = parser.parse(html_content, url="https://example.com/article")
+
+if error:
+    print(f"Error: {error}")
+else:
+    # Access extracted content and metadata
+    print(f"Title: {article.title}")
+    print(f"Content: {article.content}")
+```
 
 ### Error Handling
-- Go uses explicit error returns
-- Python typically uses exceptions
-- Need to design an error handling strategy that works well in Python while maintaining compatibility
 
-## Testing Strategy
+Following the Go implementation's pattern, we use explicit error returns rather than exceptions for the main API. This makes the API more predictable and easier to use, especially for users coming from Go.
 
-### Test Cases
-- Reuse test cases from the original Go implementation
-- Each test case consists of:
-  - `source.html`: Input HTML
-  - `expected.html`: Expected output HTML
-  - `expected-metadata.json`: Expected metadata
+```python
+article, error = parser.parse(html_content, url=url)
+if error:
+    # Handle error
+```
 
-### Test Infrastructure
-- Use pytest for running tests
-- Parameterized tests to run the same test logic against multiple test cases
-- Helpers for loading test cases and comparing results
+### Configuration
 
-### Test Coverage
-- Aim for high test coverage (90%+)
-- Focus on testing edge cases and complex logic
-- Include tests for error handling and edge cases
+The library provides configuration options through the `Readability` class:
+
+```python
+parser = Readability(
+    min_text_length=25,
+    retry=True,
+    url_rewriting=True,
+    debug=False
+)
+```
+
+## Compatibility with Go Implementation
+
+### API Compatibility
+
+The Python API is designed to be similar to the Go API where it makes sense, but adapted to be more Pythonic. The main differences are:
+
+1. **Method naming**: We use snake_case for method names instead of camelCase.
+2. **Configuration**: We use a more Pythonic configuration approach with keyword arguments.
+3. **Error handling**: We use explicit error returns, but in a more Pythonic way.
+
+### Behavior Compatibility
+
+The behavior of the Python implementation should match the Go implementation as closely as possible:
+
+1. **Content extraction**: The same content should be extracted from the same HTML.
+2. **Metadata extraction**: The same metadata should be extracted from the same HTML.
+3. **Error handling**: The same errors should be returned in the same situations.
+
+### Test Compatibility
+
+The test suite is designed to ensure compatibility with the Go implementation:
+
+1. **Test cases**: We use the same test cases as the Go implementation.
+2. **Expected output**: We compare the output of the Python implementation with the expected output from the Go implementation.
+3. **Edge cases**: We test the same edge cases as the Go implementation.

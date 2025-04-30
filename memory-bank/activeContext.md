@@ -1,139 +1,143 @@
-# Active Context: Python Readability
+# Active Context for Python Readability
 
 ## Current Work Focus
-The project has completed the initial setup phase (Phase 1), parsing and preprocessing (Phase 2), metadata extraction (Phase 3), core content extraction and scoring (Phase 4), and post-processing (Phase 5). We're now working on Phase 6: Testing Infrastructure to verify the implementation against the original Go version.
+
+The current focus of the Python Readability project is on implementing a comprehensive test case categorization and prioritization strategy. This involves:
+
+1. **Test Case Categorization**: Categorizing test cases by functional area, criticality level, and test type to provide a clear understanding of what each test case is testing.
+2. **Test Case Migration**: Migrating high-priority test cases from the Go implementation to the Python implementation.
+3. **Test Infrastructure Enhancement**: Enhancing the test infrastructure to support categorization and prioritization.
+4. **Test Case Verification**: Developing tools to verify that all test cases are properly implemented and categorized.
 
 ## Recent Changes
-- Created project directory structure (`python-readability/`, `readability/`, `tests/`, `cli/`)
-- Initialized Git repository
-- Created memory bank documentation to track project progress and context
-- Created `.gitignore` file with Python-specific patterns
-- Created `pyproject.toml` with Poetry configuration, dependencies, and development tools
-- Created basic package structure with `__init__.py` files in `readability/`, `cli/`, and `tests/` directories
-- Created `readability/models.py` with `Article` dataclass and custom error classes
-- Created `readability/parser.py` with `Readability` class and implemented core methods
-- Created `readability/utils.py` with utility functions
-- Created `readability/regexps.py` with regular expressions and constants
-- Implemented HTML parsing and preprocessing functionality
-- Implemented metadata extraction from meta tags and JSON-LD
-- Implemented core content extraction and scoring algorithm
-- Implemented post-processing and output generation
-- Updated project documentation to reflect current progress
+
+### Test Case Categorization
+
+We've created a comprehensive test case categorization document (`test-case-categorization.md`) that categorizes test cases by:
+
+1. **Functional Area**: HTML Parsing, Metadata Extraction, Content Identification, Content Cleaning, URL Handling, Visibility Detection, Text Normalization, Real-world Websites.
+2. **Criticality Level**: P0 (Critical), P1 (High), P2 (Medium), P3 (Low).
+3. **Test Type**: Basic, Feature, Edge Case, Real-world.
+
+This categorization provides a clear understanding of what each test case is testing and helps identify gaps in test coverage.
+
+### Test Infrastructure Enhancement
+
+We've enhanced the test infrastructure to support categorization and prioritization:
+
+1. **Test Categories Module**: Created a `tests/test_categories.py` module that defines category enumerations, test case to category mappings, and helper functions to get test cases by category.
+2. **Test Runner Enhancement**: Updated `tests/test_readability.py` to use pytest marks for categorization and to support running tests by category.
+3. **Test Case Verification Script**: Created a `verify_test_cases.py` script to verify that all test cases are properly implemented and categorized.
+
+### Test Case Migration
+
+We've migrated test cases from the Go implementation to the Python implementation:
+
+1. **High Priority Test Cases**:
+   - **base-url-base-element**: Tests handling of base element for URL resolution.
+   - **base-url-base-element-relative**: Tests handling of relative URLs in base element.
+   - **remove-aria-hidden**: Tests handling of aria-hidden attribute.
+   - **replace-font-tags**: Tests replacement of font tags with span tags.
+   - **medium-2**: Tests extraction from another Medium article.
+
+2. **Medium Priority Test Cases**:
+   - **rtl-3** and **rtl-4**: Tests for right-to-left text handling.
+   - **qq**: Test for non-Latin character sets.
+   - **js-link-replacement**: Test for JavaScript link handling.
+   - **ehow-2** and **herald-sun-1**: Real-world website tests.
+
+3. **Low Priority Test Cases**:
+   - **aclu**: Tests extraction from ACLU article.
+   - **aktualne**: Tests extraction from Aktualne news article.
+   - **archive-of-our-own**: Tests extraction from Archive of Our Own content.
+   - **ars-1**: Tests extraction from Ars Technica article.
+   - **bbc-1**: Tests extraction from BBC article.
+   - **blogger**: Tests extraction from Blogger post.
+   - **breitbart**: Tests extraction from Breitbart article.
 
 ## Next Steps
-1. **Complete Project Setup**:
-   - Install Poetry and set up virtual environment
 
-2. **Phase 1: Project Setup & Foundation** ✓
-   - ✓ Create `readability/models.py` with `Article` dataclass
-   - ✓ Define custom `Error` classes
-   - ✓ Create `readability/parser.py` with `Readability` class
-   - ✓ Define main entry point method `parse()`
-   - ✓ Stub out placeholder methods for major steps
-   - ✓ Create `readability/utils.py` for helper functions
-   - ✓ Create `readability/regexps.py` for regular expressions
+### 1. Create New Test Cases
 
-3. **Phase 2: Parsing & Preprocessing** ✓
-   - ✓ Implement `parse` method to handle input HTML
-   - ✓ Implement `_preprocess` method for initial HTML cleaning
+We've successfully fixed the failing test cases and migrated all the medium and low priority test cases. Now we should focus on creating new test cases to fill the identified gaps:
 
-4. **Phase 3: Metadata Extraction** ✓
-   - ✓ Implement `_get_metadata` method to extract article metadata
-   - ✓ Implement `_get_json_ld` method to extract metadata from JSON-LD
-   - ✓ Implement `_get_article_title` method to extract article title
-   - ✓ Implement `_get_article_favicon` method to extract favicon URL
+Based on our gap analysis, we should create new test cases to fill the identified gaps:
 
-5. **Phase 4: Core Content Extraction & Scoring** ✓
-   - ✓ Implement score management system
-     - Created `ScoreTracker` class using `weakref.WeakKeyDictionary`
-     - Added methods to get/set/check scores for nodes
-   - ✓ Implement DOM adapter methods
-     - Created helper methods for consistent DOM traversal
-     - Mapped Go DOM methods to BeautifulSoup equivalents
-   - ✓ Implement node classification and initialization
-     - Added class weight calculation
-     - Initialized nodes with baseline scores
-     - Added visibility detection
-   - ✓ Implement content scoring logic
-     - Calculated link density
-     - Scored paragraphs based on content
-     - Propagated scores to ancestor nodes
-   - ✓ Implement candidate selection
-     - Selected best candidate based on scores
-     - Included related content from siblings
-   - ✓ Implement main algorithm flow
-     - Removed unlikely candidates
-     - Transformed misused divs into paragraphs
-     - Orchestrated the extraction process
+1. **HTML Parsing**:
+   - malformed-html (P2): Test handling of malformed HTML.
+   - html5-elements (P2): Test handling of HTML5 specific elements.
 
-6. **Phase 5: Post-processing & Output Generation** ✓
-   - ✓ Implement content cleaning
-     - Removed presentational attributes
-     - Cleaned class attributes
-     - Implemented conditional element removal
-   - ✓ Implement link fixing
-     - Made links absolute using base URL
-     - Handled different media elements
-     - Processed srcset attributes
-   - ✓ Implement final article preparation
-     - Removed empty nodes
-     - Ensured proper paragraph structure
-     - Cleaned up readability attributes
+2. **Content Cleaning**:
+   - table-handling (P1): Test handling of table elements.
+   - form-removal (P1): Test removal of form elements.
+   - iframe-handling (P2): Test handling of iframe elements.
 
-7. **Phase 6: Testing Infrastructure** (Current Focus)
-   - Configure pytest
-     - Set up pytest configuration
-     - Copy test-pages directory from Go project
-   - Create test loader
-     - Write functions to discover test case directories
-     - Load source.html, expected.html, and expected-metadata.json
-   - Implement test cases
-     - Use pytest.mark.parametrize for test cases
-     - Compare results with expected output
-   - Run and debug tests
-     - Run tests frequently during development
-     - Debug failures by comparing with Go implementation
+3. **Metadata Extraction**:
+   - schema-org (P1): Test extraction of schema.org metadata.
+   - open-graph (P1): Test extraction of Open Graph protocol metadata.
+   - twitter-card (P2): Test extraction of Twitter Card metadata.
+
+4. **Visibility Detection**:
+   - css-visibility (P1): Test handling of CSS visibility properties.
+
+### 2. Implement CLI Tool
+
+Now that we have comprehensive documentation and a solid test suite, we should implement the CLI tool to make the library usable from the command line.
+
+### 3. Package for Distribution
+
+Prepare the library for distribution on PyPI by finalizing the packaging configuration in pyproject.toml.
+
+## Recent Documentation Updates
+
+We've created comprehensive documentation for the project:
+
+1. **README.md**: Created a detailed README with information about:
+   - Project overview and features
+   - Installation instructions
+   - Usage examples (both library API and CLI)
+   - Testing approach with categorization details
+   - Test coverage statistics
+   - Comparison with the Go implementation
+   - Development setup and workflow
+
+2. **CONTRIBUTING.md**: Created guidelines for contributors covering:
+   - Code of conduct
+   - Getting started with contributions
+   - Development environment setup
+   - Code style requirements
+   - Process for adding new test cases
+   - Pull request process
+   - Issue reporting guidelines
+
+These documentation updates will make it easier for users to understand and use the library, and for contributors to help improve it.
 
 ## Active Decisions and Considerations
 
-### Implementation Strategy
-- Following a phased approach as outlined in the project plan
-- Focusing on setting up the project structure and core components first
-- Planning to implement the parsing logic in a step-by-step manner, following the Go implementation closely
+### 1. Test Case Categorization Strategy
 
-### Key Questions
-- How closely should we follow the Go implementation's structure vs. making it more Pythonic?
-- Should we implement the CLI interface early or focus on the core library first?
+We've decided to categorize test cases by functional area, criticality level, and test type. This provides a clear understanding of what each test case is testing and helps identify gaps in test coverage. It also allows us to prioritize test cases based on their criticality level.
 
-### Current Challenges
-- Setting up comprehensive test infrastructure to verify implementation against Go version
-- Handling differences in HTML output formatting between Go and Python implementations
-- Creating robust comparison methods for HTML and metadata
-- Dealing with potential edge cases in test pages
-- Ensuring test coverage for all implemented functionality
-- Debugging any discrepancies between Python implementation and Go implementation results
+### 2. Test Infrastructure Enhancement
 
-## Reference Materials
-- Original Go implementation in `go-readability/` directory
-- Project plan in `project-plan.md`
-- Test cases in `go-readability/test-pages/`
+We've decided to enhance the test infrastructure to support categorization and prioritization. This involves:
 
-## Document Integration
-The project uses two complementary documents to track implementation:
+1. **Using pytest marks**: We're using pytest marks to categorize test cases by functional area, criticality level, and test type.
+2. **Creating helper functions**: We've created helper functions to get test cases by category, which makes it easier to run tests by category.
+3. **Creating a verification script**: We've created a script to verify that all test cases are properly implemented and categorized.
 
-1. **project-plan.md**: The detailed implementation roadmap with specific technical guidance
-   - Provides step-by-step instructions for each phase
-   - Includes implementation details and approaches
-   - Now includes status tracking with completion dates
+### 3. Test Case Migration Strategy
 
-2. **memory-bank/progress.md**: The progress tracking document
-   - Tracks task completion status
-   - Includes collapsible implementation details
-   - Contains references to corresponding sections in project-plan.md
-   - Includes implementation notes and technical debt tracking
+We've decided to migrate test cases from the Go implementation in order of priority:
 
-These documents are now integrated with:
-- Consistent phase and task naming
-- Cross-references between documents (e.g., [→ Plan §2.1])
-- Shared status tracking
-- Complementary information (plan has "how to implement", progress has "what has been implemented")
+1. **High Priority (P1)**: These test cases are essential for ensuring the Python implementation behaves the same way as the Go implementation for core functionality.
+2. **Medium Priority (P2)**: These test cases are important for ensuring the Python implementation handles edge cases correctly.
+3. **Low Priority (P3)**: These test cases are nice-to-have but not essential for the initial release.
+
+### 4. Error Handling Strategy
+
+We're following the Go implementation's pattern of using explicit error returns rather than exceptions for the main API. This makes the API more predictable and easier to use, especially for users coming from Go. However, we're adapting this pattern to be more Pythonic by using a tuple return value `(article, error)` instead of Go's multiple return values.
+
+### 5. DOM Traversal Mapping
+
+We're mapping Go's DOM traversal methods to BeautifulSoup's methods to ensure the content extraction algorithm works the same way in both implementations. This is a key consideration for ensuring compatibility with the Go implementation.

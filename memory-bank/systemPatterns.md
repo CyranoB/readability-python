@@ -1,120 +1,165 @@
-# System Patterns: Python Readability
+# System Patterns for Python Readability
 
 ## System Architecture
-The Python Readability library follows a modular architecture with clear separation of concerns:
+
+The Python Readability library follows a modular architecture with clear separation of concerns. The main components are:
+
+1. **Parser**: The main entry point for the library, responsible for orchestrating the parsing process.
+2. **Models**: Data structures for representing articles and metadata.
+3. **Preprocessing**: Utilities for cleaning and preparing HTML for content extraction.
+4. **Scoring**: Algorithms for identifying the main content of a page.
+5. **Postprocessing**: Utilities for cleaning and formatting the extracted content.
+6. **CLI**: Command-line interface for using the library.
 
 ```mermaid
 flowchart TD
-    Input[HTML Input] --> Parser[Readability Parser]
-    Parser --> Preprocess[Preprocessing]
-    Preprocess --> Metadata[Metadata Extraction]
-    Preprocess --> Scoring[Content Scoring]
-    Scoring --> Extraction[Content Extraction]
-    Extraction --> Postprocess[Postprocessing]
-    Metadata --> Article[Article Object]
-    Postprocess --> Article
-    Article --> Output[Output: HTML/Text/Metadata]
+    A[HTML Input] --> B[Parser]
+    B --> C[Preprocessing]
+    C --> D[Metadata Extraction]
+    C --> E[Content Scoring]
+    E --> F[Content Extraction]
+    F --> G[Postprocessing]
+    D --> H[Article Model]
+    G --> H
+    H --> I[Output]
 ```
-
-## Key Components
-
-### 1. Core Parser (`readability/parser.py`)
-- Main `Readability` class that orchestrates the parsing process
-- Entry point method `parse()` that returns an `Article` object or error
-- Handles the overall flow of content extraction
-
-### 2. Data Models (`readability/models.py`)
-- `Article` dataclass containing extracted content and metadata
-- Custom error classes for different failure modes
-
-### 3. Utilities (`readability/utils.py`)
-- Helper functions for text normalization, URL handling, etc.
-- Shared functionality used across the library
-
-### 4. Regular Expressions (`readability/regexps.py`)
-- Compiled regular expressions for various pattern matching operations
-- Organized by usage (preprocessing, scoring, cleaning)
-
-### 5. CLI Interface (`cli/main.py`)
-- Command-line interface for using the library
-- Handles input/output and formatting options
 
 ## Key Technical Decisions
 
-### 1. Error Handling Pattern
-- Use explicit error returns (`Tuple[Optional[Article], Optional[Exception]]`) at API boundaries
-- Use exceptions internally for control flow
-- This maintains compatibility with Go's error handling pattern while being Pythonic internally
+### 1. BeautifulSoup for HTML Parsing
 
-### 2. HTML Parsing
-- Use BeautifulSoup with lxml parser for HTML parsing
-- Map Go DOM traversal methods to BeautifulSoup equivalents
-- Attach scoring information to nodes using BeautifulSoup's custom attributes
+We use BeautifulSoup with the lxml parser for HTML parsing, as it provides a robust and Pythonic API for traversing and manipulating HTML documents. This is a key difference from the Go implementation, which uses its own DOM implementation.
 
-### 3. Data Structure Choices
-- Use Python dataclasses for clean, type-hinted data models
-- Return immutable objects to prevent unexpected modifications
+### 2. Explicit Error Returns
 
-### 4. Testing Approach
-- Reuse test cases from the original Go implementation
-- Use pytest for test infrastructure
-- Parameterized tests for running the same test logic against multiple test cases
+Following the Go implementation's pattern, we use explicit error returns rather than exceptions for the main API. This makes the API more predictable and easier to use, especially for users coming from Go.
 
-### 5. Dependency Management
-- Use modern Python packaging tools (Poetry or pyproject.toml)
-- Minimal dependencies to keep the library lightweight
+```python
+article, error = parser.parse(html_content, url=url)
+if error:
+    # Handle error
+```
+
+### 3. Dataclasses for Models
+
+We use Python's dataclasses for representing articles and metadata, which provides a clean and type-hinted API.
+
+```python
+@dataclass
+class Article:
+    url: str
+    title: str
+    byline: Optional[str] = None
+    content: str = ""
+    text_content: str = ""
+    excerpt: Optional[str] = None
+    site_name: Optional[str] = None
+    image: Optional[str] = None
+    favicon: Optional[str] = None
+    length: int = 0
+    published_time: Optional[datetime] = None
+    author: Optional[str] = None
+    lang: Optional[str] = None
+```
+
+### 4. Regular Expression Translation
+
+The Go implementation uses RE2 regular expressions, which have a slightly different syntax than Python's re module. We carefully translate these regular expressions to ensure they work correctly in Python.
+
+### 5. DOM Traversal Mapping
+
+The Go implementation uses its own DOM traversal methods, which we map to BeautifulSoup's methods. This ensures that the content extraction algorithm works the same way in both implementations.
+
+| Go DOM Method | BeautifulSoup Equivalent |
+|---------------|--------------------------|
+| FirstElementChild | .find() |
+| NextElementSibling | .find_next_sibling() |
+| PreviousElementSibling | .find_previous_sibling() |
+| Children | .children |
+| Parent | .parent |
+
+## Design Patterns
+
+### 1. Builder Pattern
+
+The `Readability` class uses a builder-like pattern for configuration, allowing users to customize the parsing process.
+
+```python
+parser = Readability()\
+    .with_min_text_length(25)\
+    .with_retry(True)\
+    .with_url_rewriting(True)
+```
+
+### 2. Strategy Pattern
+
+The scoring algorithm uses a strategy pattern, allowing different scoring strategies to be used for different types of content.
+
+```python
+class ScoringStrategy(ABC):
+    @abstractmethod
+    def score(self, node: Tag) -> float:
+        pass
+
+class DefaultScoringStrategy(ScoringStrategy):
+    def score(self, node: Tag) -> float:
+        # Default scoring algorithm
+        pass
+
+class NewsArticleScoringStrategy(ScoringStrategy):
+    def score(self, node: Tag) -> float:
+        # News article specific scoring algorithm
+        pass
+```
+
+### 3. Chain of Responsibility
+
+The preprocessing and postprocessing steps use a chain of responsibility pattern, where each step can modify the DOM tree and pass it to the next step.
+
+```python
+class ProcessingStep(ABC):
+    @abstractmethod
+    def process(self, soup: BeautifulSoup) -> BeautifulSoup:
+        pass
+
+class RemoveScripts(ProcessingStep):
+    def process(self, soup: BeautifulSoup) -> BeautifulSoup:
+        for script in soup.find_all("script"):
+            script.decompose()
+        return soup
+
+class RemoveStyles(ProcessingStep):
+    def process(self, soup: BeautifulSoup) -> BeautifulSoup:
+        for style in soup.find_all("style"):
+            style.decompose()
+        return soup
+```
 
 ## Component Relationships
 
-```mermaid
-classDiagram
-    class Readability {
-        +parse(html_content, url) Tuple[Article, Exception]
-        -_preprocess(soup) BeautifulSoup
-        -_get_metadata(soup) dict
-        -_grab_article(soup) Tag
-        -_postprocess_content(top_node) Tag
-    }
-    
-    class Article {
-        +url str
-        +title str
-        +byline str
-        +content str
-        +text_content str
-        +excerpt str
-        +site_name str
-        +image str
-        +favicon str
-        +length int
-        +published_time datetime
-        +author str
-        +lang str
-    }
-    
-    class Utils {
-        +normalize_spaces(text) str
-        +get_link_density(node) float
-        +is_probably_visible(node) bool
-    }
-    
-    class Regexps {
-        +UNLIKELY_CANDIDATES Pattern
-        +POSITIVE_CANDIDATES Pattern
-        +NEGATIVE_CANDIDATES Pattern
-    }
-    
-    Readability --> Article : creates
-    Readability --> Utils : uses
-    Readability --> Regexps : uses
-```
+### Parser and Models
 
-## Processing Flow
-1. **Input Processing**: Parse HTML into BeautifulSoup object
-2. **Preprocessing**: Clean up document (remove scripts, styles, etc.)
-3. **Metadata Extraction**: Extract title, author, date, etc.
-4. **Content Scoring**: Score nodes based on content quality heuristics
-5. **Candidate Selection**: Identify the highest-scoring content node
-6. **Content Extraction**: Extract the main content and related nodes
-7. **Postprocessing**: Clean up the extracted content
-8. **Output Generation**: Create the final Article object with HTML and text content
+The Parser is responsible for creating and populating Article objects. It uses the various processing components to extract content and metadata from the HTML.
+
+### Preprocessing and Scoring
+
+The preprocessing steps prepare the HTML for scoring by removing unnecessary elements and normalizing the content. The scoring algorithm then uses this preprocessed HTML to identify the main content.
+
+### Scoring and Content Extraction
+
+The scoring algorithm assigns scores to different parts of the HTML based on various heuristics. The content extraction component then uses these scores to identify and extract the main content.
+
+### Postprocessing and Output Generation
+
+The postprocessing steps clean up the extracted content, removing any remaining unnecessary elements and formatting the content for output. The output generation component then creates the final HTML and plain text versions of the content.
+
+## Testing Strategy
+
+The testing strategy focuses on ensuring that the Python implementation behaves the same way as the Go implementation. This is achieved through:
+
+1. **Unit Tests**: Testing individual components in isolation.
+2. **Integration Tests**: Testing the interaction between components.
+3. **End-to-End Tests**: Testing the entire parsing process with real-world HTML.
+4. **Comparison Tests**: Comparing the output of the Python implementation with the Go implementation for the same input.
+
+The test suite includes a comprehensive set of test cases covering various types of content and edge cases.

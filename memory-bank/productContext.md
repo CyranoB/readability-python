@@ -1,42 +1,77 @@
-# Product Context: Python Readability
+# Product Context for Python Readability
 
 ## Why This Project Exists
-Python Readability exists to provide Python developers with a robust solution for extracting the main content from web pages. While the original `go-readability` library offers this functionality in Go, there's a need for a high-quality equivalent in the Python ecosystem.
+
+The Python Readability project exists to provide a high-quality, Python-native implementation of the Readability algorithm. While there are existing Python libraries for content extraction, such as newspaper3k and readability-lxml, they often have limitations or are no longer actively maintained. By porting the well-tested and robust go-readability library to Python, we aim to provide a reliable and up-to-date solution for content extraction in the Python ecosystem.
 
 ## Problems It Solves
-1. **Content Extraction**: Extracts the main article content from web pages, removing navigation, ads, footers, and other irrelevant elements.
-2. **Metadata Extraction**: Identifies and extracts key metadata like title, author, publication date, and featured image.
-3. **Cross-Language Compatibility**: Enables Python developers to use the same high-quality content extraction algorithm available in Go.
-4. **Web Scraping Challenges**: Addresses the complexity of parsing and extracting meaningful content from diverse web page structures.
+
+1. **Content Extraction**: The primary problem this library solves is extracting the main content from HTML pages, removing navigation, ads, and other non-content elements. This is particularly useful for:
+   - Web scraping and data mining
+   - Creating clean reading experiences
+   - Text analysis and natural language processing
+   - Archiving web content
+
+2. **Metadata Extraction**: Beyond just the content, the library also extracts important metadata such as:
+   - Title
+   - Author/byline
+   - Publication date
+   - Featured image
+   - Description/excerpt
+
+3. **Cross-Language Compatibility**: By maintaining compatibility with the Go implementation, the library ensures consistent behavior across different language ecosystems, making it easier to use in polyglot environments.
 
 ## How It Should Work
-1. **Input**: Accept HTML content (as string or bytes) and optionally a URL for context.
-2. **Processing**: Apply a series of preprocessing, scoring, extraction, and cleaning steps:
-   - Parse the HTML using BeautifulSoup/lxml
-   - Preprocess the document (remove scripts, styles, etc.)
-   - Extract metadata (title, author, date, etc.)
-   - Score content nodes based on various heuristics
-   - Identify and extract the main content
-   - Clean and post-process the extracted content
-3. **Output**: Return an Article object containing:
-   - Extracted content (HTML)
-   - Plain text version
-   - Metadata (title, author, date, etc.)
-   - Error information if extraction failed
+
+### User Experience
+
+From a user's perspective, the library should be simple to use:
+
+```python
+from readability import Readability
+
+# Parse HTML content
+parser = Readability()
+article, error = parser.parse(html_content, url="https://example.com/article")
+
+if error:
+    print(f"Error: {error}")
+else:
+    # Access extracted content and metadata
+    print(f"Title: {article.title}")
+    print(f"Byline: {article.byline}")
+    print(f"Content: {article.content}")
+    print(f"Text Content: {article.text_content}")
+    print(f"Excerpt: {article.excerpt}")
+    print(f"Site Name: {article.site_name}")
+    print(f"Image: {article.image}")
+    print(f"Favicon: {article.favicon}")
+    print(f"Length: {article.length}")
+    print(f"Published Time: {article.published_time}")
+```
+
+For CLI usage:
+
+```bash
+python -m readability https://example.com/article --output article.html
+```
+
+### Internal Workflow
+
+Internally, the library should follow this workflow:
+
+1. **Parse HTML**: Convert the HTML string into a DOM tree using BeautifulSoup.
+2. **Preprocess**: Clean up the DOM tree by removing scripts, styles, and other unnecessary elements.
+3. **Extract Metadata**: Extract metadata from the DOM tree, such as title, author, and publication date.
+4. **Score Content**: Score different parts of the DOM tree to identify the main content.
+5. **Extract Content**: Extract the main content based on the scoring.
+6. **Postprocess**: Clean up the extracted content, removing any remaining unnecessary elements.
+7. **Generate Output**: Generate the final output, including both HTML and plain text versions.
 
 ## User Experience Goals
-1. **Simplicity**: Provide a clean, intuitive API that's easy to use
-2. **Reliability**: Consistently extract the main content across diverse web pages
-3. **Flexibility**: Support various input formats and configuration options
-4. **Performance**: Efficiently process HTML content with minimal overhead
-5. **Compatibility**: Maintain behavior compatibility with the original Go implementation
-6. **Pythonic**: Follow Python conventions and best practices
 
-## Target Users
-- Python developers building:
-  - Content aggregators
-  - News readers
-  - Web scrapers
-  - Archiving tools
-  - Text analysis applications
-  - Offline reading applications
+1. **Simplicity**: The library should be easy to use with minimal configuration.
+2. **Accuracy**: The library should accurately extract the main content and metadata from a wide variety of websites.
+3. **Robustness**: The library should handle edge cases gracefully, such as malformed HTML or unusual page structures.
+4. **Performance**: The library should be performant, with minimal memory usage and processing time.
+5. **Flexibility**: The library should provide options for customization, such as adjusting the scoring algorithm or specifying which elements to include or exclude.

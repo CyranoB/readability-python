@@ -459,11 +459,15 @@ class Readability:
         for img in imgs:
             has_valid_attrs = False
             for attr_name, attr_value in img.attrs.items():
+                # Handle AttributeValueList objects
+                if isinstance(attr_value, list):
+                    attr_value = " ".join(attr_value)
+                
                 if attr_name in ["src", "data-src", "srcset", "data-srcset"]:
                     has_valid_attrs = True
                     break
                 
-                if RX_IMG_EXTENSIONS.search(attr_value):
+                if attr_value and RX_IMG_EXTENSIONS.search(attr_value):
                     has_valid_attrs = True
                     break
             
@@ -702,9 +706,18 @@ class Readability:
         
         # Extract metadata from meta tags
         for element in meta_elements:
+            # Handle potential AttributeValueList objects
             element_name = element.get("name", "")
+            if isinstance(element_name, list):
+                element_name = " ".join(element_name)
+            
             element_property = element.get("property", "")
+            if isinstance(element_property, list):
+                element_property = " ".join(element_property)
+            
             content = element.get("content", "")
+            if isinstance(content, list):
+                content = " ".join(content)
             
             if not content:
                 continue
@@ -1646,7 +1659,12 @@ class Readability:
         weight = 0
         
         # Check for positive/negative classes in className
-        class_name = " ".join(node.get("class", []))
+        class_value = node.get("class", [])
+        if isinstance(class_value, list):
+            class_name = " ".join(class_value)
+        else:
+            class_name = str(class_value)
+            
         if class_name:
             if re2go.is_positive_class(class_name):
                 weight += 25
@@ -1655,6 +1673,9 @@ class Readability:
         
         # Check for positive/negative classes in ID
         node_id = node.get("id", "")
+        if isinstance(node_id, list):
+            node_id = " ".join(node_id)
+            
         if node_id:
             if re2go.is_positive_class(node_id):
                 weight += 25
@@ -1678,6 +1699,9 @@ class Readability:
         
         # Check style attribute for display:none or visibility:hidden
         style = node.get('style', '')
+        if isinstance(style, list):
+            style = " ".join(style)
+            
         if RX_DISPLAY_NONE.search(style) or RX_VISIBILITY_HIDDEN.search(style):
             return False
         
@@ -1686,9 +1710,17 @@ class Readability:
             return False
         
         # Check aria-hidden attribute
-        if node.get('aria-hidden', '') == 'true':
+        aria_hidden = node.get('aria-hidden', '')
+        if isinstance(aria_hidden, list):
+            aria_hidden = " ".join(aria_hidden)
+            
+        if aria_hidden == 'true':
             # Special case: allow fallback images even with aria-hidden
-            if 'fallback-image' in node.get('class', []):
+            class_value = node.get('class', [])
+            if isinstance(class_value, list):
+                if 'fallback-image' in class_value:
+                    return True
+            elif class_value == 'fallback-image':
                 return True
             return False
         
@@ -1775,6 +1807,9 @@ class Readability:
         # Process links
         for link in node.find_all("a"):
             href = link.get("href", "")
+            if isinstance(href, list):
+                href = " ".join(href)
+                
             if not href:
                 continue
             
@@ -1806,6 +1841,9 @@ class Readability:
         for media in node.find_all(["img", "picture", "figure", "video", "audio", "source"]):
             # Fix src attribute
             src = media.get("src", "")
+            if isinstance(src, list):
+                src = " ".join(src)
+                
             if src:
                 try:
                     abs_url = urljoin(self.document_uri.geturl(), src)
@@ -1815,6 +1853,9 @@ class Readability:
             
             # Fix poster attribute (for video)
             poster = media.get("poster", "")
+            if isinstance(poster, list):
+                poster = " ".join(poster)
+                
             if poster:
                 try:
                     abs_url = urljoin(self.document_uri.geturl(), poster)
@@ -1824,6 +1865,9 @@ class Readability:
             
             # Fix srcset attribute
             srcset = media.get("srcset", "")
+            if isinstance(srcset, list):
+                srcset = " ".join(srcset)
+                
             if srcset:
                 try:
                     # Parse srcset format: "url1 size1, url2 size2, ..."
@@ -1867,10 +1911,22 @@ class Readability:
         link_elements = self.doc.find_all("link")
         
         for link in link_elements:
-            link_rel = " ".join(link.get("rel", [])) if isinstance(link.get("rel"), list) else link.get("rel", "")
+            # Handle potential AttributeValueList objects
+            link_rel = link.get("rel", [])
+            if isinstance(link_rel, list):
+                link_rel = " ".join(link_rel)
+                
             link_type = link.get("type", "")
+            if isinstance(link_type, list):
+                link_type = " ".join(link_type)
+                
             link_href = link.get("href", "")
+            if isinstance(link_href, list):
+                link_href = " ".join(link_href)
+                
             link_sizes = link.get("sizes", "")
+            if isinstance(link_sizes, list):
+                link_sizes = " ".join(link_sizes)
             
             # Strip whitespace
             link_rel = link_rel.strip() if hasattr(link_rel, "strip") else link_rel

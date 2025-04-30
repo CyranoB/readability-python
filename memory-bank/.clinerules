@@ -48,3 +48,19 @@
 - Use pytest for testing
 - Use Black for formatting
 - Use Ruff or Flake8 for linting
+
+## Test Case Categorization
+- Categorize test cases by functional area, criticality level, and test type
+- Use pytest marks for categorization
+- Verify test case categorization with the verify_test_cases.py script
+
+## Test Case Migration
+- Migrate test cases from the Go implementation in order of priority
+- Fix failing test cases before migrating new ones
+- Update test case categorization after migration
+
+## Documentation Patterns
+- Use Markdown for documentation
+- Include code examples in documentation
+- Document API changes and differences from the Go implementation
+- Keep the memory bank up to date with the latest changes
