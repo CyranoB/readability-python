@@ -5,3 +5,4 @@ include pyproject.toml
 include pytest.ini
 recursive-include tests *.py *.html *.json
 recursive-exclude tests/debug *
+recursive-include cli *.py

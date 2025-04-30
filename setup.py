@@ -25,7 +25,7 @@ setup(
     author="Python Readability Team",
     author_email="python-readability@example.com",
     url="https://github.com/python-readability/python-readability",
-    packages=find_packages(),
+    packages=find_packages(include=["readability", "readability.*", "cli", "cli.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

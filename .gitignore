@@ -58,3 +58,6 @@ extracted.html
 *.html.out
 *.json.out
 *.txt.out
+test_output.html
+test_output.json
+test_output.txt

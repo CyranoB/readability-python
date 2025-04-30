@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Text Processing :: Markup :: HTML"
 ]
-packages = [{include = "readability"}]
+packages = [{include = "readability"}, {include = "cli"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
