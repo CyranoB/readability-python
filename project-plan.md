@@ -118,11 +118,17 @@ The goal of this project is to implement a python version of the go-readability 
     * [X] Format the `Article` object (e.g., print content HTML, or dump metadata as JSON) based on flags. Print to `stdout` or output file.
 4.  **Entry Point:** [COMPLETED: 4/29/2025] Define entry point in `pyproject.toml` for the CLI script.
 
-**Phase 8: Documentation & Packaging** [PARTIALLY COMPLETED: 4/29/2025]
+**Phase 8: Documentation & Packaging** [COMPLETED: 4/29/2025]
 
 1.  **README:** [COMPLETED: 4/29/2025] Write `README.md` covering installation, library usage examples, CLI usage, comparison to upstream, known differences (if any).
 2.  **Docstrings:** [COMPLETED: 4/29/2025] Add comprehensive docstrings (PEP 257) to all classes, methods, and functions.
-3.  **Packaging:** Finalize `pyproject.toml`, build distributions (`python -m build`).
-4.  **Optional:** Publish to PyPI.
+3.  **Packaging:** [COMPLETED: 4/29/2025] Finalize `pyproject.toml`, build distributions (`python -m build`).
+   * [X] Enhanced metadata in pyproject.toml
+   * [X] Created setup.py for pip installation
+   * [X] Added MANIFEST.in for source distribution
+   * [X] Created publishing script and documentation
+4.  **Optional:** [PREPARED: 4/29/2025] Publish to PyPI.
+   * [X] Created publishing script with TestPyPI support
+   * [X] Added detailed instructions in PACKAGING.md
 
 This plan provides a detailed roadmap. The most challenging parts will be the meticulous translation of scoring (Phase 4) and cleaning heuristics (Phase 5) and ensuring the test suite passes (Phase 6). Good luck!
