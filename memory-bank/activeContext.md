@@ -131,6 +131,29 @@ We've prepared the library for distribution on PyPI:
 
 ## Recent Updates
 
+### Version 0.3.0 Release
+
+We've released version 0.3.0 of the library with several improvements:
+
+1. **Enhanced CLI Features**:
+   - **Improved stdin handling**: Better detection of terminal input with user feedback
+   - **Chunk-based reading**: Efficiently handles large inputs by reading in chunks
+   - **Granular error handling**: Specific exit codes for different error types
+   - **Detailed error messages**: More informative error output for troubleshooting
+
+2. **Code Quality Improvements**:
+   - **Extracted constants**: Replaced hardcoded values with named constants in the `Readability` class
+   - **Improved type hinting**: Added return type hints to internal methods
+   - **Better exception handling**: More specific exception handling for JSON parsing
+   - **Modern packaging**: Removed redundant setup.py in favor of Poetry-only approach
+
+3. **Documentation Updates**:
+   - **Comprehensive CLI documentation**: Added examples for all CLI options
+   - **Error code documentation**: Documented exit codes for better scripting
+   - **Updated requirements**: Clarified Python version requirements (3.8+)
+   - **Improved development workflow**: Enhanced instructions for contributors
+   - **Version information**: Added version number to README and documentation
+
 ### Documentation Updates
 
 We've created comprehensive documentation for the project:
@@ -143,6 +166,7 @@ We've created comprehensive documentation for the project:
    - Test coverage statistics
    - Comparison with the Go implementation
    - Development setup and workflow
+   - Recent improvements in v0.3.0
 
 2. **CONTRIBUTING.md**: Created guidelines for contributors covering:
    - Code of conduct
@@ -176,6 +200,17 @@ We've implemented a command-line interface for the library in `cli/main.py` that
    - Debug flag: Enable debug output
    - User-agent: Custom user-agent for HTTP requests
    - Timeout: HTTP request timeout
+
+4. **Error Handling**:
+   - Specific exit codes for different error types:
+     - `0`: Success
+     - `1`: Input error (file not found, invalid input)
+     - `2`: Network error (connection issues, timeout)
+     - `3`: Parsing error (HTML parsing failed)
+     - `4`: Output error (cannot write to output file)
+     - `10`: Unknown error
+   - Detailed error messages for troubleshooting
+   - Robust stdin handling with terminal detection and chunk-based reading
 
 The CLI follows the same error handling pattern as the library, using explicit error returns rather than exceptions for the main API. It also provides helpful error messages and a clean, intuitive interface.
 

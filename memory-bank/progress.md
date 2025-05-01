@@ -80,18 +80,28 @@ The following test cases are passing:
 
 1. **Packaging**: [COMPLETED: 4/29/2025] The library has been packaged for distribution on PyPI:
    * Enhanced metadata in pyproject.toml
-   * Created setup.py for pip installation
+   * Removed redundant setup.py in favor of Poetry-only approach
    * Added MANIFEST.in for source distribution
    * Created publishing script and documentation (PACKAGING.md)
 
 ### Completed Functionality
 
-1. **CLI Tool**: Implemented a command-line interface for the library that supports:
+1. **CLI Tool**: [ENHANCED: 5/1/2025] Implemented a command-line interface for the library that supports:
    - Processing HTML from URLs, files, or stdin
    - Multiple output formats (HTML, text, JSON)
    - Writing output to files or stdout
    - Custom user agent and timeout for HTTP requests
    - Debug mode for troubleshooting
+   - Improved stdin handling with terminal detection
+   - Chunk-based reading for large inputs
+   - Specific exit codes for different error types
+   - Detailed error messages for troubleshooting
+
+2. **Code Quality Improvements**: [COMPLETED: 5/1/2025] Enhanced code quality:
+   - Extracted hardcoded values into named constants
+   - Added missing return type hints to internal methods
+   - Improved exception handling for JSON parsing
+   - Modernized packaging approach
 
 ### Test Cases
 
@@ -101,8 +111,21 @@ The following test cases are passing:
 
 ### Completed Documentation
 
-1. **README.md**: Created a comprehensive README with project overview, installation instructions, usage examples, testing approach, and development setup.
+1. **README.md**: [ENHANCED: 5/1/2025] Created a comprehensive README with:
+   - Project overview and features
+   - Version information (v0.3.0)
+   - Installation instructions
+   - Usage examples (both library API and CLI)
+   - Enhanced CLI documentation with examples for all options
+   - Error code documentation for better scripting
+   - Testing approach with categorization details
+   - Test coverage statistics
+   - Comparison with the Go implementation
+   - Development setup and workflow
+   - Recent improvements section
+
 2. **CONTRIBUTING.md**: Created detailed guidelines for contributors covering code style, test case addition, and pull request process.
+
 3. **API Documentation**: Enhanced docstrings throughout the codebase:
    - Added comprehensive module-level docstrings explaining the purpose and usage of each module
    - Improved class docstrings with detailed explanations and examples

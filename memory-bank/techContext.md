@@ -4,7 +4,7 @@
 
 ### Core Technologies
 
-1. **Python 3.6+**: The library is implemented in Python 3.6+ to ensure compatibility with modern Python projects.
+1. **Python 3.8+**: The library is implemented in Python 3.8+ to ensure compatibility with modern Python projects while leveraging newer language features.
 2. **BeautifulSoup4**: Used for HTML parsing and DOM manipulation, with the lxml parser for performance.
 3. **lxml**: Used as the HTML parser backend for BeautifulSoup.
 4. **python-dateutil**: Used for parsing and handling dates in metadata extraction.
@@ -12,7 +12,7 @@
 
 ### Development Technologies
 
-1. **Poetry**: Used for dependency management and packaging.
+1. **Poetry**: Used for dependency management and packaging. Poetry is the primary tool for managing dependencies, building, and publishing the package.
 2. **pytest**: Used for testing.
 3. **Black**: Used for code formatting.
 4. **Ruff/Flake8**: Used for linting.
@@ -55,10 +55,22 @@ python-readability/
 │   ├── regexps.py
 │   └── utils.py
 ├── cli/
-│   └── __init__.py
+│   ├── __init__.py
+│   └── main.py
+├── scripts/
+│   └── publish.py
 ├── tests/
 │   ├── conftest.py
 │   ├── test_readability.py
+│   ├── test_categories.py
+│   ├── debug_tools.py
+│   ├── scripts/
+│   │   ├── verify_test_cases.py
+│   │   ├── test-case-migration-script.py
+│   │   └── enhance_comparison_functions.py
+│   ├── docs/
+│   │   ├── test-improvement-plan.md
+│   │   └── ...
 │   └── test-pages/
 │       ├── 001/
 │       │   ├── source.html
@@ -67,6 +79,8 @@ python-readability/
 │       └── ...
 ├── pyproject.toml
 ├── README.md
+├── CONTRIBUTING.md
+├── PACKAGING.md
 └── LICENSE
 ```
 
@@ -74,22 +88,22 @@ python-readability/
 
 1. **Run tests**:
    ```bash
-   pytest
+   poetry run pytest
    ```
 
 2. **Format code**:
    ```bash
-   black readability tests
+   poetry run black readability tests
    ```
 
 3. **Lint code**:
    ```bash
-   ruff readability tests
+   poetry run ruff readability tests
    ```
 
 4. **Type check**:
    ```bash
-   mypy readability
+   poetry run mypy readability
    ```
 
 5. **Build package**:
@@ -97,11 +111,16 @@ python-readability/
    poetry build
    ```
 
+6. **Publish package**:
+   ```bash
+   python scripts/publish.py
+   ```
+
 ## Technical Constraints
 
 ### Python Version Compatibility
 
-The library is designed to be compatible with Python 3.6 and above. This ensures broad compatibility while still allowing the use of modern Python features like f-strings, type hints, and dataclasses.
+The library is designed to be compatible with Python 3.8 and above. This ensures broad compatibility while still allowing the use of modern Python features like f-strings, type hints, dataclasses, and other features introduced in Python 3.8 such as the walrus operator (:=) and more precise typing features.
 
 ### Performance Considerations
 
