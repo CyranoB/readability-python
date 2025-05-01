@@ -123,6 +123,20 @@ class Readability:
     considers factors like the amount of text, presence of commas, link density,
     and class/ID names.
     """
+    
+    # Scoring constants
+    SCORE_DIV_TAG = 5
+    SCORE_PRE_TD_BLOCKQUOTE = 3
+    SCORE_ADDRESS_LIST_FORM = -3
+    SCORE_HEADING_TH = -5
+    SCORE_COMMA_BONUS = 1.0
+    SCORE_LENGTH_BONUS_MAX = 3
+    SCORE_LENGTH_BONUS_FACTOR = 100
+    SCORE_CLASS_WEIGHT_POSITIVE = 25
+    SCORE_CLASS_WEIGHT_NEGATIVE = -25
+    SCORE_SIBLING_THRESHOLD_FACTOR = 0.2
+    SCORE_SIBLING_THRESHOLD_MIN = 10
+    MIN_PARAGRAPH_LENGTH = 25
 
     def __init__(
         self,
@@ -680,7 +694,12 @@ class Readability:
             
             try:
                 # Parse JSON
-                parsed = json.loads(content)
+                try:
+                    parsed = json.loads(content)
+                except json.JSONDecodeError as e:
+                    if self.debug:
+                        print(f"Failed to parse JSON-LD: {e}", file=sys.stderr)
+                    continue
                 
                 # Check context
                 context = parsed.get("@context", "")
@@ -1704,13 +1723,13 @@ class Readability:
         tag_name = node.name.lower()
         
         if tag_name == "div":
-            content_score += 5
+            content_score += self.SCORE_DIV_TAG
         elif tag_name in ["pre", "td", "blockquote"]:
-            content_score += 3
+            content_score += self.SCORE_PRE_TD_BLOCKQUOTE
         elif tag_name in ["address", "ol", "ul", "dl", "dd", "dt", "li", "form"]:
-            content_score -= 3
+            content_score += self.SCORE_ADDRESS_LIST_FORM
         elif tag_name in ["h1", "h2", "h3", "h4", "h5", "h6", "th"]:
-            content_score -= 5
+            content_score += self.SCORE_HEADING_TH
         
         # Store the score
         self.score_tracker.set_score(node, content_score)

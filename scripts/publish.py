@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Script to build and publish the python-readability package to PyPI.
+Script to build and publish the readability-python package to PyPI.
 
 Usage:
-    python scripts/publish.py [--test]
+    python scripts/publish.py [--test] [--clean]
 
 Options:
     --test: Upload to TestPyPI instead of PyPI
+    --clean: Clean build artifacts before building
 """
 
 import os
@@ -28,12 +29,6 @@ def build_package():
     run_command("poetry build")
 
 
-def build_package_setuptools():
-    """Build the package using setuptools."""
-    print("\n=== Building package with setuptools ===")
-    run_command("python setup.py sdist bdist_wheel")
-
-
 def publish_package(test=False):
     """Publish the package to PyPI or TestPyPI."""
     if test:
@@ -45,16 +40,6 @@ def publish_package(test=False):
         run_command("poetry publish")
 
 
-def publish_package_twine(test=False):
-    """Publish the package to PyPI or TestPyPI using twine."""
-    if test:
-        print("\n=== Publishing to TestPyPI with twine ===")
-        run_command("twine upload --repository-url https://test.pypi.org/legacy/ dist/*")
-    else:
-        print("\n=== Publishing to PyPI with twine ===")
-        run_command("twine upload dist/*")
-
-
 def clean_build_artifacts():
     """Clean up build artifacts."""
     print("\n=== Cleaning build artifacts ===")
@@ -63,9 +48,8 @@ def clean_build_artifacts():
 
 def main():
     """Main function."""
-    parser = argparse.ArgumentParser(description="Build and publish python-readability to PyPI")
+    parser = argparse.ArgumentParser(description="Build and publish readability-python to PyPI")
     parser.add_argument("--test", action="store_true", help="Upload to TestPyPI instead of PyPI")
-    parser.add_argument("--setuptools", action="store_true", help="Use setuptools instead of Poetry")
     parser.add_argument("--clean", action="store_true", help="Clean build artifacts before building")
     args = parser.parse_args()
 
@@ -78,10 +62,7 @@ def main():
         clean_build_artifacts()
     
     # Build the package
-    if args.setuptools:
-        build_package_setuptools()
-    else:
-        build_package()
+    build_package()
     
     # Ask for confirmation before publishing
     if args.test:
@@ -95,10 +76,7 @@ def main():
         return
     
     # Publish the package
-    if args.setuptools:
-        publish_package_twine(args.test)
-    else:
-        publish_package(args.test)
+    publish_package(args.test)
     
     print("\nDone!")
 

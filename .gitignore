@@ -53,6 +53,8 @@ desktop.ini
 poetry.lock  # Comment this line if you want to commit the lock file
 
 # Project specific
+tests/debug/**
+tests/tests/debug/**
 .cache/
 extracted.html
 *.html.out

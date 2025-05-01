@@ -115,13 +115,30 @@ def read_file(file_path: str) -> Tuple[Optional[str], Optional[str]]:
 
 
 def read_stdin() -> Tuple[Optional[str], Optional[str]]:
-    """Read content from stdin.
+    """Read content from stdin with improved handling.
+    
+    Detects if stdin is connected to a terminal and provides appropriate
+    feedback. Reads in chunks to avoid memory issues with large inputs.
     
     Returns:
         Tuple of (content, error)
     """
+    # Check if stdin is connected to a terminal
+    if sys.stdin.isatty():
+        print("Reading from stdin. Enter HTML content and press Ctrl+D (Unix) or Ctrl+Z (Windows) when done:", file=sys.stderr)
+    
     try:
-        return sys.stdin.read(), None
+        # Read with a sensible chunk size to avoid memory issues with very large inputs
+        chunks = []
+        while True:
+            chunk = sys.stdin.read(4096)  # Read in 4KB chunks
+            if not chunk:
+                break
+            chunks.append(chunk)
+            
+        return "".join(chunks), None
+    except KeyboardInterrupt:
+        return None, "Input reading interrupted by user"
     except IOError as e:
         return None, f"Error reading from stdin: {e}"
 
@@ -198,59 +215,98 @@ def write_output(content: str, output_path: Optional[str] = None) -> Tuple[bool,
             return False, f"Error writing to stdout: {e}"
 
 
+# Define error code constants
+EXIT_SUCCESS = 0
+EXIT_ERROR_INPUT = 1
+EXIT_ERROR_NETWORK = 2  
+EXIT_ERROR_PARSING = 3
+EXIT_ERROR_OUTPUT = 4
+EXIT_ERROR_UNKNOWN = 10
+
 def main() -> int:
-    """Main entry point for the CLI.
+    """Main entry point for the CLI with improved error handling.
     
     Returns:
-        Exit code
+        Exit code based on specific error types
     """
     args = parse_args()
     
-    # Get content from URL, file, or stdin
-    content = None
-    error = None
-    url = args.url
-    
-    if args.input:
-        if args.input.startswith(("http://", "https://")):
-            # Input is a URL
-            content, error = fetch_content(args.input, args.timeout, args.user_agent)
-            if not url:
-                url = args.input
+    try:
+        # Get content from URL, file, or stdin
+        content = None
+        error = None
+        url = args.url
+        
+        if args.input:
+            if args.input.startswith(("http://", "https://")):
+                try:
+                    # Input is a URL
+                    content, error = fetch_content(args.input, args.timeout, args.user_agent)
+                    if error:
+                        print(f"Network error: {error}", file=sys.stderr)
+                        return EXIT_ERROR_NETWORK
+                    if not url:
+                        url = args.input
+                except requests.RequestException as e:
+                    print(f"Network error: {e}", file=sys.stderr)
+                    return EXIT_ERROR_NETWORK
+            else:
+                try:
+                    # Input is a file
+                    content, error = read_file(args.input)
+                    if error:
+                        print(f"File error: {error}", file=sys.stderr)
+                        return EXIT_ERROR_INPUT
+                except FileNotFoundError:
+                    print(f"Error: File not found: {args.input}", file=sys.stderr)
+                    return EXIT_ERROR_INPUT
+                except PermissionError:
+                    print(f"Error: Permission denied for file: {args.input}", file=sys.stderr)
+                    return EXIT_ERROR_INPUT
         else:
-            # Input is a file
-            content, error = read_file(args.input)
-    else:
-        # Input from stdin
-        content, error = read_stdin()
-    
-    if error:
-        print(f"Error: {error}", file=sys.stderr)
-        return 1
-    
-    if not content:
-        print("Error: No content to process", file=sys.stderr)
-        return 1
-    
-    # Process content
-    processed_content, error = process_content(content, url, args.format, args.debug)
-    
-    if error:
-        print(f"Error: {error}", file=sys.stderr)
-        return 1
-    
-    if not processed_content:
-        print("Error: No content extracted", file=sys.stderr)
-        return 1
-    
-    # Write output
-    success, error = write_output(processed_content, args.output)
-    
-    if not success:
-        print(f"Error: {error}", file=sys.stderr)
-        return 1
-    
-    return 0
+            # Input from stdin
+            content, error = read_stdin()
+            if error:
+                print(f"Input error: {error}", file=sys.stderr)
+                return EXIT_ERROR_INPUT
+        
+        if not content:
+            print("Error: No content to process", file=sys.stderr)
+            return EXIT_ERROR_INPUT
+        
+        # Process content
+        try:
+            processed_content, error = process_content(content, url, args.format, args.debug)
+            
+            if error:
+                print(f"Error parsing content: {error}", file=sys.stderr)
+                return EXIT_ERROR_PARSING
+            
+            if not processed_content:
+                print("Error: No content extracted", file=sys.stderr)
+                return EXIT_ERROR_PARSING
+        except Exception as e:
+            print(f"Unexpected error during content processing: {e}", file=sys.stderr)
+            return EXIT_ERROR_PARSING
+        
+        # Write output
+        try:
+            success, error = write_output(processed_content, args.output)
+            
+            if not success:
+                print(f"Error writing output: {error}", file=sys.stderr)
+                return EXIT_ERROR_OUTPUT
+        except Exception as e:
+            print(f"Unexpected error writing output: {e}", file=sys.stderr)
+            return EXIT_ERROR_OUTPUT
+        
+        return EXIT_SUCCESS
+    except KeyboardInterrupt:
+        print("\nOperation interrupted by user", file=sys.stderr)
+        return EXIT_ERROR_UNKNOWN
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        return EXIT_ERROR_UNKNOWN
 
 
 if __name__ == "__main__":
