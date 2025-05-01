@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Setup script for python-readability."""
+"""Setup script for readability-python."""
 
 from setuptools import setup, find_packages
 
@@ -10,21 +10,21 @@ with open("readability/__init__.py", "r") as f:
             version = line.split("=")[1].strip().strip('"\'')
             break
     else:
-        version = "0.1.0"
+        version = "0.2.0"
 
 # Read long description from README.md
 with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name="python-readability",
+    name="readability-python",
     version=version,
     description="Python port of the go-readability library for extracting the main content from web pages",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Python Readability Team",
     author_email="python-readability@example.com",
-    url="https://github.com/python-readability/python-readability",
+    url="https://github.com/CyranoB/readability-python",
     packages=find_packages(include=["readability", "readability.*", "cli", "cli.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -49,7 +49,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "python-readability=cli.main:main",
+            "readability-python=cli.main:main",
         ],
     },
 )

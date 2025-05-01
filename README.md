@@ -1,4 +1,4 @@
-# Python Readability
+# Readability Python
 
 A high-fidelity Python port of the [go-readability](https://github.com/go-shiori/go-readability) library, which itself is a Go port of Mozilla's [Readability](https://github.com/mozilla/readability) library. This library extracts the main content from HTML pages, removing navigation, ads, and other non-content elements, making it easier to read and process the actual content.
 
@@ -14,16 +14,17 @@ A high-fidelity Python port of the [go-readability](https://github.com/go-shiori
 ## Installation
 
 ```bash
-# Not yet available on PyPI
-pip install python-readability
+pip install readability-python
+```
 
+```bash
 # Install from source
-git clone https://github.com/yourusername/python-readability.git
-cd python-readability
+git clone https://github.com/CyranoB/readability-python.git
+cd readability-python
 pip install -e .
 
 # With Poetry
-poetry add python-readability
+poetry add readability-python
 ```
 
 ## Usage
@@ -57,16 +58,16 @@ else:
 
 ```bash
 # Extract content from a URL
-python -m readability https://example.com/article --output article.html
+readability-python https://example.com/article --output article.html
 
 # Extract content from a file
-python -m readability article.html --output extracted.html
+readability-python article.html --output extracted.html
 
 # Output as JSON
-python -m readability https://example.com/article --format json --output article.json
+readability-python https://example.com/article --format json --output article.json
 
 # Output as plain text
-python -m readability https://example.com/article --format text --output article.txt
+readability-python https://example.com/article --format text --output article.txt
 ```
 
 > **Note**: When specifying output files, it's recommended to use either absolute paths or paths within a dedicated output directory (e.g., `output/article.html`) to avoid cluttering your project directory. Output files in the root directory (like `extracted.html`) are automatically added to `.gitignore`.
@@ -159,8 +160,8 @@ This library aims to be a high-fidelity port of the [go-readability](https://git
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/python-readability.git
-cd python-readability
+git clone https://github.com/CyranoB/readability-python.git
+cd readability-python
 
 # Install dependencies with pip
 pip install -e ".[dev]"

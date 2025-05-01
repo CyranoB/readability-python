@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "python-readability"
-version = "0.1.0"
+name = "readability-python"
+version = "0.2.0"
 description = "Python port of the go-readability library for extracting the main content from web pages"
-authors = ["Python Readability Team <python-readability@example.com>"]
-license = "MIT"
+authors = ["Eddie Pick <eddie@pick.fr>"]
+license = "Apache 2.0"
 readme = "README.md"
-repository = "https://github.com/python-readability/python-readability"
-homepage = "https://github.com/python-readability/python-readability"
-documentation = "https://github.com/python-readability/python-readability#readme"
+repository = "https://github.com/CyranoB/readability-python/"
+homepage = "https://github.com/CyranoB/readability-python/"
+documentation = "https://github.com/CyranoB/readability-python/blob/main/README.md"
 keywords = ["readability", "html", "content-extraction", "web-scraping", "mozilla"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -43,7 +43,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-python-readability = "cli.main:main"
+readability-python = "cli.main:main"
 
 # Black configuration
 [tool.black]

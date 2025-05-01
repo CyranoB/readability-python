@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(
         description="Extract the main content from HTML pages.",
-        prog="python-readability"
+        prog="readability-python"
     )
     
     # Input options

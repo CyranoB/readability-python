@@ -1,4 +1,4 @@
-# Packaging Guide for Python Readability
+# Packaging Guide for Readability Python
 
 This document provides instructions for building and publishing the Python Readability package to PyPI.
 
@@ -40,7 +40,7 @@ Before publishing, you can test the package locally:
 pip install -e .
 
 # Or install the built package
-pip install dist/python_readability-0.1.0-py3-none-any.whl
+pip install dist/readability_python-0.1.0-py3-none-any.whl
 ```
 
 ## Publishing to PyPI
@@ -131,10 +131,10 @@ When releasing a new version:
 Once published, users can install the package with:
 
 ```bash
-pip install python-readability
+pip install readability-python
 ```
 
 Or from TestPyPI:
 
 ```bash
-pip install --index-url https://test.pypi.org/simple/ python-readability
+pip install --index-url https://test.pypi.org/simple/ readability-python
