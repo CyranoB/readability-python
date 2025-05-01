@@ -1,4 +1,4 @@
-# Readability Python
+# Readability Python (v0.3.0)
 
 A high-fidelity Python port of the [go-readability](https://github.com/go-shiori/go-readability) library, which itself is a Go port of Mozilla's [Readability](https://github.com/mozilla/readability) library. This library extracts the main content from HTML pages, removing navigation, ads, and other non-content elements, making it easier to read and process the actual content.
 
@@ -56,6 +56,8 @@ else:
 
 ### CLI Usage
 
+The library includes a command-line interface for easy content extraction:
+
 ```bash
 # Extract content from a URL
 readability-python https://example.com/article --output article.html
@@ -63,12 +65,37 @@ readability-python https://example.com/article --output article.html
 # Extract content from a file
 readability-python article.html --output extracted.html
 
-# Output as JSON
+# Output as JSON (includes all metadata)
 readability-python https://example.com/article --format json --output article.json
 
 # Output as plain text
 readability-python https://example.com/article --format text --output article.txt
+
+# Read from stdin
+cat article.html | readability-python --output extracted.html
+
+# Specify a custom user agent
+readability-python https://example.com/article --user-agent "Mozilla/5.0 ..." --output article.html
+
+# Set a custom timeout for HTTP requests
+readability-python https://example.com/article --timeout 60 --output article.html
+
+# Enable debug output
+readability-python https://example.com/article --debug --output article.html
 ```
+
+#### Error Handling
+
+The CLI provides specific exit codes for different error types:
+
+- `0`: Success
+- `1`: Input error (file not found, invalid input)
+- `2`: Network error (connection issues, timeout)
+- `3`: Parsing error (HTML parsing failed)
+- `4`: Output error (cannot write to output file)
+- `10`: Unknown error
+
+This allows for better scripting and automation when using the CLI in pipelines.
 
 > **Note**: When specifying output files, it's recommended to use either absolute paths or paths within a dedicated output directory (e.g., `output/article.html`) to avoid cluttering your project directory. Output files in the root directory (like `extracted.html`) are automatically added to `.gitignore`.
 
@@ -153,8 +180,8 @@ This library aims to be a high-fidelity port of the [go-readability](https://git
 
 ### Requirements
 
-- Python 3.6+
-- Poetry (optional, for dependency management)
+- Python 3.8+
+- Poetry (recommended for dependency management)
 
 ### Setup
 
@@ -163,27 +190,33 @@ This library aims to be a high-fidelity port of the [go-readability](https://git
 git clone https://github.com/CyranoB/readability-python.git
 cd readability-python
 
-# Install dependencies with pip
-pip install -e ".[dev]"
-
-# Or with Poetry
+# Install dependencies with Poetry (recommended)
 poetry install
+
+# Or with pip (alternative)
+pip install -e ".[dev]"
 ```
 
 ### Development Workflow
 
 ```bash
 # Run tests
-pytest
+poetry run pytest
 
 # Format code
-black readability tests
+poetry run black readability tests
 
 # Lint code
-ruff readability tests
+poetry run ruff readability tests
 
 # Type check
-mypy readability
+poetry run mypy readability
+
+# Build the package
+poetry build
+
+# Publish the package (requires PyPI credentials)
+python scripts/publish.py
 ```
 
 ## Contributing
@@ -198,6 +231,28 @@ Contributions are welcome! Please feel free to submit a Pull Request.
    - `expected.html` - The expected content
    - `expected-metadata.json` - The expected metadata
 3. Add the test case to `tests/test_categories.py` with appropriate categorization
+
+## Recent Improvements (v0.3.0)
+
+The latest version includes several improvements to enhance usability and maintainability:
+
+### Enhanced CLI Features
+- **Improved stdin handling**: Better detection of terminal input with user feedback
+- **Chunk-based reading**: Efficiently handles large inputs by reading in chunks
+- **Granular error handling**: Specific exit codes for different error types
+- **Detailed error messages**: More informative error output for troubleshooting
+
+### Code Quality Improvements
+- **Extracted constants**: Replaced hardcoded values with named constants
+- **Improved type hinting**: Added return type hints to internal methods
+- **Better exception handling**: More specific exception handling for JSON parsing
+- **Modern packaging**: Removed redundant setup.py in favor of Poetry-only approach
+
+### Documentation Updates
+- **Comprehensive CLI documentation**: Added examples for all CLI options
+- **Error code documentation**: Documented exit codes for better scripting
+- **Updated requirements**: Clarified Python version requirements
+- **Improved development workflow**: Enhanced instructions for contributors
 
 ## License
 
