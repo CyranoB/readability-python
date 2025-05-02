@@ -59,6 +59,10 @@ def parse_args() -> argparse.Namespace:
         default=30,
         help="Timeout for HTTP requests in seconds. Default: 30"
     )
+    http_group.add_argument(
+        "--encoding", "-e",
+        help="Character encoding of the input HTML. Auto-detected if not specified."
+    )
     
     # Other options
     parser.add_argument(
@@ -75,16 +79,18 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def fetch_content(url: str, timeout: int = 30, user_agent: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
+def fetch_content(url: str, timeout: int = 30, user_agent: Optional[str] = None, 
+                 encoding: Optional[str] = None) -> Tuple[Optional[Union[str, bytes]], Optional[str]]:
     """Fetch content from a URL.
     
     Args:
         url: URL to fetch
         timeout: Timeout in seconds
         user_agent: User agent string
+        encoding: Optional encoding to use. If specified, content is returned as bytes.
         
     Returns:
-        Tuple of (content, error)
+        Tuple of (content, error) where content can be str or bytes
     """
     headers = {}
     if user_agent:
@@ -93,73 +99,100 @@ def fetch_content(url: str, timeout: int = 30, user_agent: Optional[str] = None)
     try:
         response = requests.get(url, headers=headers, timeout=timeout)
         response.raise_for_status()
-        return response.text, None
+        
+        if encoding:
+            # Return raw content as bytes when encoding is specified
+            return response.content, None
+        else:
+            # Let requests handle encoding detection
+            return response.text, None
     except requests.RequestException as e:
         return None, f"Error fetching URL: {e}"
 
 
-def read_file(file_path: str) -> Tuple[Optional[str], Optional[str]]:
+def read_file(file_path: str, encoding: Optional[str] = None) -> Tuple[Optional[Union[str, bytes]], Optional[str]]:
     """Read content from a file.
     
     Args:
         file_path: Path to the file
+        encoding: Optional encoding to use. If specified, file is read in binary mode
+                 and returned as bytes.
         
     Returns:
-        Tuple of (content, error)
+        Tuple of (content, error) where content can be str or bytes
     """
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read(), None
+        if encoding:
+            # Read in binary mode when encoding is specified
+            with open(file_path, "rb") as f:
+                return f.read(), None
+        else:
+            # Read in text mode with UTF-8 encoding
+            with open(file_path, "r", encoding="utf-8") as f:
+                return f.read(), None
     except IOError as e:
         return None, f"Error reading file: {e}"
 
 
-def read_stdin() -> Tuple[Optional[str], Optional[str]]:
+def read_stdin(encoding: Optional[str] = None) -> Tuple[Optional[Union[str, bytes]], Optional[str]]:
     """Read content from stdin with improved handling.
     
     Detects if stdin is connected to a terminal and provides appropriate
     feedback. Reads in chunks to avoid memory issues with large inputs.
     
+    Args:
+        encoding: Optional encoding to use. If specified, stdin is read in binary mode
+                 and returned as bytes.
+    
     Returns:
-        Tuple of (content, error)
+        Tuple of (content, error) where content can be str or bytes
     """
     # Check if stdin is connected to a terminal
     if sys.stdin.isatty():
         print("Reading from stdin. Enter HTML content and press Ctrl+D (Unix) or Ctrl+Z (Windows) when done:", file=sys.stderr)
     
     try:
-        # Read with a sensible chunk size to avoid memory issues with very large inputs
-        chunks = []
-        while True:
-            chunk = sys.stdin.read(4096)  # Read in 4KB chunks
-            if not chunk:
-                break
-            chunks.append(chunk)
-            
-        return "".join(chunks), None
+        if encoding:
+            # Read in binary mode
+            stdin_bytes = sys.stdin.buffer.read()
+            return stdin_bytes, None
+        else:
+            # Read with a sensible chunk size to avoid memory issues with very large inputs
+            chunks = []
+            while True:
+                chunk = sys.stdin.read(4096)  # Read in 4KB chunks
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                
+            return "".join(chunks), None
     except KeyboardInterrupt:
         return None, "Input reading interrupted by user"
     except IOError as e:
         return None, f"Error reading from stdin: {e}"
 
 
-def process_content(content: str, url: Optional[str] = None, format: str = "html", debug: bool = False) -> Tuple[Optional[str], Optional[str]]:
+def process_content(content: Union[str, bytes], url: Optional[str] = None, format: str = "html", 
+                   debug: bool = False, encoding: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
     """Process content with Readability.
     
     Args:
-        content: HTML content to process
+        content: HTML content to process (string or bytes)
         url: URL for resolving relative links
         format: Output format (html, text, json)
         debug: Enable debug output
+        encoding: Optional character encoding to use when content is bytes
         
     Returns:
         Tuple of (processed_content, error)
     """
     if debug:
         print(f"Processing content with URL: {url}", file=sys.stderr)
+        if encoding:
+            print(f"Using encoding: {encoding}", file=sys.stderr)
     
-    parser = Readability()
-    article, error = parser.parse(content, url=url)
+    parser = Readability(debug=debug)
+    article, error = parser.parse(content, url=url, encoding=encoding)
     
     if error:
         return None, f"Error parsing content: {error}"
@@ -241,7 +274,7 @@ def main() -> int:
             if args.input.startswith(("http://", "https://")):
                 try:
                     # Input is a URL
-                    content, error = fetch_content(args.input, args.timeout, args.user_agent)
+                    content, error = fetch_content(args.input, args.timeout, args.user_agent, args.encoding)
                     if error:
                         print(f"Network error: {error}", file=sys.stderr)
                         return EXIT_ERROR_NETWORK
@@ -253,7 +286,7 @@ def main() -> int:
             else:
                 try:
                     # Input is a file
-                    content, error = read_file(args.input)
+                    content, error = read_file(args.input, args.encoding)
                     if error:
                         print(f"File error: {error}", file=sys.stderr)
                         return EXIT_ERROR_INPUT
@@ -265,7 +298,7 @@ def main() -> int:
                     return EXIT_ERROR_INPUT
         else:
             # Input from stdin
-            content, error = read_stdin()
+            content, error = read_stdin(args.encoding)
             if error:
                 print(f"Input error: {error}", file=sys.stderr)
                 return EXIT_ERROR_INPUT
@@ -276,7 +309,7 @@ def main() -> int:
         
         # Process content
         try:
-            processed_content, error = process_content(content, url, args.format, args.debug)
+            processed_content, error = process_content(content, url, args.format, args.debug, args.encoding)
             
             if error:
                 print(f"Error parsing content: {error}", file=sys.stderr)

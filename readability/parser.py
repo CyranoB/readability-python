@@ -239,7 +239,8 @@ class Readability:
         return f"{node_id}:{operation}"
     
     def parse(
-        self, html_content: Union[str, bytes], url: Optional[str] = None
+        self, html_content: Union[str, bytes], url: Optional[str] = None,
+        encoding: Optional[str] = None
     ) -> Tuple[Optional[Article], Optional[Exception]]:
         """Parse HTML content and extract the main article.
 
@@ -257,6 +258,9 @@ class Readability:
             url: Optional URL for the HTML content. This is used for resolving
                 relative links in the document and for extracting the base URL
                 for metadata.
+            encoding: Optional character encoding to use when parsing bytes.
+                If None, encoding will be auto-detected.
+                Ignored when html_content is a string.
 
         Returns:
             A tuple of (article, error) where one is None. If successful, the
@@ -274,19 +278,70 @@ class Readability:
                 html_content = f.read()
             article, error = parser.parse(html_content, url="https://example.com/article")
             
+            # Parse HTML with explicit encoding
+            with open("article.html", "rb") as f:
+                html_content = f.read()
+            article, error = parser.parse(html_content, encoding="utf-8")
+            
             # Handle errors explicitly
             if error:
                 print(f"Failed to parse: {error}")
             else:
                 print(f"Extracted article: {article.title}")
             ```
+            
+        Encoding Handling:
+
+        When processing HTML content, character encoding is crucial for correct text extraction.
+        The parser handles encoding in the following ways:
+
+        1. If html_content is a string, it's assumed to be properly decoded already.
+        2. If html_content is bytes:
+           - If encoding is specified, that encoding is used
+           - Otherwise, the encoding is auto-detected by BeautifulSoup/lxml
+
+        If you encounter garbled text with strange characters like 'Ã¢', 'Ã©', etc.,
+        try specifying the correct encoding explicitly.
+
+        Common encodings:
+        - 'utf-8' (default in modern web)
+        - 'iso-8859-1' (Latin-1)
+        - 'windows-1252' (Common in Windows systems)
+        - 'euc-jp', 'shift-jis' (Japanese content)
+        - 'gb2312', 'gbk' (Chinese content)
+        - 'koi8-r' (Russian content)
         """
         # Clear cache at the start of parsing
         self._cache = {}
         try:
-            # Parse HTML content with BeautifulSoup
-            # Let BeautifulSoup/lxml handle encoding detection if html_content is bytes
-            self.doc = BeautifulSoup(html_content, "lxml")
+            # Handle encoding based on input type
+            if isinstance(html_content, bytes):
+                # If bytes provided with explicit encoding
+                if encoding:
+                    # Use the specified encoding
+                    self.doc = BeautifulSoup(html_content, "lxml", from_encoding=encoding)
+                else:
+                    # Let BeautifulSoup auto-detect encoding
+                    self.doc = BeautifulSoup(html_content, "lxml")
+                    
+                # Check encoding detection result for debugging
+                if self.debug:
+                    detected = self.doc.original_encoding
+                    logger.debug(f"Detected encoding: {detected}")
+            else:
+                # For string input, assume it's already properly decoded
+                self.doc = BeautifulSoup(html_content, "lxml")
+            
+            # Validate encoding
+            encoding_error = self._validate_encoding(self.doc)
+            if encoding_error:
+                if self.debug:
+                    logger.warning(f"Encoding warning: {encoding_error}")
+                
+                # If explicit encoding was provided but still got errors, return an error
+                if encoding and isinstance(html_content, bytes):
+                    return None, ParsingError(f"Encoding error: {encoding_error}. " 
+                                            f"Specified encoding '{encoding}' may be incorrect.")
             
             # Set document URI if provided
             if url:
@@ -2054,6 +2109,40 @@ class Readability:
                 except Exception:
                     pass
 
+    def _validate_encoding(self, doc: BeautifulSoup) -> Optional[str]:
+        """Validate that the document encoding was detected properly.
+        
+        This checks for common signs of encoding problems and returns
+        an error message if issues are detected.
+        
+        Args:
+            doc: The BeautifulSoup document
+            
+        Returns:
+            Error message if encoding issues detected, None otherwise
+        """
+        if not doc:
+            return None
+            
+        # Sample text from document
+        sample_text = doc.get_text(strip=True)[:1000]
+        
+        # Check for telltale signs of encoding issues
+        encoding_error_markers = [
+            'Ã', 'Â', 'Ð', 'Ñ', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 
+            # Common mojibake patterns
+            'Ã¢', 'Ã¨', 'Ã©', 'Ã ', 'Ã¹', 'Ã¼', 'Ã¶', 'Ã¤'
+        ]
+        
+        # Count occurrences of error markers
+        error_count = sum(sample_text.count(marker) for marker in encoding_error_markers)
+        
+        # If high concentration of error markers, suggest encoding issue
+        if error_count > 10 and error_count / len(sample_text) > 0.05:
+            return "Possible encoding issues detected. Try specifying the correct encoding."
+        
+        return None
+        
     def _get_article_favicon(self) -> str:
         """Get the favicon for the article.
         
