@@ -1,3 +1,3 @@
 """Command-line interface for Python Readability."""
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

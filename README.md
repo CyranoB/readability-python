@@ -1,4 +1,4 @@
-# Readability Python (v0.4.0)
+# Readability Python (v0.5.0)
 
 A high-fidelity Python port of the [go-readability](https://github.com/go-shiori/go-readability) library, which itself is a Go port of Mozilla's [Readability](https://github.com/mozilla/readability) library. This library extracts the main content from HTML pages, removing navigation, ads, and other non-content elements, making it easier to read and process the actual content.
 
@@ -232,9 +232,29 @@ Contributions are welcome! Please feel free to submit a Pull Request.
    - `expected-metadata.json` - The expected metadata
 3. Add the test case to `tests/test_categories.py` with appropriate categorization
 
-## Recent Improvements (v0.4.0)
+## New Features in v0.5.0
 
-The latest version includes several improvements to enhance usability and maintainability:
+This release adds important improvements for handling character encoding issues:
+
+### Encoding Support
+- **Explicit encoding parameter**: Added `encoding` parameter to the `parse()` method to handle non-Latin character sets
+- **Encoding detection**: Improved automatic encoding detection with validation
+- **Encoding error handling**: Added detection and reporting of potential encoding issues
+- **CLI encoding option**: Added `--encoding` / `-e` parameter to specify character encoding
+
+### HTML Output Improvements
+- **Proper HTML document structure**: Added complete HTML document structure to output
+- **Encoding declaration**: Added UTF-8 charset meta tags to ensure correct rendering
+- **Title preservation**: Article title is now included in the HTML output
+
+### Other Improvements
+- **Binary content handling**: Added support for reading binary content from files and stdin
+- **Error reporting**: Enhanced error messages for encoding-related issues
+- **Documentation**: Added comprehensive documentation for encoding handling
+
+## Previous Improvements (v0.4.0)
+
+The previous version included several improvements to enhance usability and maintainability:
 
 ### Test Infrastructure Improvements
 - **Fixed test helper functions**: Renamed `test_individual_case` to `_test_individual_case` to prevent it from being collected as a standalone test

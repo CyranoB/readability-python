@@ -3,7 +3,7 @@
 A Python port of the go-readability library.
 """
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 from readability.parser import Readability
 from readability.models import Article
