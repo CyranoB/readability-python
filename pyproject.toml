@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "readability-python"
-version = "0.3.0"
+version = "0.4.0"
 description = "Python port of the go-readability library for extracting the main content from web pages"
 authors = ["Eddie Pick <eddie@pick.fr>"]
 license = "Apache 2.0"
