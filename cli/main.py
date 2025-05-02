@@ -201,7 +201,19 @@ def process_content(content: Union[str, bytes], url: Optional[str] = None, forma
         return None, "No article content found"
     
     if format == "html":
-        return article.content, None
+        # Wrap the content in a proper HTML document structure with encoding declaration
+        html_document = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{article.title or "Extracted Content"}</title>
+</head>
+<body>
+    {article.content}
+</body>
+</html>"""
+        return html_document, None
     elif format == "text":
         return article.text_content, None
     elif format == "json":
