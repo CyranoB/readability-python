@@ -9,6 +9,12 @@ import pytest
 from bs4 import BeautifulSoup
 from dateutil import parser
 
+# Import test categories
+from .test_categories import FunctionalArea, Criticality, TestType
+
+# Configure pytest collection
+collect_ignore = ["test_categories.py::TestType"]
+
 
 def discover_test_cases() -> List[Path]:
     """Discover all test case directories in tests/test-pages/."""
@@ -65,6 +71,69 @@ def load_test_case(case_dir: Path) -> Dict:
 def test_cases():
     """Fixture to provide all test cases."""
     return [load_test_case(case_dir) for case_dir in discover_test_cases()]
+
+@pytest.fixture
+def case_dir(request):
+    """Fixture to provide a test case directory.
+    
+    This is used by test_individual_case to test a specific case.
+    
+    Args:
+        request: The pytest request object
+        
+    Returns:
+        Path to the test case directory
+    """
+    # Get the test case name from the test ID
+    test_id = request.node.name
+    case_name = test_id.split('[')[-1].split(']')[0] if '[' in test_id else None
+    
+    if not case_name:
+        pytest.skip("No test case specified")
+        
+    return Path(__file__).parent / "test-pages" / case_name
+
+@pytest.fixture(params=list(FunctionalArea))
+def area(request):
+    """Fixture to provide a functional area for testing.
+    
+    This is used by test_by_functional_area to test all cases in a specific area.
+    
+    Args:
+        request: The pytest request object
+        
+    Returns:
+        A FunctionalArea enum value
+    """
+    return request.param
+
+@pytest.fixture(params=list(Criticality))
+def criticality(request):
+    """Fixture to provide a criticality level for testing.
+    
+    This is used by test_by_criticality to test all cases at a specific criticality level.
+    
+    Args:
+        request: The pytest request object
+        
+    Returns:
+        A Criticality enum value
+    """
+    return request.param
+
+@pytest.fixture(params=list(TestType))
+def test_type(request):
+    """Fixture to provide a test type for testing.
+    
+    This is used by test_by_test_type to test all cases of a specific type.
+    
+    Args:
+        request: The pytest request object
+        
+    Returns:
+        A TestType enum value
+    """
+    return request.param
 
 
 # HTML comparison helpers
