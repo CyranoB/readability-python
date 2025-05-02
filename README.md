@@ -1,4 +1,4 @@
-# Readability Python (v0.3.0)
+# Readability Python (v0.4.0)
 
 A high-fidelity Python port of the [go-readability](https://github.com/go-shiori/go-readability) library, which itself is a Go port of Mozilla's [Readability](https://github.com/mozilla/readability) library. This library extracts the main content from HTML pages, removing navigation, ads, and other non-content elements, making it easier to read and process the actual content.
 
@@ -232,9 +232,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
    - `expected-metadata.json` - The expected metadata
 3. Add the test case to `tests/test_categories.py` with appropriate categorization
 
-## Recent Improvements (v0.3.0)
+## Recent Improvements (v0.4.0)
 
 The latest version includes several improvements to enhance usability and maintainability:
+
+### Test Infrastructure Improvements
+- **Fixed test helper functions**: Renamed `test_individual_case` to `_test_individual_case` to prevent it from being collected as a standalone test
+- **Fixed pytest warnings**: Added collection ignore for TestType class to eliminate warnings
+- **Improved Git integration**: Untracked debug files from Git while preserving them on the filesystem
+- **Enhanced test organization**: Better separation of test helper functions and actual test cases
 
 ### Enhanced CLI Features
 - **Improved stdin handling**: Better detection of terminal input with user feedback

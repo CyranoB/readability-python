@@ -131,9 +131,33 @@ We've prepared the library for distribution on PyPI:
 
 ## Recent Updates
 
+### Version 0.4.0 Release
+
+We've released version 0.4.0 of the library with several test infrastructure improvements:
+
+1. **Fixed Test Helper Functions**:
+   - Renamed `test_individual_case` to `_test_individual_case` to prevent it from being collected as a standalone test
+   - Updated all references to use the new name in all test functions
+   - This prevents pytest from collecting it as a standalone test that would be skipped
+
+2. **Fixed TestType Warning**:
+   - Added `collect_ignore = ["test_categories.py::TestType"]` to `conftest.py`
+   - This tells pytest to ignore the TestType class during test collection
+   - The warning is now handled properly without affecting test execution
+
+3. **Improved Git Integration**:
+   - Used `git rm --cached -r tests/debug/` to untrack the debug files from Git
+   - The files remain on the filesystem and are still generated during tests
+   - Future changes to these files won't be tracked by Git
+   - This is the correct approach since the debug directory is already in `.gitignore`
+
+4. **Enhanced Test Organization**:
+   - Better separation of test helper functions and actual test cases
+   - Improved test function naming for clarity
+
 ### Version 0.3.0 Release
 
-We've released version 0.3.0 of the library with several improvements:
+Previous version 0.3.0 included these improvements:
 
 1. **Enhanced CLI Features**:
    - **Improved stdin handling**: Better detection of terminal input with user feedback

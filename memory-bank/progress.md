@@ -137,6 +137,30 @@ The following test cases are passing:
 
 The project is in the testing and refinement phase. The core functionality is implemented and working, and all test cases from the Go implementation have been successfully migrated and are passing. The test infrastructure has been enhanced to support categorization and prioritization, which will help guide the remaining work on creating new test cases and implementing the CLI tool.
 
+### Version 0.4.0 Release
+
+We've released version 0.4.0 of the library with several test infrastructure improvements:
+
+1. **Fixed Test Helper Functions**:
+   - Renamed `test_individual_case` to `_test_individual_case` to prevent it from being collected as a standalone test
+   - Updated all references to use the new name in all test functions
+   - This prevents pytest from collecting it as a standalone test that would be skipped
+
+2. **Fixed TestType Warning**:
+   - Added `collect_ignore = ["test_categories.py::TestType"]` to `conftest.py`
+   - This tells pytest to ignore the TestType class during test collection
+   - The warning is now handled properly without affecting test execution
+
+3. **Improved Git Integration**:
+   - Used `git rm --cached -r tests/debug/` to untrack the debug files from Git
+   - The files remain on the filesystem and are still generated during tests
+   - Future changes to these files won't be tracked by Git
+   - This is the correct approach since the debug directory is already in `.gitignore`
+
+4. **Enhanced Test Organization**:
+   - Better separation of test helper functions and actual test cases
+   - Improved test function naming for clarity
+
 ### Test Coverage
 
 | Functional Area | P0 | P1 | P2 | P3 | Total |
