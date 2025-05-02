@@ -6,45 +6,45 @@ This module contains compiled regular expressions that are used throughout the p
 import re
 
 # Regular expressions from parser.go
-RX_VIDEOS = re.compile(r'(?i)//(www\.)?((dailymotion|youtube|youtube-nocookie|player\.vimeo|v\.qq)\.com|(archive|upload\.wikimedia)\.org|player\.twitch\.tv)')
-RX_TOKENIZE = re.compile(r'(?i)\W+')
-RX_WHITESPACE = re.compile(r'(?i)^\s*$')
-RX_HAS_CONTENT = re.compile(r'(?i)\S$')
-RX_HASH_URL = re.compile(r'(?i)^#.+')
-RX_PROPERTY_PATTERN = re.compile(r'(?i)\s*(dc|dcterm|og|article|twitter)\s*:\s*(author|creator|description|title|site_name|published_time|modified_time|image\S*)\s*')
-RX_NAME_PATTERN = re.compile(r'(?i)^\s*(?:(dc|dcterm|article|og|twitter|weibo:(article|webpage))\s*[\.:]\s*)?(author|creator|description|title|site_name|published_time|modified_time|image)\s*$')
-RX_TITLE_SEPARATOR = re.compile(r'(?i) [\|\-\\/>»] ')
-RX_TITLE_HIERARCHY_SEP = re.compile(r'(?i) [\\/>»] ')
-RX_TITLE_REMOVE_FINAL_PART = re.compile(r'(?i)(.*)[\|\-\\/>»] .*')
-RX_TITLE_REMOVE_1ST_PART = re.compile(r'(?i)[^\|\-\\/>»]*[\|\-\\/>»](.*)')
-RX_TITLE_ANY_SEPARATOR = re.compile(r'(?i)[\|\-\\/>»]+')
-RX_DISPLAY_NONE = re.compile(r'(?i)display\s*:\s*none')
-RX_VISIBILITY_HIDDEN = re.compile(r'(?i)visibility\s*:\s*hidden')
-RX_SENTENCE_PERIOD = re.compile(r'(?i)\.( |$)')
-RX_SHARE_ELEMENTS = re.compile(r'(?i)(\b|_)(share|sharedaddy)(\b|_)')
-RX_FAVICON_SIZE = re.compile(r'(?i)(\d+)x(\d+)')
-RX_LAZY_IMAGE_SRCSET = re.compile(r'(?i)\.(jpg|jpeg|png|webp)\s+\d')
-RX_LAZY_IMAGE_SRC = re.compile(r'(?i)^\s*\S+\.(jpg|jpeg|png|webp)\S*\s*$')
-RX_IMG_EXTENSIONS = re.compile(r'(?i)\.(jpg|jpeg|png|webp)')
-RX_SRCSET_URL = re.compile(r'(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))')
-RX_B64_DATA_URL = re.compile(r'(?i)^data:\s*([^\s;,]+)\s*;\s*base64\s*,')
-RX_JSON_LD_ARTICLE_TYPES = re.compile(r'(?i)^Article|AdvertiserContentArticle|NewsArticle|AnalysisNewsArticle|AskPublicNewsArticle|BackgroundNewsArticle|OpinionNewsArticle|ReportageNewsArticle|ReviewNewsArticle|Report|SatiricalArticle|ScholarlyArticle|MedicalScholarlyArticle|SocialMediaPosting|BlogPosting|LiveBlogPosting|DiscussionForumPosting|TechArticle|APIReference$')
+RX_VIDEOS = re.compile(r'//(www\.)?((dailymotion|youtube|youtube-nocookie|player\.vimeo|v\.qq)\.com|(archive|upload\.wikimedia)\.org|player\.twitch\.tv)', re.IGNORECASE)
+RX_TOKENIZE = re.compile(r'\W+', re.IGNORECASE)
+RX_WHITESPACE = re.compile(r'^\s*$', re.IGNORECASE)
+RX_HAS_CONTENT = re.compile(r'\S$', re.IGNORECASE)
+RX_HASH_URL = re.compile(r'^#.+', re.IGNORECASE)
+RX_PROPERTY_PATTERN = re.compile(r'\s*(dc|dcterm|og|article|twitter)\s*:\s*(author|creator|description|title|site_name|published_time|modified_time|image\S*)\s*', re.IGNORECASE)
+RX_NAME_PATTERN = re.compile(r'^\s*(?:(dc|dcterm|article|og|twitter|weibo:(article|webpage))\s*[\.:]\s*)?(author|creator|description|title|site_name|published_time|modified_time|image)\s*$', re.IGNORECASE)
+RX_TITLE_SEPARATOR = re.compile(r' [\|\-\\/>»] ', re.IGNORECASE)
+RX_TITLE_HIERARCHY_SEP = re.compile(r' [\\/>»] ', re.IGNORECASE)
+RX_TITLE_REMOVE_FINAL_PART = re.compile(r'(.*)[\|\-\\/>»] .*', re.IGNORECASE)
+RX_TITLE_REMOVE_1ST_PART = re.compile(r'[^\|\-\\/>»]*[\|\-\\/>»](.*)', re.IGNORECASE)
+RX_TITLE_ANY_SEPARATOR = re.compile(r'[\|\-\\/>»]+', re.IGNORECASE)
+RX_DISPLAY_NONE = re.compile(r'display\s*:\s*none', re.IGNORECASE)
+RX_VISIBILITY_HIDDEN = re.compile(r'visibility\s*:\s*hidden', re.IGNORECASE)
+RX_SENTENCE_PERIOD = re.compile(r'\.( |$)', re.IGNORECASE)
+RX_SHARE_ELEMENTS = re.compile(r'(\b|_)(share|sharedaddy)(\b|_)', re.IGNORECASE)
+RX_FAVICON_SIZE = re.compile(r'(\d+)x(\d+)', re.IGNORECASE)
+RX_LAZY_IMAGE_SRCSET = re.compile(r'\.(jpg|jpeg|png|webp)\s+\d', re.IGNORECASE)
+RX_LAZY_IMAGE_SRC = re.compile(r'^\s*\S+\.(jpg|jpeg|png|webp)\S*\s*$', re.IGNORECASE)
+RX_IMG_EXTENSIONS = re.compile(r'\.(jpg|jpeg|png|webp)', re.IGNORECASE)
+RX_SRCSET_URL = re.compile(r'(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))', re.IGNORECASE)
+RX_B64_DATA_URL = re.compile(r'^data:\s*([^\s;,]+)\s*;\s*base64\s*,', re.IGNORECASE)
+RX_JSON_LD_ARTICLE_TYPES = re.compile(r'^Article|AdvertiserContentArticle|NewsArticle|AnalysisNewsArticle|AskPublicNewsArticle|BackgroundNewsArticle|OpinionNewsArticle|ReportageNewsArticle|ReviewNewsArticle|Report|SatiricalArticle|ScholarlyArticle|MedicalScholarlyArticle|SocialMediaPosting|BlogPosting|LiveBlogPosting|DiscussionForumPosting|TechArticle|APIReference$', re.IGNORECASE)
 RX_CDATA = re.compile(r'^\s*<!\[CDATA\[|\]\]>\s*$')
-RX_SCHEMA_ORG = re.compile(r'(?i)^https?\:\/\/schema\.org\/?$')
+RX_SCHEMA_ORG = re.compile(r'^https?\:\/\/schema\.org\/?$', re.IGNORECASE)
 
 # Regular expressions from internal/re2go/class-weight.go
-RX_POSITIVE_CLASS = re.compile(r'(?i)article|body|content|entry|hentry|h-entry|main|page|pagination|post|text|blog|story')
-RX_NEGATIVE_CLASS = re.compile(r'(?i)-ad-|hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|foot|footer|footnote|gdpr|masthead|media|meta|outbrain|promo|related|scroll|share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|tool|widget')
+RX_POSITIVE_CLASS = re.compile(r'article|body|content|entry|hentry|h-entry|main|page|pagination|post|text|blog|story', re.IGNORECASE)
+RX_NEGATIVE_CLASS = re.compile(r'-ad-|hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|foot|footer|footnote|gdpr|masthead|media|meta|outbrain|promo|related|scroll|share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|tool|widget', re.IGNORECASE)
 
 # Regular expressions from internal/re2go/check-byline.go
-RX_BYLINE = re.compile(r'(?i)byline|author|dateline|writtenby|p-author')
+RX_BYLINE = re.compile(r'byline|author|dateline|writtenby|p-author', re.IGNORECASE)
 
 # Regular expressions from internal/re2go/grab-article.go
-RX_UNLIKELY_CANDIDATES = re.compile(r'(?i)-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote')
-RX_MAYBE_CANDIDATE = re.compile(r'(?i)and|article|body|column|content|main|shadow')
+RX_UNLIKELY_CANDIDATES = re.compile(r'-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote', re.IGNORECASE)
+RX_MAYBE_CANDIDATE = re.compile(r'and|article|body|column|content|main|shadow', re.IGNORECASE)
 
 # Regular expressions from internal/re2go/normalize.go
-RX_NORMALIZE_SPACES = re.compile(r'(?i)\s{2,}')
+RX_NORMALIZE_SPACES = re.compile(r'\s{2,}', re.IGNORECASE)
 
 # Constants from parser.go
 UNLIKELY_ROLES = {

@@ -35,6 +35,8 @@ import math
 import re
 import copy
 import weakref
+import logging
+import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Union, Callable, Any
 from urllib.parse import urlparse, urljoin
@@ -44,6 +46,9 @@ from bs4 import BeautifulSoup, Tag, Comment
 from readability.models import Article, ParsingError, ExtractionError
 from readability.regexps import RX_DISPLAY_NONE, RX_VISIBILITY_HIDDEN
 import readability.regexps as re2go
+
+# Configure logger
+logger = logging.getLogger("readability")
 
 
 class ScoreTracker:
@@ -215,7 +220,24 @@ class Readability:
         
         # Score tracker for managing node scores
         self.score_tracker = ScoreTracker()
+        
+        # Cache for frequently accessed node properties
+        self._cache = {}
 
+    def _get_cache_key(self, node: Tag, operation: str) -> str:
+        """Generate a cache key for node operations.
+        
+        Args:
+            node: The node to generate a key for
+            operation: The operation being performed
+            
+        Returns:
+            A unique cache key for the node and operation
+        """
+        # Use the node's id as a key
+        node_id = id(node)
+        return f"{node_id}:{operation}"
+    
     def parse(
         self, html_content: Union[str, bytes], url: Optional[str] = None
     ) -> Tuple[Optional[Article], Optional[Exception]]:
@@ -259,6 +281,8 @@ class Readability:
                 print(f"Extracted article: {article.title}")
             ```
         """
+        # Clear cache at the start of parsing
+        self._cache = {}
         try:
             # Parse HTML content with BeautifulSoup
             # Let BeautifulSoup/lxml handle encoding detection if html_content is bytes
@@ -665,7 +689,7 @@ class Readability:
             return parse(date_str)
         except Exception:
             if self.debug:
-                print(f"Failed to parse date: {date_str}")
+                logger.debug(f"Failed to parse date: {date_str}")
             return None
 
     def _get_json_ld(self) -> Dict[str, str]:
@@ -698,7 +722,7 @@ class Readability:
                     parsed = json.loads(content)
                 except json.JSONDecodeError as e:
                     if self.debug:
-                        print(f"Failed to parse JSON-LD: {e}", file=sys.stderr)
+                        logger.debug(f"Failed to parse JSON-LD: {e}")
                     continue
                 
                 # Check context
@@ -820,17 +844,9 @@ class Readability:
         # Extract metadata from meta tags
         for element in meta_elements:
             # Handle potential AttributeValueList objects
-            element_name = element.get("name", "")
-            if isinstance(element_name, list):
-                element_name = " ".join(element_name)
-            
-            element_property = element.get("property", "")
-            if isinstance(element_property, list):
-                element_property = " ".join(element_property)
-            
-            content = element.get("content", "")
-            if isinstance(content, list):
-                content = " ".join(content)
+            element_name = self._normalize_attr_value(element.get("name", ""))
+            element_property = self._normalize_attr_value(element.get("property", ""))
+            content = self._normalize_attr_value(element.get("content", ""))
             
             if not content:
                 continue
@@ -1141,57 +1157,57 @@ class Readability:
         # Track attempts for retry with different flags
         self.attempts = []
         
-        # Phase 1: Clean and prepare the document
-        self._remove_unlikely_candidates()
-        self._transform_misused_divs_into_paragraphs()
+        # Define flag configurations to try in order
+        flag_configurations = [
+            {"strip_unlikelys": True, "use_weight_classes": True, "clean_conditionally": True},
+            {"strip_unlikelys": False, "use_weight_classes": True, "clean_conditionally": True},
+            {"strip_unlikelys": False, "use_weight_classes": False, "clean_conditionally": True},
+            {"strip_unlikelys": False, "use_weight_classes": False, "clean_conditionally": False}
+        ]
         
-        # Phase 2: Score paragraphs
-        candidates = self._score_paragraphs()
-        
-        # Phase 3: Select the best candidate
-        top_candidate = self._select_best_candidate(candidates)
-        
-        # Phase 4: Construct the article content
-        article_content = self._construct_article_content(top_candidate)
-        
-        # Truncate to avoid memory issues with very large documents
-        if article_content:
-            inner_text = self._get_inner_text(article_content)
-            content_length = len(inner_text)
-            self.attempts.append({
-                "article_content": article_content,
-                "length": content_length
-            })
-        
-        # Phase 5: Check content length and retry if needed
-        if not article_content or len(self._get_inner_text(article_content)) < self.char_thresholds:
-            # Try adjusting flags and reprocessing
-            if self.flags["strip_unlikelys"]:
-                # Try again without stripping unlikely candidates
-                self.flags["strip_unlikelys"] = False
-                return self._grab_article()  # Recursive call
-            elif self.flags["use_weight_classes"]:
-                # Try again without using weight classes
-                self.flags["use_weight_classes"] = False
-                return self._grab_article()  # Recursive call
-            elif self.flags["clean_conditionally"]:
-                # Try again without cleaning conditionally
-                self.flags["clean_conditionally"] = False
-                return self._grab_article()  # Recursive call
-            else:
-                # We've tried all options, use the best result we found
-                best_attempt = None
-                max_length = 0
+        # Try each flag configuration until we get good content or exhaust options
+        for flags in flag_configurations:
+            # Update flags for this attempt
+            self.flags = flags
+            
+            # Phase 1: Clean and prepare the document
+            self._remove_unlikely_candidates()
+            self._transform_misused_divs_into_paragraphs()
+            
+            # Phase 2: Score paragraphs
+            candidates = self._score_paragraphs()
+            
+            # Phase 3: Select the best candidate
+            top_candidate = self._select_best_candidate(candidates)
+            
+            # Phase 4: Construct the article content
+            article_content = self._construct_article_content(top_candidate)
+            
+            # Track this attempt
+            if article_content:
+                inner_text = self._get_inner_text(article_content)
+                content_length = len(inner_text)
+                self.attempts.append({
+                    "article_content": article_content,
+                    "length": content_length,
+                    "flags": flags.copy()
+                })
                 
-                for attempt in self.attempts:
-                    if attempt["length"] > max_length:
-                        max_length = attempt["length"]
-                        best_attempt = attempt["article_content"]
-                        
-                if best_attempt:
-                    return best_attempt
+                # If content is long enough, we're done
+                if content_length >= self.char_thresholds:
+                    return article_content
         
-        return article_content
+        # If we get here, we've tried all configurations and nothing worked well
+        # Return the best attempt we have
+        best_attempt = None
+        max_length = 0
+        
+        for attempt in self.attempts:
+            if attempt["length"] > max_length:
+                max_length = attempt["length"]
+                best_attempt = attempt["article_content"]
+                
+        return best_attempt
 
     def _remove_unlikely_candidates(self) -> None:
         """Remove nodes that are unlikely to be content.
@@ -1212,7 +1228,9 @@ class Readability:
                 continue
                 
             # Check class and ID for unlikely patterns
-            match_string = f"{' '.join(elem.get('class', []))} {elem.get('id', '')}"
+            class_value = self._normalize_attr_value(elem.get('class', []))
+            id_value = self._normalize_attr_value(elem.get('id', ''))
+            match_string = f"{class_value} {id_value}"
             
             # Use imported re2go functions from regexps.py
             if re2go.is_unlikely_candidate(match_string) and \
@@ -1506,6 +1524,23 @@ class Readability:
                 if attr.startswith("data-readability-"):
                     del elem[attr]
 
+    def _normalize_attr_value(self, value: Any) -> str:
+        """Normalize attribute values that might be lists into strings.
+        
+        Args:
+            value: The attribute value that might be a string or a list
+            
+        Returns:
+            Normalized string value
+        """
+        if value is None:
+            return ""
+            
+        if isinstance(value, list):
+            return " ".join(value)
+            
+        return str(value).strip()
+    
     def _get_inner_text(self, node: Tag, normalize_spaces: bool = True) -> str:
         """Get the inner text of a node.
         
@@ -1519,11 +1554,20 @@ class Readability:
         if node is None:
             return ""
         
+        # Check cache first
+        cache_key = self._get_cache_key(node, f"inner_text:{normalize_spaces}")
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        
+        # Not in cache, compute the value
         text = node.get_text().strip()
         
         if normalize_spaces:
             from readability.utils import normalize_spaces
             text = normalize_spaces(text)
+        
+        # Store in cache
+        self._cache[cache_key] = text
         
         return text
 
@@ -1772,12 +1816,7 @@ class Readability:
         weight = 0
         
         # Check for positive/negative classes in className
-        class_value = node.get("class", [])
-        if isinstance(class_value, list):
-            class_name = " ".join(class_value)
-        else:
-            class_name = str(class_value)
-            
+        class_name = self._normalize_attr_value(node.get("class", []))
         if class_name:
             if re2go.is_positive_class(class_name):
                 weight += 25
@@ -1785,10 +1824,7 @@ class Readability:
                 weight -= 25
         
         # Check for positive/negative classes in ID
-        node_id = node.get("id", "")
-        if isinstance(node_id, list):
-            node_id = " ".join(node_id)
-            
+        node_id = self._normalize_attr_value(node.get("id", ""))
         if node_id:
             if re2go.is_positive_class(node_id):
                 weight += 25
@@ -1852,6 +1888,12 @@ class Readability:
         Returns:
             Link density as a float between 0.0 and 1.0
         """
+        # Check cache first
+        cache_key = self._get_cache_key(node, "link_density")
+        if cache_key in self._cache:
+            return self._cache[cache_key]
+        
+        # Not in cache, compute the value
         text_length = len(self._get_inner_text(node, True))
         if text_length == 0:
             return 0.0
@@ -1866,7 +1908,11 @@ class Readability:
             link_text = self._get_inner_text(link, True)
             link_length += len(link_text) * coefficient
         
-        return link_length / text_length
+        # Calculate and cache the result
+        result = link_length / text_length
+        self._cache[cache_key] = result
+        
+        return result
 
     def _clean_styles(self, node: Tag) -> None:
         """Clean styles from a node.
