@@ -3,12 +3,13 @@
 Script to run code coverage reports for the readability-python project.
 
 Usage:
-    python scripts/coverage.py [--html] [--xml] [--report] [--min-coverage PERCENTAGE]
+    python scripts/coverage.py [--html] [--xml] [--report] [--all] [--min-coverage PERCENTAGE]
 
 Options:
     --html          Generate HTML coverage report in the coverage_html directory
     --xml           Generate XML coverage report (for CI tools)
     --report        Show coverage report in the terminal (default if no other options specified)
+    --all           Generate all report formats (HTML, XML, and terminal)
     --min-coverage  Set minimum required coverage percentage (e.g., --min-coverage 80)
 """
 
@@ -21,16 +22,18 @@ def run_coverage(html=False, xml=False, report=True, min_coverage=None):
     """Run pytest with coverage options."""
     cmd = ["python", "-m", "pytest", "--cov=readability", "--cov=cli"]
     
-    # Add report formats
+    # Build report formats list
+    report_formats = []
     if html:
-        cmd.append("--cov-report=html")
+        report_formats.append("html")
     if xml:
-        cmd.append("--cov-report=xml")
-    if report:
-        cmd.append("--cov-report=term")
-    elif not html and not xml:
-        # If no report format is specified, default to terminal
-        cmd.append("--cov-report=term")
+        report_formats.append("xml")
+    if report or not report_formats:
+        report_formats.append("term")
+    
+    # Add report formats to command
+    for fmt in report_formats:
+        cmd.append(f"--cov-report={fmt}")
     
     # Add minimum coverage requirement
     if min_coverage is not None:
@@ -48,12 +51,18 @@ def main():
     parser.add_argument("--html", action="store_true", help="Generate HTML report")
     parser.add_argument("--xml", action="store_true", help="Generate XML report")
     parser.add_argument("--report", action="store_true", help="Show terminal report")
+    parser.add_argument("--all", action="store_true", help="Generate all report formats (HTML, XML, and terminal)")
     parser.add_argument("--min-coverage", type=float, help="Minimum coverage percentage")
     
     args = parser.parse_args()
     
+    # Handle --all flag that generates all report types
+    if args.all:
+        args.html = True
+        args.xml = True
+        args.report = True
     # Default to terminal report if no options specified
-    if not (args.html or args.xml or args.report):
+    elif not (args.html or args.xml or args.report):
         args.report = True
     
     return run_coverage(
