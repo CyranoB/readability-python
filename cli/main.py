@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Command-line interface for Python Readability."""
+"""Command-line interface for Python Readability.
+
+This module provides a command-line interface for the Python Readability library.
+It includes enhanced error handling with error boundaries for more robust operation.
+"""
 
 import argparse
 import json
@@ -10,6 +14,7 @@ from pathlib import Path
 
 from readability import Readability, Article
 from readability.models import ParsingError, ExtractionError
+from cli.errors import ErrorBoundary, ErrorType, with_error_boundary
 
 
 def parse_args() -> argparse.Namespace:
@@ -65,6 +70,20 @@ def parse_args() -> argparse.Namespace:
         help="Character encoding of the input HTML. Auto-detected if not specified."
     )
     
+    # Error handling options
+    error_group = parser.add_argument_group("Error handling")
+    error_group.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="Continue processing when errors occur (where possible)"
+    )
+    error_group.add_argument(
+        "--error-format",
+        choices=["text", "json"],
+        default="text",
+        help="Format for error messages"
+    )
+    
     # Other options
     parser.add_argument(
         "--debug", "-d",
@@ -80,62 +99,94 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+@with_error_boundary(ErrorType.NETWORK, "fetch_content")
 def fetch_content(url: str, timeout: int = 30, user_agent: Optional[str] = None, 
-                 encoding: Optional[str] = None) -> Tuple[Optional[Union[str, bytes]], Optional[str]]:
+                 encoding: Optional[str] = None, verbose: bool = False, 
+                 continue_on_error: bool = False, error_format: str = "text") -> Union[str, bytes]:
     """Fetch content from a URL.
     
     Args:
         url: URL to fetch
         timeout: Timeout in seconds
         user_agent: User agent string
-        encoding: Optional encoding to use. If specified, content is returned as bytes.
+        encoding: Optional encoding to use. If specified, content is returned as bytes
+        verbose: Whether to include detailed information in error messages
+        continue_on_error: Whether to continue execution after an error
+        error_format: Format for error messages ("text" or "json")
         
     Returns:
-        Tuple of (content, error) where content can be str or bytes
+        Content as string or bytes
+        
+    Raises:
+        requests.RequestException: If there's a problem fetching the URL
     """
-    headers = {}
-    if user_agent:
-        headers["User-Agent"] = user_agent
-    
-    try:
+    with ErrorBoundary("fetch_content", ErrorType.NETWORK, 
+                      verbose, continue_on_error, error_format) as eb:
+        eb.add_context("url", url)
+        eb.add_context("timeout", timeout)
+        
+        headers = {}
+        if user_agent:
+            headers["User-Agent"] = user_agent
+            eb.add_context("user_agent", user_agent)
+        
+        if encoding:
+            eb.add_context("encoding", encoding)
+            
         response = requests.get(url, headers=headers, timeout=timeout)
         response.raise_for_status()
         
         if encoding:
             # Return raw content as bytes when encoding is specified
-            return response.content, None
+            return response.content
         else:
             # Let requests handle encoding detection
-            return response.text, None
-    except requests.RequestException as e:
-        return None, f"Error fetching URL: {e}"
+            return response.text
 
 
-def read_file(file_path: str, encoding: Optional[str] = None) -> Tuple[Optional[Union[str, bytes]], Optional[str]]:
+@with_error_boundary(ErrorType.INPUT, "read_file")
+def read_file(file_path: str, encoding: Optional[str] = None, verbose: bool = False,
+             continue_on_error: bool = False, error_format: str = "text") -> Union[str, bytes]:
     """Read content from a file.
     
     Args:
         file_path: Path to the file
         encoding: Optional encoding to use. If specified, file is read in binary mode
-                 and returned as bytes.
+                 and returned as bytes
+        verbose: Whether to include detailed information in error messages
+        continue_on_error: Whether to continue execution after an error
+        error_format: Format for error messages ("text" or "json")
         
     Returns:
-        Tuple of (content, error) where content can be str or bytes
+        Content as string or bytes
+        
+    Raises:
+        FileNotFoundError: If the file does not exist
+        PermissionError: If permission is denied for the file
+        IOError: If there's a problem reading the file
     """
-    try:
+    with ErrorBoundary("read_file", ErrorType.INPUT, 
+                      verbose, continue_on_error, error_format) as eb:
+        eb.add_context("file_path", file_path)
+        if encoding:
+            eb.add_context("encoding", encoding)
+            
+        if not Path(file_path).exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+            
         if encoding:
             # Read in binary mode when encoding is specified
             with open(file_path, "rb") as f:
-                return f.read(), None
+                return f.read()
         else:
             # Read in text mode with UTF-8 encoding
             with open(file_path, "r", encoding="utf-8") as f:
-                return f.read(), None
-    except IOError as e:
-        return None, f"Error reading file: {e}"
+                return f.read()
 
 
-def read_stdin(encoding: Optional[str] = None) -> Tuple[Optional[Union[str, bytes]], Optional[str]]:
+@with_error_boundary(ErrorType.INPUT, "read_stdin")
+def read_stdin(encoding: Optional[str] = None, verbose: bool = False,
+              continue_on_error: bool = False, error_format: str = "text") -> Union[str, bytes]:
     """Read content from stdin with improved handling.
     
     Detects if stdin is connected to a terminal and provides appropriate
@@ -143,20 +194,34 @@ def read_stdin(encoding: Optional[str] = None) -> Tuple[Optional[Union[str, byte
     
     Args:
         encoding: Optional encoding to use. If specified, stdin is read in binary mode
-                 and returned as bytes.
-    
+                 and returned as bytes
+        verbose: Whether to include detailed information in error messages
+        continue_on_error: Whether to continue execution after an error
+        error_format: Format for error messages ("text" or "json")
+        
     Returns:
-        Tuple of (content, error) where content can be str or bytes
+        Content as string or bytes
+        
+    Raises:
+        KeyboardInterrupt: If the user interrupts input
+        IOError: If there's a problem reading from stdin
     """
-    # Check if stdin is connected to a terminal
-    if sys.stdin.isatty():
-        print("Reading from stdin. Enter HTML content and press Ctrl+D (Unix) or Ctrl+Z (Windows) when done:", file=sys.stderr)
-    
-    try:
+    with ErrorBoundary("read_stdin", ErrorType.INPUT, 
+                      verbose, continue_on_error, error_format) as eb:
+        if encoding:
+            eb.add_context("encoding", encoding)
+            
+        # Check if stdin is connected to a terminal
+        is_terminal = sys.stdin.isatty()
+        eb.add_context("is_terminal", is_terminal)
+        
+        if is_terminal:
+            print("Reading from stdin. Enter HTML content and press Ctrl+D (Unix) or Ctrl+Z (Windows) when done:", file=sys.stderr)
+        
         if encoding:
             # Read in binary mode
             stdin_bytes = sys.stdin.buffer.read()
-            return stdin_bytes, None
+            return stdin_bytes
         else:
             # Read with a sensible chunk size to avoid memory issues with very large inputs
             chunks = []
@@ -166,15 +231,13 @@ def read_stdin(encoding: Optional[str] = None) -> Tuple[Optional[Union[str, byte
                     break
                 chunks.append(chunk)
                 
-            return "".join(chunks), None
-    except KeyboardInterrupt:
-        return None, "Input reading interrupted by user"
-    except IOError as e:
-        return None, f"Error reading from stdin: {e}"
+            return "".join(chunks)
 
 
+@with_error_boundary(ErrorType.PARSING, "process_content")
 def process_content(content: Union[str, bytes], url: Optional[str] = None, format: str = "html", 
-                   debug: bool = False, encoding: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
+                   debug: bool = False, encoding: Optional[str] = None, verbose: bool = False,
+                   continue_on_error: bool = False, error_format: str = "text") -> str:
     """Process content with Readability.
     
     Args:
@@ -183,27 +246,48 @@ def process_content(content: Union[str, bytes], url: Optional[str] = None, forma
         format: Output format (html, text, json)
         debug: Enable debug output
         encoding: Optional character encoding to use when content is bytes
-        
+        verbose: Whether to include detailed information in error messages
+        continue_on_error: Whether to continue execution after an error
+        error_format: Format for error messages ("text" or "json")
+    
     Returns:
-        Tuple of (processed_content, error)
+        Processed content as string
+        
+    Raises:
+        ParsingError: If there's a problem parsing the HTML
+        ExtractionError: If there's a problem extracting the content
+        ValueError: If the format is invalid or no content was extracted
     """
-    if debug:
-        print(f"Processing content with URL: {url}", file=sys.stderr)
+    with ErrorBoundary("process_content", ErrorType.PARSING, 
+                      verbose, continue_on_error, error_format) as eb:
+        if url:
+            eb.add_context("url", url)
+        eb.add_context("format", format)
         if encoding:
-            print(f"Using encoding: {encoding}", file=sys.stderr)
-    
-    parser = Readability(debug=debug)
-    article, error = parser.parse(content, url=url, encoding=encoding)
-    
-    if error:
-        return None, f"Error parsing content: {error}"
-    
-    if not article:
-        return None, "No article content found"
-    
-    if format == "html":
-        # Wrap the content in a proper HTML document structure with encoding declaration
-        html_document = f"""<!DOCTYPE html>
+            eb.add_context("encoding", encoding)
+        
+        if debug:
+            print(f"Processing content with URL: {url}", file=sys.stderr)
+            if encoding:
+                print(f"Using encoding: {encoding}", file=sys.stderr)
+        
+        parser = Readability(debug=debug)
+        article, error = parser.parse(content, url=url, encoding=encoding)
+        
+        if error:
+            if isinstance(error, ParsingError):
+                raise ParsingError(f"Error parsing content: {error}")
+            elif isinstance(error, ExtractionError):
+                raise ExtractionError(f"Error extracting content: {error}")
+            else:
+                raise ValueError(f"Error processing content: {error}")
+        
+        if not article:
+            raise ValueError("No article content found")
+        
+        if format == "html":
+            # Wrap the content in a proper HTML document structure with encoding declaration
+            html_document = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -214,51 +298,57 @@ def process_content(content: Union[str, bytes], url: Optional[str] = None, forma
     {article.content}
 </body>
 </html>"""
-        return html_document, None
-    elif format == "text":
-        return article.text_content, None
-    elif format == "json":
-        article_dict = {
-            "title": article.title,
-            "byline": article.byline,
-            "content": article.content,
-            "text_content": article.text_content,
-            "excerpt": article.excerpt,
-            "site_name": article.site_name,
-            "image": article.image,
-            "favicon": article.favicon,
-            "length": article.length,
-            "published_time": article.published_time.isoformat() if article.published_time else None,
-            "url": article.url
-        }
-        return json.dumps(article_dict, indent=2), None
-    else:
-        return None, f"Unknown format: {format}"
+            return html_document
+        elif format == "text":
+            return article.text_content
+        elif format == "json":
+            article_dict = {
+                "title": article.title,
+                "byline": article.byline,
+                "content": article.content,
+                "text_content": article.text_content,
+                "excerpt": article.excerpt,
+                "site_name": article.site_name,
+                "image": article.image,
+                "favicon": article.favicon,
+                "length": article.length,
+                "published_time": article.published_time.isoformat() if article.published_time else None,
+                "url": article.url
+            }
+            return json.dumps(article_dict, indent=2)
+        else:
+            raise ValueError(f"Unknown format: {format}")
 
 
-def write_output(content: str, output_path: Optional[str] = None) -> Tuple[bool, Optional[str]]:
+@with_error_boundary(ErrorType.OUTPUT, "write_output")
+def write_output(content: str, output_path: Optional[str] = None, verbose: bool = False,
+                continue_on_error: bool = False, error_format: str = "text") -> None:
     """Write content to output destination.
     
     Args:
         content: Content to write
         output_path: Path to output file, or None for stdout
-        
-    Returns:
-        Tuple of (success, error)
+        verbose: Whether to include detailed information in error messages
+        continue_on_error: Whether to continue execution after an error
+        error_format: Format for error messages ("text" or "json")
+    
+    Raises:
+        IOError: If there's a problem writing to the output destination
     """
-    if output_path:
-        try:
+    with ErrorBoundary("write_output", ErrorType.OUTPUT, 
+                      verbose, continue_on_error, error_format) as eb:
+        if output_path:
+            eb.add_context("output_path", output_path)
+            # Ensure the directory exists
+            output_dir = Path(output_path).parent
+            if not output_dir.exists() and str(output_dir) != '.':
+                output_dir.mkdir(parents=True, exist_ok=True)
+                
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(content)
-            return True, None
-        except IOError as e:
-            return False, f"Error writing to file: {e}"
-    else:
-        try:
+        else:
+            eb.add_context("output", "stdout")
             print(content)
-            return True, None
-        except IOError as e:
-            return False, f"Error writing to stdout: {e}"
 
 
 # Define error code constants
@@ -275,92 +365,107 @@ def main() -> int:
     Returns:
         Exit code based on specific error types
     """
-    args = parse_args()
-    
     try:
-        # Get content from URL, file, or stdin
+        # Parse arguments
+        args = parse_args()
+        
+        # Set up error handling options
+        error_opts = {
+            "verbose": args.debug,
+            "continue_on_error": args.continue_on_error,
+            "error_format": args.error_format
+        }
+        
+        # Configure content acquisition
         content = None
-        error = None
         url = args.url
         
-        if args.input:
-            if args.input.startswith(("http://", "https://")):
-                try:
+        # Main processing with error boundaries
+        with ErrorBoundary("main", ErrorType.UNKNOWN, **error_opts) as main_eb:
+            # Get content from URL, file, or stdin
+            if args.input:
+                if args.input.startswith(("http://", "https://")):
                     # Input is a URL
-                    content, error = fetch_content(args.input, args.timeout, args.user_agent, args.encoding)
-                    if error:
-                        print(f"Network error: {error}", file=sys.stderr)
-                        return EXIT_ERROR_NETWORK
-                    if not url:
-                        url = args.input
-                except requests.RequestException as e:
-                    print(f"Network error: {e}", file=sys.stderr)
-                    return EXIT_ERROR_NETWORK
-            else:
-                try:
-                    # Input is a file
-                    content, error = read_file(args.input, args.encoding)
-                    if error:
-                        print(f"File error: {error}", file=sys.stderr)
-                        return EXIT_ERROR_INPUT
-                except FileNotFoundError:
-                    print(f"Error: File not found: {args.input}", file=sys.stderr)
-                    return EXIT_ERROR_INPUT
-                except PermissionError:
-                    print(f"Error: Permission denied for file: {args.input}", file=sys.stderr)
-                    return EXIT_ERROR_INPUT
-        else:
-            # Input from stdin
-            content, error = read_stdin(args.encoding)
-            if error:
-                print(f"Input error: {error}", file=sys.stderr)
-                return EXIT_ERROR_INPUT
-        
-        if not content:
-            print("Error: No content to process", file=sys.stderr)
-            return EXIT_ERROR_INPUT
-        
-        # Process content
-        try:
-            processed_content, error = process_content(content, url, args.format, args.debug, args.encoding)
-            
-            if error:
-                # Handle specific error types with more detailed messages
-                if isinstance(error, ParsingError):
-                    print(f"Parsing error: {error}", file=sys.stderr)
-                    return EXIT_ERROR_PARSING
-                elif isinstance(error, ExtractionError):
-                    print(f"Content extraction error: {error}", file=sys.stderr)
-                    return EXIT_ERROR_PARSING
+                    with ErrorBoundary("fetch_url", ErrorType.NETWORK, **error_opts) as eb:
+                        eb.add_context("url", args.input)
+                        content = fetch_content(
+                            args.input, 
+                            timeout=args.timeout,
+                            user_agent=args.user_agent,
+                            encoding=args.encoding,
+                            **error_opts
+                        )
+                        if not url:
+                            url = args.input
                 else:
-                    print(f"Error parsing content: {error}", file=sys.stderr)
-                    return EXIT_ERROR_PARSING
+                    # Input is a file
+                    with ErrorBoundary("read_input_file", ErrorType.INPUT, **error_opts) as eb:
+                        eb.add_context("file_path", args.input)
+                        content = read_file(
+                            args.input,
+                            encoding=args.encoding,
+                            **error_opts
+                        )
+            else:
+                # Input from stdin
+                with ErrorBoundary("read_stdin_input", ErrorType.INPUT, **error_opts) as eb:
+                    content = read_stdin(
+                        encoding=args.encoding,
+                        **error_opts
+                    )
             
-            if not processed_content:
-                print("Error: No content extracted", file=sys.stderr)
-                return EXIT_ERROR_PARSING
-        except Exception as e:
-            print(f"Unexpected error during content processing: {e}", file=sys.stderr)
-            return EXIT_ERROR_PARSING
-        
-        # Write output
-        try:
-            success, error = write_output(processed_content, args.output)
+            if not content:
+                raise ValueError("No content to process")
             
-            if not success:
-                print(f"Error writing output: {error}", file=sys.stderr)
-                return EXIT_ERROR_OUTPUT
-        except Exception as e:
-            print(f"Unexpected error writing output: {e}", file=sys.stderr)
-            return EXIT_ERROR_OUTPUT
-        
+            # Process content
+            with ErrorBoundary("process_content", ErrorType.PARSING, **error_opts) as eb:
+                if url:
+                    eb.add_context("url", url)
+                    
+                processed_content = process_content(
+                    content,
+                    url=url,
+                    format=args.format,
+                    debug=args.debug,
+                    encoding=args.encoding,
+                    **error_opts
+                )
+                
+                if not processed_content:
+                    raise ValueError("No content extracted")
+            
+            # Write output
+            with ErrorBoundary("write_output", ErrorType.OUTPUT, **error_opts) as eb:
+                if args.output:
+                    eb.add_context("output_path", args.output)
+                    
+                write_output(
+                    processed_content,
+                    output_path=args.output,
+                    **error_opts
+                )
+                
         return EXIT_SUCCESS
+    
     except KeyboardInterrupt:
-        print("\nOperation interrupted by user", file=sys.stderr)
-        return EXIT_ERROR_UNKNOWN
+        with ErrorBoundary("interrupt_handler", ErrorType.UNKNOWN, 
+                          verbose=False, continue_on_error=False, error_format="text") as eb:
+            print("\nOperation interrupted by user", file=sys.stderr)
+            return EXIT_ERROR_UNKNOWN
+            
     except Exception as e:
+        # This catches any exceptions that weren't caught by error boundaries
         print(f"Unexpected error: {e}", file=sys.stderr)
-        return EXIT_ERROR_UNKNOWN
+        if hasattr(e, '__module__') and e.__module__ == 'requests':
+            return EXIT_ERROR_NETWORK
+        elif isinstance(e, (FileNotFoundError, PermissionError)):
+            return EXIT_ERROR_INPUT
+        elif isinstance(e, (ParsingError, ExtractionError)):
+            return EXIT_ERROR_PARSING
+        elif isinstance(e, IOError) and "writing" in str(e).lower():
+            return EXIT_ERROR_OUTPUT
+        else:
+            return EXIT_ERROR_UNKNOWN
 
 
 if __name__ == "__main__":

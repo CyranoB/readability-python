@@ -1,1 +1,1 @@
-"""Tests for Python Readability."""
+# Mark the tests directory as a package

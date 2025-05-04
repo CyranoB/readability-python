@@ -11,6 +11,32 @@ The current focus of the Python Readability project is on implementing a compreh
 
 ## Recent Changes
 
+### Error Handling Enhancement with Mocked Tests
+
+We've enhanced the error handling system in the CLI with better exception handling and test coverage:
+
+1. **Improved Exception Handling**:
+   - Added automatic mapping of exceptions to appropriate error types (e.g., PermissionError → ErrorType.PERMISSION)
+   - Enhanced error boundary nesting with custom `ErrorBoundaryExit` exception
+   - Ensured error types propagate correctly through nested error boundaries
+
+2. **Comprehensive Test Mocking**:
+   - Added `pytest-mock` dependency for robust test mocking
+   - Implemented mocked tests for file system operations:
+     - Created `test_file_not_found_scenario_mocked` to test file errors without touching real file system
+     - Added parameterized tests for various file error types (FileNotFound, Permission, IsADirectory)
+   - Implemented mocked tests for network operations:
+     - Created `test_network_error_scenario_mocked` to test network errors without making real requests
+     - Added parameterized tests for various network error types (Connection, Timeout, TooManyRedirects)
+   - Separated real and mocked tests to improve test reliability and speed
+
+3. **Test Reliability Improvements**:
+   - Added class-level storage of error information for easier testing
+   - Created mechanisms to test error messages and error types without relying on stdout/stderr capture
+   - Fixed test failures by properly handling self parameter in test methods
+
+These changes have significantly improved the robustness of our error handling system and test coverage. All tests are now passing with full coverage of both real and mocked scenarios.
+
 ### Test Case Categorization
 
 We've created a comprehensive test case categorization document (`test-case-categorization.md`) that categorizes test cases by:

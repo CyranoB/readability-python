@@ -135,7 +135,33 @@ The following test cases are passing:
 
 ## Current Status
 
-The project is in the testing and refinement phase. The core functionality is implemented and working, and all test cases from the Go implementation have been successfully migrated and are passing. The test infrastructure has been enhanced to support categorization and prioritization, which will help guide the remaining work on creating new test cases and implementing the CLI tool.
+The project is in the testing and refinement phase. The core functionality is implemented and working, and all test cases from the Go implementation have been successfully migrated and are passing. The test infrastructure has been enhanced to support categorization and prioritization, which will help guide the remaining work on creating new test cases.
+
+### Error Handling System
+
+We've implemented a robust error handling system for the CLI using the Error Boundary pattern:
+
+1. **Core Error Handling Components**:
+   - `ErrorType` enum for categorizing errors with appropriate exit codes (INPUT, NETWORK, PARSING, etc.)
+   - `ErrorBoundaryExit` exception for proper handling of nested boundaries
+   - `ErrorBoundary` context manager for consistent error handling
+   - `with_error_boundary` decorator for adding boundaries to functions
+
+2. **Key Features**:
+   - Consistent error reporting with unified format
+   - Contextual error information collection
+   - Format options for human-readable text and machine-readable JSON
+   - Proper nesting of error boundaries
+   - Support for continue-on-error functionality
+   - Error categorization with specific exit codes
+   - Enhanced testability with class attributes for testing
+
+3. **Testing Improvements**:
+   - Added pytest-mock for dependency mocking
+   - Created mocked tests for file system operations
+   - Created mocked tests for network operations
+   - Implemented parameterized tests for error variations
+   - Separated real and mocked test scenarios
 
 ### Version 0.4.0 Release
 

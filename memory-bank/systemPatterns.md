@@ -153,6 +153,81 @@ The scoring algorithm assigns scores to different parts of the HTML based on var
 
 The postprocessing steps clean up the extracted content, removing any remaining unnecessary elements and formatting the content for output. The output generation component then creates the final HTML and plain text versions of the content.
 
+## Error Handling System
+
+The error handling system follows a robust design pattern inspired by React's error boundaries:
+
+### 1. Error Boundary Pattern
+
+We use a context manager-based error boundary pattern that provides a consistent way to handle errors across the codebase:
+
+```python
+with ErrorBoundary("operation_name", ErrorType.PERMISSION) as eb:
+    eb.add_context("file_path", path)
+    # Code that might fail
+    with open(path, "r") as f:
+        content = f.read()
+```
+
+This pattern allows for:
+- Centralized error handling logic
+- Consistent error reporting
+- Contextual information capture
+- Clean error recovery paths
+
+### 2. Error Type Classification
+
+Errors are classified using an Enum to provide specific exit codes:
+
+```python
+class ErrorType(Enum):
+    SUCCESS = 0
+    INPUT = 1        # Input-related errors
+    NETWORK = 2      # Network errors
+    PARSING = 3      # Content parsing errors
+    OUTPUT = 4       # Output-related errors
+    PERMISSION = 5   # Permission errors
+    # ...
+```
+
+### 3. Automatic Error Mapping
+
+The system automatically maps Python exceptions to the appropriate error types:
+
+```python
+# Determine the most appropriate error type based on the exception
+error_type = self.error_type
+if isinstance(exception, PermissionError):
+    error_type = ErrorType.PERMISSION
+elif isinstance(exception, TimeoutError):
+    error_type = ErrorType.TIMEOUT
+```
+
+### 4. Nested Error Boundaries
+
+The system supports nested error boundaries using a custom exception type:
+
+```python
+class ErrorBoundaryExit(Exception):
+    def __init__(self, error_type: ErrorType, message: str):
+        self.error_type = error_type
+        self.message = message
+        super().__init__(message)
+```
+
+This allows inner error boundaries to propagate errors to outer boundaries with appropriate error type information.
+
+### 5. Decorator Support
+
+The system provides a decorator for wrapping functions with error boundaries:
+
+```python
+@with_error_boundary(ErrorType.INPUT)
+def read_file(path: str) -> str:
+    with open(path, "r") as f:
+        return f.read()
+```
+
 ## Testing Strategy
 
 The testing strategy focuses on ensuring that the Python implementation behaves the same way as the Go implementation. This is achieved through:
@@ -161,5 +236,46 @@ The testing strategy focuses on ensuring that the Python implementation behaves 
 2. **Integration Tests**: Testing the interaction between components.
 3. **End-to-End Tests**: Testing the entire parsing process with real-world HTML.
 4. **Comparison Tests**: Comparing the output of the Python implementation with the Go implementation for the same input.
+
+### Dependency Mocking Patterns
+
+To ensure reliable tests that don't depend on external systems, we use dependency mocking:
+
+1. **File System Mocking**
+
+We use pytest-mock to mock file system operations:
+
+```python
+def test_file_not_found(self, mocker):
+    mock_open = mocker.patch("builtins.open")
+    mock_open.side_effect = FileNotFoundError(2, "No such file", "test.txt")
+    
+    # Test code that uses open()
+```
+
+2. **Network Request Mocking**
+
+We mock network requests to test error scenarios without making actual HTTP requests:
+
+```python
+def test_network_error(self, mocker):
+    mock_get = mocker.patch("requests.get")
+    mock_get.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    
+    # Test code that uses requests.get()
+```
+
+3. **Parameterized Error Tests**
+
+We use pytest's parameterization to test different error scenarios:
+
+```python
+@pytest.mark.parametrize("exception,expected_code", [
+    (FileNotFoundError(2, "No such file", "test.txt"), ErrorType.INPUT.value),
+    (PermissionError(13, "Permission denied", "test.txt"), ErrorType.PERMISSION.value),
+])
+def test_error_variations(self, mocker, exception, expected_code):
+    # Test with different error types
+```
 
 The test suite includes a comprehensive set of test cases covering various types of content and edge cases.
