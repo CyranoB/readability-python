@@ -146,6 +146,12 @@ python scripts/coverage.py
 # Generate HTML coverage report
 python scripts/coverage.py --html
 
+# Generate XML report (for SonarQube/CI tools)
+python scripts/coverage.py --xml
+
+# Generate all report formats
+python scripts/coverage.py --all
+
 # Set minimum coverage requirement (fails if not met)
 python scripts/coverage.py --min-coverage 70
 ```
@@ -174,6 +180,28 @@ The library has extensive test coverage across different functional areas and cr
 | Feature | 14 | 37.8% |
 | Edge Case | 7 | 18.9% |
 | Real-world | 14 | 37.8% |
+
+## SonarQube Integration
+
+The project includes configuration for SonarQube/SonarCloud code quality analysis:
+
+- Coverage reports are generated in the `coverage-reports` directory
+- XML format coverage data is available for SonarQube analysis
+- A `sonar-project.properties` file is included with recommended settings
+
+To run SonarQube analysis:
+
+1. Generate coverage data:
+   ```bash
+   python scripts/coverage.py --xml
+   ```
+
+2. Run the SonarQube scanner:
+   ```bash
+   sonar-scanner
+   ```
+
+The coverage data will be automatically picked up and integrated into the analysis results.
 
 ## Comparison with Go Implementation
 
