@@ -1,16 +1,19 @@
 """Regular expressions for Python Readability.
 
 This module contains compiled regular expressions that are used throughout the project.
+Performance optimizations have been applied to frequently used patterns.
 """
 
 import re
+from functools import lru_cache
 
 # Regular expressions from parser.go
+# Only use IGNORECASE flag where needed for text matching
 RX_VIDEOS = re.compile(r'//(www\.)?((dailymotion|youtube|youtube-nocookie|player\.vimeo|v\.qq)\.com|(archive|upload\.wikimedia)\.org|player\.twitch\.tv)', re.IGNORECASE)
-RX_TOKENIZE = re.compile(r'\W+', re.IGNORECASE)
-RX_WHITESPACE = re.compile(r'^\s*$', re.IGNORECASE)
-RX_HAS_CONTENT = re.compile(r'\S$', re.IGNORECASE)
-RX_HASH_URL = re.compile(r'^#.+', re.IGNORECASE)
+RX_TOKENIZE = re.compile(r'\W+')  # No need for IGNORECASE with \W
+RX_WHITESPACE = re.compile(r'^\s*$')  # No need for IGNORECASE with \s
+RX_HAS_CONTENT = re.compile(r'\S$')  # No need for IGNORECASE with \S
+RX_HASH_URL = re.compile(r'^#.+')  # No need for IGNORECASE for # symbol
 RX_PROPERTY_PATTERN = re.compile(r'\s*(dc|dcterm|og|article|twitter)\s*:\s*(author|creator|description|title|site_name|published_time|modified_time|image\S*)\s*', re.IGNORECASE)
 RX_NAME_PATTERN = re.compile(r'^\s*(?:(dc|dcterm|article|og|twitter|weibo:(article|webpage))\s*[\.:]\s*)?(author|creator|description|title|site_name|published_time|modified_time|image)\s*$', re.IGNORECASE)
 RX_TITLE_SEPARATOR = re.compile(r' [\|\-\\/>»] ', re.IGNORECASE)
@@ -20,13 +23,13 @@ RX_TITLE_REMOVE_1ST_PART = re.compile(r'[^\|\-\\/>»]*[\|\-\\/>»](.*)', re.IGNO
 RX_TITLE_ANY_SEPARATOR = re.compile(r'[\|\-\\/>»]+', re.IGNORECASE)
 RX_DISPLAY_NONE = re.compile(r'display\s*:\s*none', re.IGNORECASE)
 RX_VISIBILITY_HIDDEN = re.compile(r'visibility\s*:\s*hidden', re.IGNORECASE)
-RX_SENTENCE_PERIOD = re.compile(r'\.( |$)', re.IGNORECASE)
+RX_SENTENCE_PERIOD = re.compile(r'\.( |$)')  # No need for IGNORECASE for period
 RX_SHARE_ELEMENTS = re.compile(r'(\b|_)(share|sharedaddy)(\b|_)', re.IGNORECASE)
-RX_FAVICON_SIZE = re.compile(r'(\d+)x(\d+)', re.IGNORECASE)
+RX_FAVICON_SIZE = re.compile(r'(\d+)x(\d+)')  # No need for IGNORECASE for digits
 RX_LAZY_IMAGE_SRCSET = re.compile(r'\.(jpg|jpeg|png|webp)\s+\d', re.IGNORECASE)
 RX_LAZY_IMAGE_SRC = re.compile(r'^\s*\S+\.(jpg|jpeg|png|webp)\S*\s*$', re.IGNORECASE)
 RX_IMG_EXTENSIONS = re.compile(r'\.(jpg|jpeg|png|webp)', re.IGNORECASE)
-RX_SRCSET_URL = re.compile(r'(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))', re.IGNORECASE)
+RX_SRCSET_URL = re.compile(r'(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))')  # No need for IGNORECASE
 RX_B64_DATA_URL = re.compile(r'^data:\s*([^\s;,]+)\s*;\s*base64\s*,', re.IGNORECASE)
 RX_JSON_LD_ARTICLE_TYPES = re.compile(r'^Article|AdvertiserContentArticle|NewsArticle|AnalysisNewsArticle|AskPublicNewsArticle|BackgroundNewsArticle|OpinionNewsArticle|ReportageNewsArticle|ReviewNewsArticle|Report|SatiricalArticle|ScholarlyArticle|MedicalScholarlyArticle|SocialMediaPosting|BlogPosting|LiveBlogPosting|DiscussionForumPosting|TechArticle|APIReference$', re.IGNORECASE)
 RX_CDATA = re.compile(r'^\s*<!\[CDATA\[|\]\]>\s*$')
@@ -44,7 +47,7 @@ RX_UNLIKELY_CANDIDATES = re.compile(r'-ad-|ai2html|banner|breadcrumbs|combx|comm
 RX_MAYBE_CANDIDATE = re.compile(r'and|article|body|column|content|main|shadow', re.IGNORECASE)
 
 # Regular expressions from internal/re2go/normalize.go
-RX_NORMALIZE_SPACES = re.compile(r'\s{2,}', re.IGNORECASE)
+RX_NORMALIZE_SPACES = re.compile(r'\s{2,}')  # No need for IGNORECASE with \s
 
 # Constants from parser.go
 UNLIKELY_ROLES = {
@@ -88,7 +91,8 @@ PHRASING_ELEMS = [
     'sup', 'textarea', 'time', 'var', 'wbr',
 ]
 
-# Helper functions for regular expressions
+# Helper functions for regular expressions - optimized with caching for frequently used patterns
+@lru_cache(maxsize=128)
 def is_positive_class(class_name: str) -> bool:
     """Check if a class name is positive.
     
@@ -98,9 +102,12 @@ def is_positive_class(class_name: str) -> bool:
     Returns:
         True if the class name is positive, False otherwise
     """
-    return bool(RX_POSITIVE_CLASS.search(class_name))
+    if not class_name:
+        return False
+    return RX_POSITIVE_CLASS.search(class_name) is not None
 
 
+@lru_cache(maxsize=128)
 def is_negative_class(class_name: str) -> bool:
     """Check if a class name is negative.
     
@@ -110,9 +117,12 @@ def is_negative_class(class_name: str) -> bool:
     Returns:
         True if the class name is negative, False otherwise
     """
-    return bool(RX_NEGATIVE_CLASS.search(class_name))
+    if not class_name:
+        return False
+    return RX_NEGATIVE_CLASS.search(class_name) is not None
 
 
+@lru_cache(maxsize=64)
 def is_byline(text: str) -> bool:
     """Check if a text is a byline.
     
@@ -122,9 +132,12 @@ def is_byline(text: str) -> bool:
     Returns:
         True if the text is a byline, False otherwise
     """
-    return bool(RX_BYLINE.search(text))
+    if not text:
+        return False
+    return RX_BYLINE.search(text) is not None
 
 
+@lru_cache(maxsize=128)
 def is_unlikely_candidate(match_string: str) -> bool:
     """Check if a match string is an unlikely candidate.
     
@@ -134,9 +147,12 @@ def is_unlikely_candidate(match_string: str) -> bool:
     Returns:
         True if the match string is an unlikely candidate, False otherwise
     """
-    return bool(RX_UNLIKELY_CANDIDATES.search(match_string))
+    if not match_string:
+        return False
+    return RX_UNLIKELY_CANDIDATES.search(match_string) is not None
 
 
+@lru_cache(maxsize=128)
 def maybe_its_a_candidate(match_string: str) -> bool:
     """Check if a match string might be a candidate.
     
@@ -146,7 +162,9 @@ def maybe_its_a_candidate(match_string: str) -> bool:
     Returns:
         True if the match string might be a candidate, False otherwise
     """
-    return bool(RX_MAYBE_CANDIDATE.search(match_string))
+    if not match_string:
+        return False
+    return RX_MAYBE_CANDIDATE.search(match_string) is not None
 
 
 def count_commas(text: str) -> int:
@@ -158,6 +176,7 @@ def count_commas(text: str) -> int:
     Returns:
         The number of commas in the text
     """
+    # Direct string method is much faster than regex for this simple case
     return text.count(',')
 
 
@@ -171,3 +190,36 @@ def normalize_spaces(text: str) -> str:
         The text with normalized spaces
     """
     return RX_NORMALIZE_SPACES.sub(' ', text)
+
+
+@lru_cache(maxsize=64)
+def evaluate_class_weight(class_name: str, id_value: str = "") -> int:
+    """Evaluate class and ID weight in a single pass.
+    
+    This consolidated function replaces separate calls to is_positive_class
+    and is_negative_class, improving performance in hot code paths.
+    
+    Args:
+        class_name: The class name to evaluate
+        id_value: The ID value to evaluate
+        
+    Returns:
+        The calculated weight value
+    """
+    weight = 0
+    
+    # Check class name
+    if class_name:
+        if RX_POSITIVE_CLASS.search(class_name):
+            weight += 25
+        if RX_NEGATIVE_CLASS.search(class_name):
+            weight -= 25
+    
+    # Check ID
+    if id_value:
+        if RX_POSITIVE_CLASS.search(id_value):
+            weight += 25
+        if RX_NEGATIVE_CLASS.search(id_value):
+            weight -= 25
+            
+    return weight

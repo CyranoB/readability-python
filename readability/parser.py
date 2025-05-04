@@ -1868,25 +1868,12 @@ class Readability:
         if not self.flags["use_weight_classes"]:
             return 0
         
-        weight = 0
-        
-        # Check for positive/negative classes in className
+        # Get normalized class and ID values
         class_name = self._normalize_attr_value(node.get("class", []))
-        if class_name:
-            if re2go.is_positive_class(class_name):
-                weight += 25
-            if re2go.is_negative_class(class_name):
-                weight -= 25
-        
-        # Check for positive/negative classes in ID
         node_id = self._normalize_attr_value(node.get("id", ""))
-        if node_id:
-            if re2go.is_positive_class(node_id):
-                weight += 25
-            if re2go.is_negative_class(node_id):
-                weight -= 25
         
-        return weight
+        # Use the optimized function that evaluates both in a single pass
+        return re2go.evaluate_class_weight(class_name, node_id)
 
     def _is_probably_visible(self, node: Tag) -> bool:
         """Determine if a node is likely visible to the user.

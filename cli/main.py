@@ -9,6 +9,7 @@ from typing import Optional, Tuple, Dict, Any, Union
 from pathlib import Path
 
 from readability import Readability, Article
+from readability.models import ParsingError, ExtractionError
 
 
 def parse_args() -> argparse.Namespace:
@@ -324,8 +325,16 @@ def main() -> int:
             processed_content, error = process_content(content, url, args.format, args.debug, args.encoding)
             
             if error:
-                print(f"Error parsing content: {error}", file=sys.stderr)
-                return EXIT_ERROR_PARSING
+                # Handle specific error types with more detailed messages
+                if isinstance(error, ParsingError):
+                    print(f"Parsing error: {error}", file=sys.stderr)
+                    return EXIT_ERROR_PARSING
+                elif isinstance(error, ExtractionError):
+                    print(f"Content extraction error: {error}", file=sys.stderr)
+                    return EXIT_ERROR_PARSING
+                else:
+                    print(f"Error parsing content: {error}", file=sys.stderr)
+                    return EXIT_ERROR_PARSING
             
             if not processed_content:
                 print("Error: No content extracted", file=sys.stderr)
