@@ -139,6 +139,15 @@ pytest -m "criticality_p0"
 
 # Run tests by type
 pytest -m "type_real_world"
+
+# Run tests with coverage report
+python scripts/coverage.py
+
+# Generate HTML coverage report
+python scripts/coverage.py --html
+
+# Set minimum coverage requirement (fails if not met)
+python scripts/coverage.py --min-coverage 70
 ```
 
 ## Test Coverage
