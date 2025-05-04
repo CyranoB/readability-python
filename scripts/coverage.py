@@ -13,6 +13,7 @@ Options:
     --min-coverage  Set minimum required coverage percentage (e.g., --min-coverage 80)
 """
 
+import os
 import sys
 import subprocess
 import argparse
@@ -22,12 +23,16 @@ def run_coverage(html=False, xml=False, report=True, min_coverage=None):
     """Run pytest with coverage options."""
     cmd = ["python", "-m", "pytest", "--cov=readability", "--cov=cli"]
     
+    # Ensure the coverage-reports directory exists
+    if xml:
+        os.makedirs("coverage-reports", exist_ok=True)
+    
     # Build report formats list
     report_formats = []
     if html:
         report_formats.append("html")
     if xml:
-        report_formats.append("xml")
+        report_formats.append("xml:coverage-reports/coverage.xml")
     if report or not report_formats:
         report_formats.append("term")
     
