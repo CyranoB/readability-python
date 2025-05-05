@@ -39,27 +39,11 @@ jobs:
         run: |
           pip install pytest-xdist
       
-      # Generate coverage report with parallel test execution
-      - name: Run tests with coverage
+      # Generate coverage report and test results with parallel execution
+      - name: Run tests with coverage and reports
         run: |
           mkdir -p coverage-reports test-reports
-          python scripts/run_tests.py --all --parallel --no-debug --jobs 4
-          pytest --cov=readability --cov=cli --cov-report=xml:coverage-reports/coverage.xml
-      
-      # Fix coverage paths for SonarQube
-      - name: Fix coverage paths
-        run: |
-          # Replace all absolute paths in source tag with relative path
-          sed -i 's|<sources>.*</sources>|<sources><source>.</source></sources>|g' coverage-reports/coverage.xml
-          
-          # Add module prefixes to filenames
-          sed -i 's|<class name="\(errors\|main\)\.py" filename="\(errors\|main\)\.py"|<class name="\1.py" filename="cli/\2.py"|g' coverage-reports/coverage.xml
-          sed -i 's|<class name="\(models\|parser\|regexps\|utils\)\.py" filename="\(models\|parser\|regexps\|utils\)\.py"|<class name="\1.py" filename="readability/\2.py"|g' coverage-reports/coverage.xml
-      
-      # Generate test results
-      - name: Generate test results
-        run: |
-          pytest --junitxml=test-reports/test-results.xml
+          python scripts/coverage.py --all --parallel --jobs 4 --split-tests --fix-paths --junit --junit-output=test-reports/test-results.xml
       
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5

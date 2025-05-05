@@ -1,11 +1,34 @@
 #!/usr/bin/env python
-"""Script to run targeted test subsets for readability-python."""
+"""
+Script to run targeted test subsets for readability-python.
+
+This script allows running specific subsets of tests based on functional areas,
+performance categories, or using the split test files for better parallelization.
+
+Usage:
+    python scripts/run_tests.py --all [--parallel] [--jobs N] [--no-debug]
+    python scripts/run_tests.py --fast [--parallel] [--jobs N] [--no-debug]
+    python scripts/run_tests.py --slow [--parallel] [--jobs N] [--no-debug]
+    python scripts/run_tests.py --html-parsing [--parallel] [--jobs N] [--no-debug]
+    python scripts/run_tests.py --comprehensive [--parallel] [--jobs N] [--no-debug]
+
+Options:
+    --all            Run all tests using split test files
+    --fast           Run only fast tests (excludes real-world tests)
+    --slow           Run only slow tests (only real-world tests)
+    --comprehensive  Run all tests using the comprehensive test file (test_readability.py)
+    --parallel, -p   Run tests in parallel
+    --jobs, -j       Number of parallel jobs (default: auto)
+    --no-debug       Disable debug output generation
+    --verbose, -v    Enable verbose output
+"""
 
 import argparse
 import os
 import subprocess
 import sys
 from enum import Enum
+from pathlib import Path
 
 
 class FunctionalArea(Enum):
@@ -18,6 +41,22 @@ class FunctionalArea(Enum):
     VISIBILITY_DETECTION = "Visibility Detection"
     TEXT_NORMALIZATION = "Text Normalization"
     REAL_WORLD = "Real-world Websites"
+
+
+# Map functional areas to their corresponding test files
+AREA_TO_TEST_FILE = {
+    FunctionalArea.HTML_PARSING: "tests/test_html_parsing.py",
+    FunctionalArea.METADATA_EXTRACTION: "tests/test_metadata_extraction.py",
+    FunctionalArea.CONTENT_IDENTIFICATION: "tests/test_content_identification.py",
+    FunctionalArea.CONTENT_CLEANING: "tests/test_content_cleaning.py",
+    FunctionalArea.URL_HANDLING: "tests/test_url_handling.py",
+    FunctionalArea.VISIBILITY_DETECTION: "tests/test_visibility_detection.py",
+    FunctionalArea.TEXT_NORMALIZATION: "tests/test_text_normalization.py",
+    FunctionalArea.REAL_WORLD: "tests/test_real_world.py",
+}
+
+# Comprehensive test file that contains all tests
+COMPREHENSIVE_TEST_FILE = "tests/test_readability.py"
 
 
 # Group areas into performance categories
@@ -35,15 +74,29 @@ SLOW_AREAS = [
     FunctionalArea.REAL_WORLD
 ]
 
+# Get test files for a list of areas
+def get_test_files_for_areas(areas):
+    """Get test files for a list of functional areas.
+    
+    Args:
+        areas: List of FunctionalArea enum values
+        
+    Returns:
+        List of test file paths
+    """
+    return [AREA_TO_TEST_FILE[area] for area in areas]
+
 
 def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(description="Run targeted test subsets")
     
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--all", action="store_true", help="Run all tests")
+    group.add_argument("--all", action="store_true", help="Run all tests using split test files")
     group.add_argument("--fast", action="store_true", help="Run only fast tests (excludes real-world tests)")
     group.add_argument("--slow", action="store_true", help="Run only slow tests (only real-world tests)")
+    group.add_argument("--comprehensive", action="store_true", 
+                      help="Run all tests using the comprehensive test file (test_readability.py)")
     
     for area in FunctionalArea:
         flag = f"--{area.name.lower().replace('_', '-')}"
@@ -76,25 +129,30 @@ def main():
         os.environ["DISABLE_DEBUG_OUTPUT"] = "1"
     
     # Determine which tests to run
-    if args.all:
-        # Run all tests (no marker filtering)
-        pass
+    test_files = []
+    
+    if args.comprehensive:
+        # Use the comprehensive test file
+        test_files = [COMPREHENSIVE_TEST_FILE]
+    elif args.all:
+        # Run all tests using split test files
+        test_files = list(AREA_TO_TEST_FILE.values())
     elif args.fast:
-        markers = [f"area_{area.name.lower()}" for area in FAST_AREAS]
-        cmd.append(f"-m \"{' or '.join(markers)}\"")
+        # Run fast tests using split test files
+        test_files = get_test_files_for_areas(FAST_AREAS)
     elif args.slow:
-        markers = [f"area_{area.name.lower()}" for area in SLOW_AREAS]
-        cmd.append(f"-m \"{' or '.join(markers)}\"")
+        # Run slow tests using split test files
+        test_files = get_test_files_for_areas(SLOW_AREAS)
     else:
         # Individual area
         for area in FunctionalArea:
             flag_name = f"{area.name.lower().replace('_', '-')}"
             if getattr(args, flag_name.replace("-", "_"), False):
-                cmd.append(f"-m area_{area.name.lower()}")
+                test_files = [AREA_TO_TEST_FILE[area]]
                 break
     
-    # Add the test file
-    cmd.append("tests/test_readability.py")
+    # Add the test files to the command
+    cmd.extend(test_files)
     
     # Print command for transparency
     print(f"Running: {' '.join(cmd)}")
