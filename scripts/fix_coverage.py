@@ -1,33 +1,10 @@
 #!/usr/bin/env python3
 """
-Script to generate coverage reports specifically formatted for SonarQube.
+Script to fix coverage XML file for SonarQube.
 """
 import os
 import sys
-import subprocess
 import re
-
-def run_coverage():
-    """Run pytest with coverage and generate XML report"""
-    # Ensure coverage-reports directory exists
-    os.makedirs("coverage-reports", exist_ok=True)
-    
-    # Run coverage with relative paths
-    cmd = [
-        "python", "-m", "pytest",
-        "--cov=readability", "--cov=cli",
-        "--cov-report=xml:coverage-reports/coverage.xml"
-    ]
-    
-    print(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd)
-    if result.returncode != 0:
-        print("Coverage test run failed")
-        return result.returncode
-    
-    # Post-process the XML to fix paths for SonarQube
-    fix_coverage_xml("coverage-reports/coverage.xml")
-    return 0
 
 def fix_coverage_xml(xml_path):
     """Fix the coverage XML file to use relative paths and correct filenames"""
@@ -71,4 +48,9 @@ def fix_coverage_xml(xml_path):
     return 0
 
 if __name__ == "__main__":
-    sys.exit(run_coverage())
+    if len(sys.argv) > 1:
+        xml_path = sys.argv[1]
+    else:
+        xml_path = "coverage-reports/coverage.xml"
+    
+    sys.exit(fix_coverage_xml(xml_path))

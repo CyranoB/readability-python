@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="31" skipped="2" tests="158" time="91.514" timestamp="2025-05-04T17:23:02.260862-04:00" hostname="Eddies-Mac-mini.local"><testcase classname="tests.test_cli.TestParseArgs" name="test_parse_args_defaults" time="0.001" /><testcase classname="tests.test_cli.TestParseArgs" name="test_parse_args_with_values" time="0.000" /><testcase classname="tests.test_cli.TestFetchContent" name="test_fetch_content_http_error" time="0.001"><failure message="SystemExit: 2">url = 'https://example.com', timeout = 30, user_agent = None, encoding = None, verbose = False, continue_on_error = False
-error_format = 'text'
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="31" skipped="2" tests="158" time="90.938" timestamp="2025-05-04T21:16:59.247835-04:00" hostname="Eddies-Mac-mini.local"><testcase classname="tests.test_cli.TestParseArgs" name="test_parse_args_defaults" time="0.001" /><testcase classname="tests.test_cli.TestParseArgs" name="test_parse_args_with_values" time="0.000" /><testcase classname="tests.test_cli.TestFetchContent" name="test_fetch_content_http_error" time="0.001"><failure message="SystemExit: 2">url = 'https://example.com', timeout = 30, user_agent = None, encoding = None
+verbose = False, continue_on_error = False, error_format = 'text'
 
     @with_error_boundary(ErrorType.NETWORK, "fetch_content")
     def fetch_content(url: str, timeout: int = 30, user_agent: Optional[str] = None,
@@ -39,14 +39,15 @@ error_format = 'text'
 &gt;           response.raise_for_status()
 
 cli/main.py:137: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1124: in __call__
     return self._mock_call(*args, **kwargs)
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1128: in _mock_call
     return self._execute_mock_call(*args, **kwargs)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;Mock name='get().raise_for_status' id='4431651280'&gt;, args = (), kwargs = {}, effect = HTTPError('404 Not Found')
+self = &lt;Mock name='get().raise_for_status' id='4426997712'&gt;, args = ()
+kwargs = {}, effect = HTTPError('404 Not Found')
 
     def _execute_mock_call(self, /, *args, **kwargs):
         # separate from _increment_mock_call so that awaited functions are
@@ -62,8 +63,9 @@ E               requests.exceptions.HTTPError: 404 Not Found
 
 During handling of the above exception, another exception occurred:
 
-args = ('https://example.com',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1084f0b50&gt;
+args = ('https://example.com',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x107df3390&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -74,7 +76,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1084f0b50&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -85,9 +87,10 @@ cli/main.py:123: in fetch_content
     with ErrorBoundary("fetch_content", ErrorType.NETWORK,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x10825a410&gt;, exception = HTTPError('404 Not Found')
+self = &lt;cli.errors.ErrorBoundary object at 0x107de9dd0&gt;
+exception = HTTPError('404 Not Found')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -145,7 +148,7 @@ cli/errors.py:163: ErrorBoundaryExit
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestFetchContent testMethod=test_fetch_content_http_error&gt;
-mock_get = &lt;MagicMock name='get' id='4434131920'&gt;
+mock_get = &lt;MagicMock name='get' id='4403250448'&gt;
 
     @mock.patch('cli.main.requests.get')
     def test_fetch_content_http_error(self, mock_get):
@@ -159,10 +162,11 @@ mock_get = &lt;MagicMock name='get' id='4434131920'&gt;
 &gt;       content, error = fetch_content('https://example.com')
 
 tests/test_cli.py:178: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('https://example.com',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1084f0b50&gt;
+args = ('https://example.com',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x107df3390&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -177,8 +181,8 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1084f0b50&gt;
 &gt;           sys.exit(e.error_type.value)
 E           SystemExit: 2
 
-cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestFetchContent" name="test_fetch_content_network_error" time="0.000"><failure message="SystemExit: 2">url = 'https://example.com', timeout = 30, user_agent = None, encoding = None, verbose = False, continue_on_error = False
-error_format = 'text'
+cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestFetchContent" name="test_fetch_content_network_error" time="0.000"><failure message="SystemExit: 2">url = 'https://example.com', timeout = 30, user_agent = None, encoding = None
+verbose = False, continue_on_error = False, error_format = 'text'
 
     @with_error_boundary(ErrorType.NETWORK, "fetch_content")
     def fetch_content(url: str, timeout: int = 30, user_agent: Optional[str] = None,
@@ -217,14 +221,15 @@ error_format = 'text'
 &gt;           response = requests.get(url, headers=headers, timeout=timeout)
 
 cli/main.py:136: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1124: in __call__
     return self._mock_call(*args, **kwargs)
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1128: in _mock_call
     return self._execute_mock_call(*args, **kwargs)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;MagicMock name='get' id='4473067600'&gt;, args = ('https://example.com',), kwargs = {'headers': {}, 'timeout': 30}
+self = &lt;MagicMock name='get' id='4577936016'&gt;, args = ('https://example.com',)
+kwargs = {'headers': {}, 'timeout': 30}
 effect = RequestException('Network error')
 
     def _execute_mock_call(self, /, *args, **kwargs):
@@ -241,8 +246,9 @@ E               requests.exceptions.RequestException: Network error
 
 During handling of the above exception, another exception occurred:
 
-args = ('https://example.com',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1086a4f50&gt;
+args = ('https://example.com',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x110ddd850&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -253,7 +259,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1086a4f50&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -264,9 +270,10 @@ cli/main.py:123: in fetch_content
     with ErrorBoundary("fetch_content", ErrorType.NETWORK,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x10a9db310&gt;, exception = RequestException('Network error')
+self = &lt;cli.errors.ErrorBoundary object at 0x110dd2c10&gt;
+exception = RequestException('Network error')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -324,7 +331,7 @@ cli/errors.py:163: ErrorBoundaryExit
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestFetchContent testMethod=test_fetch_content_network_error&gt;
-mock_get = &lt;MagicMock name='get' id='4473067600'&gt;
+mock_get = &lt;MagicMock name='get' id='4577936016'&gt;
 
     @mock.patch('cli.main.requests.get')
     def test_fetch_content_network_error(self, mock_get):
@@ -336,10 +343,11 @@ mock_get = &lt;MagicMock name='get' id='4473067600'&gt;
 &gt;       content, error = fetch_content('https://example.com')
 
 tests/test_cli.py:160: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('https://example.com',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1086a4f50&gt;
+args = ('https://example.com',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x110ddd850&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -355,7 +363,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1086a4f50&gt;
 E           SystemExit: 2
 
 cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestFetchContent" name="test_fetch_content_success" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestFetchContent testMethod=test_fetch_content_success&gt;
-mock_get = &lt;MagicMock name='get' id='4473549008'&gt;
+mock_get = &lt;MagicMock name='get' id='4578405712'&gt;
 
     @mock.patch('cli.main.requests.get')
     def test_fetch_content_success(self, mock_get):
@@ -372,7 +380,7 @@ mock_get = &lt;MagicMock name='get' id='4473549008'&gt;
 E       ValueError: too many values to unpack (expected 2)
 
 tests/test_cli.py:110: ValueError</failure></testcase><testcase classname="tests.test_cli.TestFetchContent" name="test_fetch_content_with_user_agent" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestFetchContent testMethod=test_fetch_content_with_user_agent&gt;
-mock_get = &lt;MagicMock name='get' id='4435529488'&gt;
+mock_get = &lt;MagicMock name='get' id='4426835856'&gt;
 
     @mock.patch('cli.main.requests.get')
     def test_fetch_content_with_user_agent(self, mock_get):
@@ -403,7 +411,8 @@ tests/test_cli.py:141: ValueError</failure></testcase><testcase classname="tests
 &gt;           content, error = read_file(temp_file, encoding='utf-8')
 E           ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:214: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadFile" name="test_read_file_not_found" time="0.000"><failure message="SystemExit: 1">file_path = 'non_existent_file.html', encoding = None, verbose = False, continue_on_error = False, error_format = 'text'
+tests/test_cli.py:214: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadFile" name="test_read_file_not_found" time="0.000"><failure message="SystemExit: 1">file_path = 'non_existent_file.html', encoding = None, verbose = False
+continue_on_error = False, error_format = 'text'
 
     @with_error_boundary(ErrorType.INPUT, "read_file")
     def read_file(file_path: str, encoding: Optional[str] = None, verbose: bool = False,
@@ -440,8 +449,9 @@ cli/main.py:175: FileNotFoundError
 
 During handling of the above exception, another exception occurred:
 
-args = ('non_existent_file.html',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x10866a990&gt;
+args = ('non_existent_file.html',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x110998650&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -452,7 +462,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x10866a990&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -463,9 +473,10 @@ cli/main.py:168: in read_file
     with ErrorBoundary("read_file", ErrorType.INPUT,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x10866a6d0&gt;, exception = FileNotFoundError('File not found: non_existent_file.html')
+self = &lt;cli.errors.ErrorBoundary object at 0x1109986d0&gt;
+exception = FileNotFoundError('File not found: non_existent_file.html')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -530,10 +541,11 @@ self = &lt;tests.test_cli.TestReadFile testMethod=test_read_file_not_found&gt;
 &gt;       content, error = read_file('non_existent_file.html')
 
 tests/test_cli.py:224: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('non_existent_file.html',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x10866a990&gt;
+args = ('non_existent_file.html',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x110998650&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -561,8 +573,8 @@ cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.tes
 &gt;           content, error = read_file(temp_file)
 E           ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:199: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_binary_mode" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_binary_mode&gt;
-mock_stdin = &lt;MagicMock name='stdin' id='4436154832'&gt;
+tests/test_cli.py:199: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_binary_mode" time="0.001"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_binary_mode&gt;
+mock_stdin = &lt;MagicMock name='stdin' id='4392154448'&gt;
 
     @mock.patch('sys.stdin')
     def test_read_stdin_binary_mode(self, mock_stdin):
@@ -576,7 +588,7 @@ mock_stdin = &lt;MagicMock name='stdin' id='4436154832'&gt;
 E       ValueError: too many values to unpack (expected 2)
 
 tests/test_cli.py:252: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_interactive" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_interactive&gt;
-mock_stdin = &lt;MagicMock name='stdin' id='4431470480'&gt;
+mock_stdin = &lt;MagicMock name='stdin' id='4426956304'&gt;
 
     @mock.patch('sys.stdin')
     def test_read_stdin_interactive(self, mock_stdin):
@@ -590,7 +602,8 @@ mock_stdin = &lt;MagicMock name='stdin' id='4431470480'&gt;
 &gt;           content, error = read_stdin()
 E           ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:265: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_io_error" time="0.001"><failure message="SystemExit: 1">encoding = None, verbose = False, continue_on_error = False, error_format = 'text'
+tests/test_cli.py:265: ValueError</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_io_error" time="0.001"><failure message="SystemExit: 1">encoding = None, verbose = False, continue_on_error = False
+error_format = 'text'
 
     @with_error_boundary(ErrorType.INPUT, "read_stdin")
     def read_stdin(encoding: Optional[str] = None, verbose: bool = False,
@@ -637,14 +650,15 @@ tests/test_cli.py:265: ValueError</failure></testcase><testcase classname="tests
 &gt;                   chunk = sys.stdin.read(4096)  # Read in 4KB chunks
 
 cli/main.py:229: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1124: in __call__
     return self._mock_call(*args, **kwargs)
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1128: in _mock_call
     return self._execute_mock_call(*args, **kwargs)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;MagicMock name='stdin.read' id='4473069136'&gt;, args = (4096,), kwargs = {}, effect = OSError('IO error')
+self = &lt;MagicMock name='stdin.read' id='4427032848'&gt;, args = (4096,)
+kwargs = {}, effect = OSError('IO error')
 
     def _execute_mock_call(self, /, *args, **kwargs):
         # separate from _increment_mock_call so that awaited functions are
@@ -660,8 +674,8 @@ E               OSError: IO error
 
 During handling of the above exception, another exception occurred:
 
-args = (), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1082b5850&gt;
+args = (), kwargs = {}, verbose = False, continue_on_error = False
+error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x110c6d410&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -672,7 +686,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1082b5850&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -683,9 +697,10 @@ cli/main.py:209: in read_stdin
     with ErrorBoundary("read_stdin", ErrorType.INPUT,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x10a9d8e10&gt;, exception = OSError('IO error')
+self = &lt;cli.errors.ErrorBoundary object at 0x107dc4210&gt;
+exception = OSError('IO error')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -742,7 +757,8 @@ cli/errors.py:163: ErrorBoundaryExit
 
 During handling of the above exception, another exception occurred:
 
-self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_io_error&gt;, mock_stdin = &lt;MagicMock name='stdin' id='4473065424'&gt;
+self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_io_error&gt;
+mock_stdin = &lt;MagicMock name='stdin' id='4576433040'&gt;
 
     @mock.patch('sys.stdin')
     def test_read_stdin_io_error(self, mock_stdin):
@@ -755,10 +771,10 @@ self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_io_error&gt;,
 &gt;       content, error = read_stdin()
 
 tests/test_cli.py:290: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = (), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1082b5850&gt;
+args = (), kwargs = {}, verbose = False, continue_on_error = False
+error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x110c6d410&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -773,7 +789,8 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1082b5850&gt;
 &gt;           sys.exit(e.error_type.value)
 E           SystemExit: 1
 
-cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_keyboard_interrupt" time="0.002"><failure message="SystemExit: 1">encoding = None, verbose = False, continue_on_error = False, error_format = 'text'
+cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_keyboard_interrupt" time="0.001"><failure message="SystemExit: 1">encoding = None, verbose = False, continue_on_error = False
+error_format = 'text'
 
     @with_error_boundary(ErrorType.INPUT, "read_stdin")
     def read_stdin(encoding: Optional[str] = None, verbose: bool = False,
@@ -820,14 +837,15 @@ cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.tes
 &gt;                   chunk = sys.stdin.read(4096)  # Read in 4KB chunks
 
 cli/main.py:229: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1124: in __call__
     return self._mock_call(*args, **kwargs)
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:1128: in _mock_call
     return self._execute_mock_call(*args, **kwargs)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;MagicMock name='stdin.read' id='4419928848'&gt;, args = (4096,), kwargs = {}, effect = KeyboardInterrupt()
+self = &lt;MagicMock name='stdin.read' id='4578561552'&gt;, args = (4096,)
+kwargs = {}, effect = KeyboardInterrupt()
 
     def _execute_mock_call(self, /, *args, **kwargs):
         # separate from _increment_mock_call so that awaited functions are
@@ -843,8 +861,8 @@ E               KeyboardInterrupt
 
 During handling of the above exception, another exception occurred:
 
-args = (), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x10862d450&gt;
+args = (), kwargs = {}, verbose = False, continue_on_error = False
+error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x110e76e90&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -855,7 +873,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x10862d450&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -866,9 +884,10 @@ cli/main.py:209: in read_stdin
     with ErrorBoundary("read_stdin", ErrorType.INPUT,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x1084d6190&gt;, exception = KeyboardInterrupt()
+self = &lt;cli.errors.ErrorBoundary object at 0x110c2e0d0&gt;
+exception = KeyboardInterrupt()
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -926,7 +945,7 @@ cli/errors.py:163: ErrorBoundaryExit
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_keyboard_interrupt&gt;
-mock_stdin = &lt;MagicMock name='stdin' id='4435660752'&gt;
+mock_stdin = &lt;MagicMock name='stdin' id='4578563664'&gt;
 
     @mock.patch('sys.stdin')
     def test_read_stdin_keyboard_interrupt(self, mock_stdin):
@@ -939,10 +958,10 @@ mock_stdin = &lt;MagicMock name='stdin' id='4435660752'&gt;
 &gt;       content, error = read_stdin()
 
 tests/test_cli.py:278: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = (), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x10862d450&gt;
+args = (), kwargs = {}, verbose = False, continue_on_error = False
+error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x110e76e90&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -958,7 +977,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x10862d450&gt;
 E           SystemExit: 1
 
 cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestReadStdin" name="test_read_stdin_text_mode" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestReadStdin testMethod=test_read_stdin_text_mode&gt;
-mock_stdin = &lt;MagicMock name='stdin' id='4473067792'&gt;
+mock_stdin = &lt;MagicMock name='stdin' id='4426891472'&gt;
 
     @mock.patch('sys.stdin')
     def test_read_stdin_text_mode(self, mock_stdin):
@@ -972,7 +991,7 @@ mock_stdin = &lt;MagicMock name='stdin' id='4473067792'&gt;
 E       ValueError: too many values to unpack (expected 2)
 
 tests/test_cli.py:240: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_html_format" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_html_format&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4472745168'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4578468240'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_html_format(self, mock_readability_class):
@@ -989,8 +1008,8 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4472745168'&gt;
 &gt;       content, error = process_content('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', format='html')
 E       ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:310: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_json_format" time="0.001"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_json_format&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4431493072'&gt;
+tests/test_cli.py:310: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_json_format" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_json_format&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4426827216'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_json_format(self, mock_readability_class):
@@ -1017,8 +1036,9 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4431493072'&gt;
 &gt;       content, error = process_content('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', format='json')
 E       ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:366: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_no_content" time="0.002"><failure message="SystemExit: 3">content = '&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', url = None, format = 'html', debug = False, encoding = None, verbose = False
-continue_on_error = False, error_format = 'text'
+tests/test_cli.py:366: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_no_content" time="0.000"><failure message="SystemExit: 3">content = '&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', url = None, format = 'html'
+debug = False, encoding = None, verbose = False, continue_on_error = False
+error_format = 'text'
 
     @with_error_boundary(ErrorType.PARSING, "process_content")
     def process_content(content: Union[str, bytes], url: Optional[str] = None, format: str = "html",
@@ -1076,8 +1096,9 @@ cli/main.py:286: ValueError
 
 During handling of the above exception, another exception occurred:
 
-args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1062b5150&gt;
+args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x107dde790&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1088,7 +1109,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1062b5150&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -1099,9 +1120,10 @@ cli/main.py:261: in process_content
     with ErrorBoundary("process_content", ErrorType.PARSING,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x108236590&gt;, exception = ValueError('No article content found')
+self = &lt;cli.errors.ErrorBoundary object at 0x107ddf4d0&gt;
+exception = ValueError('No article content found')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -1159,7 +1181,7 @@ cli/errors.py:163: ErrorBoundaryExit
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_no_content&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4431653968'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4426945808'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_no_content(self, mock_readability_class):
@@ -1173,10 +1195,11 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4431653968'&gt;
 &gt;       content, error = process_content('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;')
 
 tests/test_cli.py:457: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x1062b5150&gt;
+args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x107dde790&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1191,8 +1214,9 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x1062b5150&gt;
 &gt;           sys.exit(e.error_type.value)
 E           SystemExit: 3
 
-cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_parser_error" time="0.001"><failure message="SystemExit: 3">content = '&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', url = None, format = 'html', debug = False, encoding = None, verbose = False
-continue_on_error = False, error_format = 'text'
+cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_parser_error" time="0.000"><failure message="SystemExit: 3">content = '&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', url = None, format = 'html'
+debug = False, encoding = None, verbose = False, continue_on_error = False
+error_format = 'text'
 
     @with_error_boundary(ErrorType.PARSING, "process_content")
     def process_content(content: Union[str, bytes], url: Optional[str] = None, format: str = "html",
@@ -1247,8 +1271,9 @@ cli/main.py:283: ValueError
 
 During handling of the above exception, another exception occurred:
 
-args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x10aa39710&gt;
+args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x105cadb50&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1259,7 +1284,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x10aa39710&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -1270,9 +1295,10 @@ cli/main.py:261: in process_content
     with ErrorBoundary("process_content", ErrorType.PARSING,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x10aa3ac10&gt;, exception = ValueError('Error processing content: Parser error')
+self = &lt;cli.errors.ErrorBoundary object at 0x110e37010&gt;
+exception = ValueError('Error processing content: Parser error')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -1330,7 +1356,7 @@ cli/errors.py:163: ErrorBoundaryExit
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_parser_error&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4473459920'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4578306000'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_parser_error(self, mock_readability_class):
@@ -1344,10 +1370,11 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4473459920'&gt;
 &gt;       content, error = process_content('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;')
 
 tests/test_cli.py:442: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x10aa39710&gt;
+args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x105cadb50&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1363,7 +1390,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x10aa39710&gt;
 E           SystemExit: 3
 
 cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_text_format" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_text_format&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4429548944'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4576523152'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_text_format(self, mock_readability_class):
@@ -1379,8 +1406,9 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4429548944'&gt;
 &gt;       content, error = process_content('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', format='text')
 E       ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:338: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_unknown_format" time="0.001"><failure message="SystemExit: 3">content = '&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', url = None, format = 'unknown', debug = False, encoding = None, verbose = False
-continue_on_error = False, error_format = 'text'
+tests/test_cli.py:338: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_unknown_format" time="0.000"><failure message="SystemExit: 3">content = '&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', url = None, format = 'unknown'
+debug = False, encoding = None, verbose = False, continue_on_error = False
+error_format = 'text'
 
     @with_error_boundary(ErrorType.PARSING, "process_content")
     def process_content(content: Union[str, bytes], url: Optional[str] = None, format: str = "html",
@@ -1472,8 +1500,9 @@ cli/main.py:320: ValueError
 
 During handling of the above exception, another exception occurred:
 
-args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {'format': 'unknown'}, verbose = False, continue_on_error = False
-error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x1077d4510&gt;
+args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {'format': 'unknown'}
+verbose = False, continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x107da83d0&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1484,7 +1513,7 @@ error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x1077d4510&g
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -1495,9 +1524,10 @@ cli/main.py:261: in process_content
     with ErrorBoundary("process_content", ErrorType.PARSING,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x108257210&gt;, exception = ValueError('Unknown format: unknown')
+self = &lt;cli.errors.ErrorBoundary object at 0x107dab910&gt;
+exception = ValueError('Unknown format: unknown')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -1555,7 +1585,7 @@ cli/errors.py:163: ErrorBoundaryExit
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_unknown_format&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4433986832'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4426727632'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_unknown_format(self, mock_readability_class):
@@ -1570,10 +1600,11 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4433986832'&gt;
 &gt;       content, error = process_content('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;', format='unknown')
 
 tests/test_cli.py:473: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {'format': 'unknown'}, verbose = False, continue_on_error = False
-error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x1077d4510&gt;
+args = ('&lt;html&gt;&lt;body&gt;Test&lt;/body&gt;&lt;/html&gt;',), kwargs = {'format': 'unknown'}
+verbose = False, continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x107da83d0&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1589,7 +1620,7 @@ error_format = 'text', eb = &lt;cli.errors.ErrorBoundary object at 0x1077d4510&g
 E           SystemExit: 3
 
 cli/errors.py:239: SystemExit</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_with_debug" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_with_debug&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4472572368'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4577896528'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_with_debug(self, mock_readability_class):
@@ -1613,7 +1644,7 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4472572368'&gt;
 E           ValueError: too many values to unpack (expected 2)
 
 tests/test_cli.py:423: ValueError</failure></testcase><testcase classname="tests.test_cli.TestProcessContent" name="test_process_content_with_url" time="0.000"><failure message="ValueError: too many values to unpack (expected 2)">self = &lt;tests.test_cli.TestProcessContent testMethod=test_process_content_with_url&gt;
-mock_readability_class = &lt;MagicMock name='Readability' id='4473004112'&gt;
+mock_readability_class = &lt;MagicMock name='Readability' id='4578301328'&gt;
 
     @mock.patch('cli.main.Readability')
     def test_process_content_with_url(self, mock_readability_class):
@@ -1634,7 +1665,8 @@ mock_readability_class = &lt;MagicMock name='Readability' id='4473004112'&gt;
         )
 E       ValueError: too many values to unpack (expected 2)
 
-tests/test_cli.py:397: ValueError</failure></testcase><testcase classname="tests.test_cli.TestWriteOutput" name="test_write_output_file_error" time="0.000"><failure message="SystemExit: 4">content = 'Test content', output_path = '/invalid/path', verbose = False, continue_on_error = False, error_format = 'text'
+tests/test_cli.py:397: ValueError</failure></testcase><testcase classname="tests.test_cli.TestWriteOutput" name="test_write_output_file_error" time="0.000"><failure message="SystemExit: 4">content = 'Test content', output_path = '/invalid/path', verbose = False
+continue_on_error = False, error_format = 'text'
 
     @with_error_boundary(ErrorType.OUTPUT, "write_output")
     def write_output(content: str, output_path: Optional[str] = None, verbose: bool = False,
@@ -1661,7 +1693,7 @@ tests/test_cli.py:397: ValueError</failure></testcase><testcase classname="tests
 &gt;                   output_dir.mkdir(parents=True, exist_ok=True)
 
 cli/main.py:345: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
 self = PosixPath('/invalid'), mode = 511, parents = True, exist_ok = True
 
@@ -1677,8 +1709,9 @@ E           OSError: [Errno 30] Read-only file system: '/invalid'
 
 During handling of the above exception, another exception occurred:
 
-args = ('Test content', '/invalid/path'), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x108661e10&gt;
+args = ('Test content', '/invalid/path'), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x110c7b190&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1689,7 +1722,7 @@ eb = &lt;cli.errors.ErrorBoundary object at 0x108661e10&gt;
 &gt;           with ErrorBoundary(operation_name, error_type, verbose, continue_on_error, error_format) as eb:
 
 cli/errors.py:235: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
 cli/errors.py:135: in handle_error
@@ -1700,9 +1733,10 @@ cli/main.py:338: in write_output
     with ErrorBoundary("write_output", ErrorType.OUTPUT,
 cli/errors.py:98: in __exit__
     self.handle_error(exc_val)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-self = &lt;cli.errors.ErrorBoundary object at 0x108662e50&gt;, exception = OSError(30, 'Read-only file system')
+self = &lt;cli.errors.ErrorBoundary object at 0x110c79090&gt;
+exception = OSError(30, 'Read-only file system')
 
     def handle_error(self, exception: Exception) -&gt; None:
         """Handle an exception.
@@ -1767,10 +1801,11 @@ self = &lt;tests.test_cli.TestWriteOutput testMethod=test_write_output_file_erro
 &gt;       success, error = write_output('Test content', '/invalid/path')
 
 tests/test_cli.py:522: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-args = ('Test content', '/invalid/path'), kwargs = {}, verbose = False, continue_on_error = False, error_format = 'text'
-eb = &lt;cli.errors.ErrorBoundary object at 0x108661e10&gt;
+args = ('Test content', '/invalid/path'), kwargs = {}, verbose = False
+continue_on_error = False, error_format = 'text'
+eb = &lt;cli.errors.ErrorBoundary object at 0x110c7b190&gt;
 
     def wrapper(*args, **kwargs):
         verbose = kwargs.pop("verbose", False)
@@ -1807,9 +1842,11 @@ tests/test_cli.py:490: TypeError</failure></testcase><testcase classname="tests.
 &gt;           success, error = write_output('Test content')
 E           TypeError: cannot unpack non-iterable NoneType object
 
-tests/test_cli.py:510: TypeError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_file_input_success" time="0.001"><failure message="AssertionError: expected call not found.&#10;Expected: read_file('test.html', None)&#10;  Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4429550800'&gt;)&#10;&#10;pytest introspection follows:&#10;&#10;Args:&#10;assert ('test.html',) == ('test.html', None)&#10;  &#10;  Right contains one more item: None&#10;  Use -v to get more diff&#10;Kwargs:&#10;assert {'continue_on...rbose': False} == {}&#10;  &#10;  Left contains 4 more items:&#10;  {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;,&#10;   'encoding': None,&#10;   'error_format': &lt;Mock name='parse_args().error_format' id='4429550800'&gt;,&#10;   'verbose': False}&#10;  Use -v to get more diff">self = &lt;MagicMock name='read_file' id='4473912976'&gt;, args = ('test.html', None), kwargs = {}, expected = call('test.html', None)
-actual = call('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4429550800'&gt;)
-_error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;._error_message at 0x1086c7060&gt;, cause = None
+tests/test_cli.py:510: TypeError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_file_input_success" time="0.001"><failure message="AssertionError: expected call not found.&#10;Expected: read_file('test.html', None)&#10;  Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4578999568'&gt;)&#10;&#10;pytest introspection follows:&#10;&#10;Args:&#10;assert ('test.html',) == ('test.html', None)&#10;  &#10;  Right contains one more item: None&#10;  Use -v to get more diff&#10;Kwargs:&#10;assert {'continue_on...rbose': False} == {}&#10;  &#10;  Left contains 4 more items:&#10;  {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;,&#10;   'encoding': None,&#10;   'error_format': &lt;Mock name='parse_args().error_format' id='4578999568'&gt;,&#10;   'verbose': False}&#10;  Use -v to get more diff">self = &lt;MagicMock name='read_file' id='4578986448'&gt;, args = ('test.html', None)
+kwargs = {}, expected = call('test.html', None)
+actual = call('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4578999568'&gt;)
+_error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;._error_message at 0x110cd7060&gt;
+cause = None
 
     def assert_called_with(self, /, *args, **kwargs):
         """assert that the last call was made with the specified arguments.
@@ -1833,13 +1870,14 @@ _error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;.
 &gt;           raise AssertionError(_error_message()) from cause
 E           AssertionError: expected call not found.
 E           Expected: read_file('test.html', None)
-E             Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4429550800'&gt;)
+E             Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4578999568'&gt;)
 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:939: AssertionError
 
 During handling of the above exception, another exception occurred:
 
-self = &lt;MagicMock name='read_file' id='4473912976'&gt;, args = ('test.html', None), kwargs = {}
+self = &lt;MagicMock name='read_file' id='4578986448'&gt;, args = ('test.html', None)
+kwargs = {}
 
     def assert_called_once_with(self, /, *args, **kwargs):
         """assert that the mock was called exactly once and that that call was
@@ -1853,7 +1891,7 @@ self = &lt;MagicMock name='read_file' id='4473912976'&gt;, args = ('test.html', 
 &gt;       return self.assert_called_with(*args, **kwargs)
 E       AssertionError: expected call not found.
 E       Expected: read_file('test.html', None)
-E         Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4429550800'&gt;)
+E         Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4578999568'&gt;)
 E       
 E       pytest introspection follows:
 E       
@@ -1866,9 +1904,9 @@ E       Kwargs:
 E       assert {'continue_on...rbose': False} == {}
 E         
 E         Left contains 4 more items:
-E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;,
+E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;,
 E          'encoding': None,
-E          'error_format': &lt;Mock name='parse_args().error_format' id='4429550800'&gt;,
+E          'error_format': &lt;Mock name='parse_args().error_format' id='4578999568'&gt;,
 E          'verbose': False}
 E         Use -v to get more diff
 
@@ -1877,9 +1915,10 @@ E         Use -v to get more diff
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestMain testMethod=test_main_file_input_success&gt;
-mock_write_output = &lt;MagicMock name='write_output' id='4435912592'&gt;
-mock_process_content = &lt;MagicMock name='process_content' id='4473911568'&gt;
-mock_read_file = &lt;MagicMock name='read_file' id='4473912976'&gt;, mock_parse_args = &lt;MagicMock name='parse_args' id='4473902160'&gt;
+mock_write_output = &lt;MagicMock name='write_output' id='4578358992'&gt;
+mock_process_content = &lt;MagicMock name='process_content' id='4578350160'&gt;
+mock_read_file = &lt;MagicMock name='read_file' id='4578986448'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4578988816'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.read_file')
@@ -1915,7 +1954,7 @@ mock_read_file = &lt;MagicMock name='read_file' id='4473912976'&gt;, mock_parse_
 &gt;       mock_read_file.assert_called_once_with('test.html', None)
 E       AssertionError: expected call not found.
 E       Expected: read_file('test.html', None)
-E         Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4429550800'&gt;)
+E         Actual: read_file('test.html', encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4578999568'&gt;)
 E       
 E       pytest introspection follows:
 E       
@@ -1928,14 +1967,15 @@ E       Kwargs:
 E       assert {'continue_on...rbose': False} == {}
 E         
 E         Left contains 4 more items:
-E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4429552080'&gt;,
+E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4578999504'&gt;,
 E          'encoding': None,
-E          'error_format': &lt;Mock name='parse_args().error_format' id='4429550800'&gt;,
+E          'error_format': &lt;Mock name='parse_args().error_format' id='4578999568'&gt;,
 E          'verbose': False}
 E         Use -v to get more diff
 
 tests/test_cli.py:617: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_file_not_found" time="0.001"><failure message="AssertionError: 0 != 1">self = &lt;tests.test_cli.TestMain testMethod=test_main_file_not_found&gt;
-mock_read_file = &lt;MagicMock name='read_file' id='4473978768'&gt;, mock_parse_args = &lt;MagicMock name='parse_args' id='4473975440'&gt;
+mock_read_file = &lt;MagicMock name='read_file' id='4426805968'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4426793424'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.read_file')
@@ -1960,8 +2000,8 @@ mock_read_file = &lt;MagicMock name='read_file' id='4473978768'&gt;, mock_parse_
 E       AssertionError: 0 != 1
 
 tests/test_cli.py:722: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_keyboard_interrupt" time="0.000"><skipped type="pytest.skip" message="This test causes actual KeyboardInterrupt that's not caught by the test framework">/Users/eddie/projects/python-readability/tests/test_cli.py:825: This test causes actual KeyboardInterrupt that's not caught by the test framework</skipped></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_network_error" time="0.001"><failure message="AssertionError: 0 != 2">self = &lt;tests.test_cli.TestMain testMethod=test_main_network_error&gt;
-mock_fetch_content = &lt;MagicMock name='fetch_content' id='4431650384'&gt;
-mock_parse_args = &lt;MagicMock name='parse_args' id='4431481040'&gt;
+mock_fetch_content = &lt;MagicMock name='fetch_content' id='4403339856'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4578647696'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.fetch_content')
@@ -1987,11 +2027,11 @@ mock_parse_args = &lt;MagicMock name='parse_args' id='4431481040'&gt;
 &gt;       self.assertEqual(result, EXIT_ERROR_NETWORK)
 E       AssertionError: 0 != 2
 
-tests/test_cli.py:701: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_output_error" time="0.001"><failure message="AssertionError: 0 != 4">self = &lt;tests.test_cli.TestMain testMethod=test_main_output_error&gt;
-mock_write_output = &lt;MagicMock name='write_output' id='4435880144'&gt;
-mock_process_content = &lt;MagicMock name='process_content' id='4436163024'&gt;
-mock_fetch_content = &lt;MagicMock name='fetch_content' id='4473064976'&gt;
-mock_parse_args = &lt;MagicMock name='parse_args' id='4473067728'&gt;
+tests/test_cli.py:701: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_output_error" time="0.000"><failure message="AssertionError: 0 != 4">self = &lt;tests.test_cli.TestMain testMethod=test_main_output_error&gt;
+mock_write_output = &lt;MagicMock name='write_output' id='4573610576'&gt;
+mock_process_content = &lt;MagicMock name='process_content' id='4403344208'&gt;
+mock_fetch_content = &lt;MagicMock name='fetch_content' id='4403333584'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4577362512'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.fetch_content')
@@ -2030,9 +2070,9 @@ mock_parse_args = &lt;MagicMock name='parse_args' id='4473067728'&gt;
 E       AssertionError: 0 != 4
 
 tests/test_cli.py:786: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_parsing_error" time="0.001"><failure message="AssertionError: 0 != 3">self = &lt;tests.test_cli.TestMain testMethod=test_main_parsing_error&gt;
-mock_process_content = &lt;MagicMock name='process_content' id='4435829584'&gt;
-mock_fetch_content = &lt;MagicMock name='fetch_content' id='4434141136'&gt;
-mock_parse_args = &lt;MagicMock name='parse_args' id='4473521424'&gt;
+mock_process_content = &lt;MagicMock name='process_content' id='4577861776'&gt;
+mock_fetch_content = &lt;MagicMock name='fetch_content' id='4427003024'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4578563728'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.fetch_content')
@@ -2065,9 +2105,9 @@ mock_parse_args = &lt;MagicMock name='parse_args' id='4473521424'&gt;
 E       AssertionError: 0 != 3
 
 tests/test_cli.py:751: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_specific_parsing_errors" time="0.001"><failure message="AssertionError: 0 != 3">self = &lt;tests.test_cli.TestMain testMethod=test_main_specific_parsing_errors&gt;
-mock_process_content = &lt;MagicMock name='process_content' id='4472986064'&gt;
-mock_fetch_content = &lt;MagicMock name='fetch_content' id='4472979920'&gt;
-mock_parse_args = &lt;MagicMock name='parse_args' id='4473423184'&gt;
+mock_process_content = &lt;MagicMock name='process_content' id='4426668432'&gt;
+mock_fetch_content = &lt;MagicMock name='fetch_content' id='4426665360'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4576391248'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.fetch_content')
@@ -2098,9 +2138,11 @@ mock_parse_args = &lt;MagicMock name='parse_args' id='4473423184'&gt;
 &gt;       self.assertEqual(result, EXIT_ERROR_PARSING)
 E       AssertionError: 0 != 3
 
-tests/test_cli.py:814: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_stdin_input_success" time="0.001"><failure message="AssertionError: expected call not found.&#10;Expected: read_stdin(None)&#10;  Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473666896'&gt;)&#10;&#10;pytest introspection follows:&#10;&#10;Args:&#10;assert () == (None,)&#10;  &#10;  Right contains one more item: None&#10;  Use -v to get more diff&#10;Kwargs:&#10;assert {'continue_on...rbose': False} == {}&#10;  &#10;  Left contains 4 more items:&#10;  {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;,&#10;   'encoding': None,&#10;   'error_format': &lt;Mock name='parse_args().error_format' id='4473666896'&gt;,&#10;   'verbose': False}&#10;  Use -v to get more diff">self = &lt;MagicMock name='read_stdin' id='4474244688'&gt;, args = (None,), kwargs = {}, expected = call(None)
-actual = call(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473666896'&gt;)
-_error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;._error_message at 0x1086c4ae0&gt;, cause = None
+tests/test_cli.py:814: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_stdin_input_success" time="0.001"><failure message="AssertionError: expected call not found.&#10;Expected: read_stdin(None)&#10;  Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577884432'&gt;)&#10;&#10;pytest introspection follows:&#10;&#10;Args:&#10;assert () == (None,)&#10;  &#10;  Right contains one more item: None&#10;  Use -v to get more diff&#10;Kwargs:&#10;assert {'continue_on...rbose': False} == {}&#10;  &#10;  Left contains 4 more items:&#10;  {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;,&#10;   'encoding': None,&#10;   'error_format': &lt;Mock name='parse_args().error_format' id='4577884432'&gt;,&#10;   'verbose': False}&#10;  Use -v to get more diff">self = &lt;MagicMock name='read_stdin' id='4426825872'&gt;, args = (None,)
+kwargs = {}, expected = call(None)
+actual = call(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577884432'&gt;)
+_error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;._error_message at 0x110cd4ae0&gt;
+cause = None
 
     def assert_called_with(self, /, *args, **kwargs):
         """assert that the last call was made with the specified arguments.
@@ -2124,13 +2166,14 @@ _error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;.
 &gt;           raise AssertionError(_error_message()) from cause
 E           AssertionError: expected call not found.
 E           Expected: read_stdin(None)
-E             Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473666896'&gt;)
+E             Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577884432'&gt;)
 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:939: AssertionError
 
 During handling of the above exception, another exception occurred:
 
-self = &lt;MagicMock name='read_stdin' id='4474244688'&gt;, args = (None,), kwargs = {}
+self = &lt;MagicMock name='read_stdin' id='4426825872'&gt;, args = (None,)
+kwargs = {}
 
     def assert_called_once_with(self, /, *args, **kwargs):
         """assert that the mock was called exactly once and that that call was
@@ -2144,7 +2187,7 @@ self = &lt;MagicMock name='read_stdin' id='4474244688'&gt;, args = (None,), kwar
 &gt;       return self.assert_called_with(*args, **kwargs)
 E       AssertionError: expected call not found.
 E       Expected: read_stdin(None)
-E         Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473666896'&gt;)
+E         Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577884432'&gt;)
 E       
 E       pytest introspection follows:
 E       
@@ -2157,9 +2200,9 @@ E       Kwargs:
 E       assert {'continue_on...rbose': False} == {}
 E         
 E         Left contains 4 more items:
-E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;,
+E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;,
 E          'encoding': None,
-E          'error_format': &lt;Mock name='parse_args().error_format' id='4473666896'&gt;,
+E          'error_format': &lt;Mock name='parse_args().error_format' id='4577884432'&gt;,
 E          'verbose': False}
 E         Use -v to get more diff
 
@@ -2168,9 +2211,10 @@ E         Use -v to get more diff
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestMain testMethod=test_main_stdin_input_success&gt;
-mock_write_output = &lt;MagicMock name='write_output' id='4431400464'&gt;
-mock_process_content = &lt;MagicMock name='process_content' id='4431406160'&gt;
-mock_read_stdin = &lt;MagicMock name='read_stdin' id='4474244688'&gt;, mock_parse_args = &lt;MagicMock name='parse_args' id='4474248272'&gt;
+mock_write_output = &lt;MagicMock name='write_output' id='4426849168'&gt;
+mock_process_content = &lt;MagicMock name='process_content' id='4426850384'&gt;
+mock_read_stdin = &lt;MagicMock name='read_stdin' id='4426825872'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4426834192'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.read_stdin')
@@ -2206,7 +2250,7 @@ mock_read_stdin = &lt;MagicMock name='read_stdin' id='4474244688'&gt;, mock_pars
 &gt;       mock_read_stdin.assert_called_once_with(None)
 E       AssertionError: expected call not found.
 E       Expected: read_stdin(None)
-E         Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473666896'&gt;)
+E         Actual: read_stdin(encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577884432'&gt;)
 E       
 E       pytest introspection follows:
 E       
@@ -2219,16 +2263,18 @@ E       Kwargs:
 E       assert {'continue_on...rbose': False} == {}
 E         
 E         Left contains 4 more items:
-E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4473661392'&gt;,
+E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4577879952'&gt;,
 E          'encoding': None,
-E          'error_format': &lt;Mock name='parse_args().error_format' id='4473666896'&gt;,
+E          'error_format': &lt;Mock name='parse_args().error_format' id='4577884432'&gt;,
 E          'verbose': False}
 E         Use -v to get more diff
 
-tests/test_cli.py:664: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_unexpected_error" time="0.000"><skipped type="pytest.skip" message="This test causes actual RuntimeError that's not caught by the test framework">/Users/eddie/projects/python-readability/tests/test_cli.py:842: This test causes actual RuntimeError that's not caught by the test framework</skipped></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_url_input_success" time="0.001"><failure message="AssertionError: expected call not found.&#10;Expected: fetch_content('https://example.com', 30, None, None)&#10;  Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473012048'&gt;)&#10;&#10;pytest introspection follows:&#10;&#10;Args:&#10;assert ('https://example.com',) == ('https://exa...0, None, None)&#10;  &#10;  Right contains 3 more items, first extra item: 30&#10;  Use -v to get more diff&#10;Kwargs:&#10;assert {'continue_on...out': 30, ...} == {}&#10;  &#10;  Left contains 6 more items:&#10;  {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;,&#10;   'encoding': None,&#10;   'error_format': &lt;Mock name='parse_args().error_format' id='4473012048'&gt;,&#10;   'timeout': 30,&#10;   'user_agent': None,&#10;   'verbose': False}&#10;  Use -v to get more diff">self = &lt;MagicMock name='fetch_content' id='4472261200'&gt;, args = ('https://example.com', 30, None, None), kwargs = {}
+tests/test_cli.py:664: AssertionError</failure></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_unexpected_error" time="0.000"><skipped type="pytest.skip" message="This test causes actual RuntimeError that's not caught by the test framework">/Users/eddie/projects/python-readability/tests/test_cli.py:842: This test causes actual RuntimeError that's not caught by the test framework</skipped></testcase><testcase classname="tests.test_cli.TestMain" name="test_main_url_input_success" time="0.001"><failure message="AssertionError: expected call not found.&#10;Expected: fetch_content('https://example.com', 30, None, None)&#10;  Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577889808'&gt;)&#10;&#10;pytest introspection follows:&#10;&#10;Args:&#10;assert ('https://example.com',) == ('https://exa...0, None, None)&#10;  &#10;  Right contains 3 more items, first extra item: 30&#10;  Use -v to get more diff&#10;Kwargs:&#10;assert {'continue_on...out': 30, ...} == {}&#10;  &#10;  Left contains 6 more items:&#10;  {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;,&#10;   'encoding': None,&#10;   'error_format': &lt;Mock name='parse_args().error_format' id='4577889808'&gt;,&#10;   'timeout': 30,&#10;   'user_agent': None,&#10;   'verbose': False}&#10;  Use -v to get more diff">self = &lt;MagicMock name='fetch_content' id='4578243088'&gt;
+args = ('https://example.com', 30, None, None), kwargs = {}
 expected = call('https://example.com', 30, None, None)
-actual = call('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473012048'&gt;)
-_error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;._error_message at 0x1086c6fc0&gt;, cause = None
+actual = call('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577889808'&gt;)
+_error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;._error_message at 0x110cd4720&gt;
+cause = None
 
     def assert_called_with(self, /, *args, **kwargs):
         """assert that the last call was made with the specified arguments.
@@ -2252,13 +2298,14 @@ _error_message = &lt;function NonCallableMock.assert_called_with.&lt;locals&gt;.
 &gt;           raise AssertionError(_error_message()) from cause
 E           AssertionError: expected call not found.
 E           Expected: fetch_content('https://example.com', 30, None, None)
-E             Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473012048'&gt;)
+E             Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577889808'&gt;)
 
 ../../.pyenv/versions/3.11.11/lib/python3.11/unittest/mock.py:939: AssertionError
 
 During handling of the above exception, another exception occurred:
 
-self = &lt;MagicMock name='fetch_content' id='4472261200'&gt;, args = ('https://example.com', 30, None, None), kwargs = {}
+self = &lt;MagicMock name='fetch_content' id='4578243088'&gt;
+args = ('https://example.com', 30, None, None), kwargs = {}
 
     def assert_called_once_with(self, /, *args, **kwargs):
         """assert that the mock was called exactly once and that that call was
@@ -2272,7 +2319,7 @@ self = &lt;MagicMock name='fetch_content' id='4472261200'&gt;, args = ('https://
 &gt;       return self.assert_called_with(*args, **kwargs)
 E       AssertionError: expected call not found.
 E       Expected: fetch_content('https://example.com', 30, None, None)
-E         Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473012048'&gt;)
+E         Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577889808'&gt;)
 E       
 E       pytest introspection follows:
 E       
@@ -2285,9 +2332,9 @@ E       Kwargs:
 E       assert {'continue_on...out': 30, ...} == {}
 E         
 E         Left contains 6 more items:
-E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;,
+E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;,
 E          'encoding': None,
-E          'error_format': &lt;Mock name='parse_args().error_format' id='4473012048'&gt;,
+E          'error_format': &lt;Mock name='parse_args().error_format' id='4577889808'&gt;,
 E          'timeout': 30,
 E          'user_agent': None,
 E          'verbose': False}
@@ -2298,10 +2345,10 @@ E         Use -v to get more diff
 During handling of the above exception, another exception occurred:
 
 self = &lt;tests.test_cli.TestMain testMethod=test_main_url_input_success&gt;
-mock_write_output = &lt;MagicMock name='write_output' id='4473551568'&gt;
-mock_process_content = &lt;MagicMock name='process_content' id='4473548176'&gt;
-mock_fetch_content = &lt;MagicMock name='fetch_content' id='4472261200'&gt;
-mock_parse_args = &lt;MagicMock name='parse_args' id='4472269840'&gt;
+mock_write_output = &lt;MagicMock name='write_output' id='4578234384'&gt;
+mock_process_content = &lt;MagicMock name='process_content' id='4578233936'&gt;
+mock_fetch_content = &lt;MagicMock name='fetch_content' id='4578243088'&gt;
+mock_parse_args = &lt;MagicMock name='parse_args' id='4577889040'&gt;
 
     @mock.patch('cli.main.parse_args')
     @mock.patch('cli.main.fetch_content')
@@ -2344,7 +2391,7 @@ mock_parse_args = &lt;MagicMock name='parse_args' id='4472269840'&gt;
         )
 E       AssertionError: expected call not found.
 E       Expected: fetch_content('https://example.com', 30, None, None)
-E         Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4473012048'&gt;)
+E         Actual: fetch_content('https://example.com', timeout=30, user_agent=None, encoding=None, verbose=False, continue_on_error=&lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;, error_format=&lt;Mock name='parse_args().error_format' id='4577889808'&gt;)
 E       
 E       pytest introspection follows:
 E       
@@ -2357,12 +2404,12 @@ E       Kwargs:
 E       assert {'continue_on...out': 30, ...} == {}
 E         
 E         Left contains 6 more items:
-E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4473008016'&gt;,
+E         {'continue_on_error': &lt;Mock name='parse_args().continue_on_error' id='4577887376'&gt;,
 E          'encoding': None,
-E          'error_format': &lt;Mock name='parse_args().error_format' id='4473012048'&gt;,
+E          'error_format': &lt;Mock name='parse_args().error_format' id='4577889808'&gt;,
 E          'timeout': 30,
 E          'user_agent': None,
 E          'verbose': False}
 E         Use -v to get more diff
 
-tests/test_cli.py:565: AssertionError</failure></testcase><testcase classname="tests.test_errors" name="test_error_module_imports" time="0.000" /><testcase classname="tests.test_errors.TestErrorType" name="test_error_types_exist" time="0.000" /><testcase classname="tests.test_errors.TestErrorType" name="test_error_types_are_unique" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_normal_execution" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_exception_handling" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_continue_on_error" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_context_tracking" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_method_chaining" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_json_output_format" time="0.000" /><testcase classname="tests.test_errors.TestWithErrorBoundary" name="test_decorator_basic_functionality" time="0.000" /><testcase classname="tests.test_errors.TestWithErrorBoundary" name="test_decorator_with_custom_name" time="0.000" /><testcase classname="tests.test_errors.TestWithErrorBoundary" name="test_decorator_passes_options" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_not_found_scenario" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_not_found_scenario_mocked" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_scenario" time="0.006" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_scenario_mocked" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception0-connection error]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception1-timeout error]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception2-too many redirects]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception3-general error]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_error_variations[exception0-1]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_error_variations[exception1-5]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_error_variations[exception2-1]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_nested_error_boundaries" time="0.000" /><testcase classname="tests.test_readability" name="test_specific_cases[001]" time="0.097" /><testcase classname="tests.test_readability" name="test_specific_cases[002]" time="2.799" /><testcase classname="tests.test_readability" name="test_specific_cases[003-metadata-preferred]" time="0.006" /><testcase classname="tests.test_readability" name="test_specific_cases[004-metadata-space-separated-properties]" time="0.003" /><testcase classname="tests.test_readability" name="test_specific_cases[metadata-content-missing]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[base-url]" time="0.011" /><testcase classname="tests.test_readability" name="test_specific_cases[base-url-base-element]" time="0.010" /><testcase classname="tests.test_readability" name="test_specific_cases[base-url-base-element-relative]" time="0.010" /><testcase classname="tests.test_readability" name="test_specific_cases[basic-tags-cleaning]" time="0.006" /><testcase classname="tests.test_readability" name="test_specific_cases[js-link-replacement]" time="0.003" /><testcase classname="tests.test_readability" name="test_specific_cases[keep-images]" time="0.641" /><testcase classname="tests.test_readability" name="test_specific_cases[missing-paragraphs]" time="0.013" /><testcase classname="tests.test_readability" name="test_specific_cases[remove-script-tags]" time="0.006" /><testcase classname="tests.test_readability" name="test_specific_cases[replace-brs]" time="0.008" /><testcase classname="tests.test_readability" name="test_specific_cases[replace-font-tags]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[comment-inside-script-parsing]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[svg-parsing]" time="0.008" /><testcase classname="tests.test_readability" name="test_specific_cases[hidden-nodes]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[remove-aria-hidden]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[normalize-spaces]" time="0.004" /><testcase classname="tests.test_readability" name="test_specific_cases[rtl-3]" time="0.004" /><testcase classname="tests.test_readability" name="test_specific_cases[rtl-4]" time="0.004" /><testcase classname="tests.test_readability" name="test_specific_cases[qq]" time="0.153" /><testcase classname="tests.test_readability" name="test_specific_cases[aclu]" time="0.054" /><testcase classname="tests.test_readability" name="test_specific_cases[aktualne]" time="0.222" /><testcase classname="tests.test_readability" name="test_specific_cases[archive-of-our-own]" time="1.808" /><testcase classname="tests.test_readability" name="test_specific_cases[ars-1]" time="0.139" /><testcase classname="tests.test_readability" name="test_specific_cases[bbc-1]" time="0.678" /><testcase classname="tests.test_readability" name="test_specific_cases[blogger]" time="0.326" /><testcase classname="tests.test_readability" name="test_specific_cases[breitbart]" time="0.307" /><testcase classname="tests.test_readability" name="test_specific_cases[ehow-2]" time="0.136" /><testcase classname="tests.test_readability" name="test_specific_cases[herald-sun-1]" time="0.100" /><testcase classname="tests.test_readability" name="test_specific_cases[medium-1]" time="0.655" /><testcase classname="tests.test_readability" name="test_specific_cases[medium-2]" time="0.103" /><testcase classname="tests.test_readability" name="test_specific_cases[mozilla-1]" time="0.185" /><testcase classname="tests.test_readability" name="test_specific_cases[nytimes-1]" time="0.319" /><testcase classname="tests.test_readability" name="test_specific_cases[wikipedia]" time="9.243" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.HTML_PARSING]" time="0.013" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.METADATA_EXTRACTION]" time="0.010" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.CONTENT_IDENTIFICATION]" time="2.904" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.CONTENT_CLEANING]" time="0.682" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.URL_HANDLING]" time="0.031" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.VISIBILITY_DETECTION]" time="0.009" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.TEXT_NORMALIZATION]" time="0.163" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.REAL_WORLD]" time="14.347" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P0]" time="13.360" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P1]" time="0.822" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P2]" time="0.427" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P3]" time="3.511" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.BASIC]" time="2.961" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.FEATURE]" time="0.719" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.EDGE_CASE]" time="0.186" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.REAL_WORLD]" time="14.360" /><testcase classname="tests.test_readability" name="test_all_cases" time="18.250" /><testcase classname="tests.test_utils.TestIndexOf" name="test_element_exists" time="0.000" /><testcase classname="tests.test_utils.TestIndexOf" name="test_element_not_exists" time="0.000" /><testcase classname="tests.test_utils.TestIndexOf" name="test_first_occurrence" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_multiple_spaces" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_multiple_words" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_newlines_and_tabs" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_single_word" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_special_characters" time="0.000" /><testcase classname="tests.test_utils.TestCharCount" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestCharCount" name="test_simple_string" time="0.000" /><testcase classname="tests.test_utils.TestCharCount" name="test_special_characters" time="0.000" /><testcase classname="tests.test_utils.TestIsValidUrl" name="test_edge_cases" time="0.000" /><testcase classname="tests.test_utils.TestIsValidUrl" name="test_invalid_urls" time="0.000" /><testcase classname="tests.test_utils.TestIsValidUrl" name="test_valid_urls" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_absolute_path" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_absolute_url" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_data_uri" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_empty_inputs" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_exception_handling" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_hash_fragment" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_relative_path" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_all_empty" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_empty_args" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_multiple_arguments" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_non_string_values" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_single_argument" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_duplicate_items" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_empty_list" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_mixed_list" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_string_list" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_complex_filter" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_empty_list" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_filter_by_content" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_filter_by_length" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_internal_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_leading_trailing_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_mixed_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_no_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_internal_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_leading_trailing_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_mixed_whitespace" time="0.001" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_no_whitespace" time="0.000" /></testsuite></testsuites>
+tests/test_cli.py:565: AssertionError</failure></testcase><testcase classname="tests.test_errors" name="test_error_module_imports" time="0.000" /><testcase classname="tests.test_errors.TestErrorType" name="test_error_types_exist" time="0.000" /><testcase classname="tests.test_errors.TestErrorType" name="test_error_types_are_unique" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_normal_execution" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_exception_handling" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_continue_on_error" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_context_tracking" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_method_chaining" time="0.000" /><testcase classname="tests.test_errors.TestErrorBoundary" name="test_json_output_format" time="0.000" /><testcase classname="tests.test_errors.TestWithErrorBoundary" name="test_decorator_basic_functionality" time="0.000" /><testcase classname="tests.test_errors.TestWithErrorBoundary" name="test_decorator_with_custom_name" time="0.000" /><testcase classname="tests.test_errors.TestWithErrorBoundary" name="test_decorator_passes_options" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_not_found_scenario" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_not_found_scenario_mocked" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_scenario" time="0.006" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_scenario_mocked" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception0-connection error]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception1-timeout error]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception2-too many redirects]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_network_error_variations[exception3-general error]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_error_variations[exception0-1]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_error_variations[exception1-5]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_file_error_variations[exception2-1]" time="0.000" /><testcase classname="tests.test_errors.TestRealScenarios" name="test_nested_error_boundaries" time="0.000" /><testcase classname="tests.test_readability" name="test_specific_cases[001]" time="0.096" /><testcase classname="tests.test_readability" name="test_specific_cases[002]" time="2.749" /><testcase classname="tests.test_readability" name="test_specific_cases[003-metadata-preferred]" time="0.006" /><testcase classname="tests.test_readability" name="test_specific_cases[004-metadata-space-separated-properties]" time="0.003" /><testcase classname="tests.test_readability" name="test_specific_cases[metadata-content-missing]" time="0.004" /><testcase classname="tests.test_readability" name="test_specific_cases[base-url]" time="0.011" /><testcase classname="tests.test_readability" name="test_specific_cases[base-url-base-element]" time="0.010" /><testcase classname="tests.test_readability" name="test_specific_cases[base-url-base-element-relative]" time="0.010" /><testcase classname="tests.test_readability" name="test_specific_cases[basic-tags-cleaning]" time="0.007" /><testcase classname="tests.test_readability" name="test_specific_cases[js-link-replacement]" time="0.002" /><testcase classname="tests.test_readability" name="test_specific_cases[keep-images]" time="0.634" /><testcase classname="tests.test_readability" name="test_specific_cases[missing-paragraphs]" time="0.013" /><testcase classname="tests.test_readability" name="test_specific_cases[remove-script-tags]" time="0.006" /><testcase classname="tests.test_readability" name="test_specific_cases[replace-brs]" time="0.007" /><testcase classname="tests.test_readability" name="test_specific_cases[replace-font-tags]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[comment-inside-script-parsing]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[svg-parsing]" time="0.008" /><testcase classname="tests.test_readability" name="test_specific_cases[hidden-nodes]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[remove-aria-hidden]" time="0.005" /><testcase classname="tests.test_readability" name="test_specific_cases[normalize-spaces]" time="0.003" /><testcase classname="tests.test_readability" name="test_specific_cases[rtl-3]" time="0.003" /><testcase classname="tests.test_readability" name="test_specific_cases[rtl-4]" time="0.004" /><testcase classname="tests.test_readability" name="test_specific_cases[qq]" time="0.151" /><testcase classname="tests.test_readability" name="test_specific_cases[aclu]" time="0.053" /><testcase classname="tests.test_readability" name="test_specific_cases[aktualne]" time="0.220" /><testcase classname="tests.test_readability" name="test_specific_cases[archive-of-our-own]" time="1.795" /><testcase classname="tests.test_readability" name="test_specific_cases[ars-1]" time="0.137" /><testcase classname="tests.test_readability" name="test_specific_cases[bbc-1]" time="0.665" /><testcase classname="tests.test_readability" name="test_specific_cases[blogger]" time="0.322" /><testcase classname="tests.test_readability" name="test_specific_cases[breitbart]" time="0.304" /><testcase classname="tests.test_readability" name="test_specific_cases[ehow-2]" time="0.134" /><testcase classname="tests.test_readability" name="test_specific_cases[herald-sun-1]" time="0.100" /><testcase classname="tests.test_readability" name="test_specific_cases[medium-1]" time="0.642" /><testcase classname="tests.test_readability" name="test_specific_cases[medium-2]" time="0.101" /><testcase classname="tests.test_readability" name="test_specific_cases[mozilla-1]" time="0.196" /><testcase classname="tests.test_readability" name="test_specific_cases[nytimes-1]" time="0.317" /><testcase classname="tests.test_readability" name="test_specific_cases[wikipedia]" time="9.242" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.HTML_PARSING]" time="0.013" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.METADATA_EXTRACTION]" time="0.009" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.CONTENT_IDENTIFICATION]" time="2.870" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.CONTENT_CLEANING]" time="0.670" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.URL_HANDLING]" time="0.029" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.VISIBILITY_DETECTION]" time="0.009" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.TEXT_NORMALIZATION]" time="0.159" /><testcase classname="tests.test_readability" name="test_by_functional_area[FunctionalArea.REAL_WORLD]" time="14.285" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P0]" time="13.361" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P1]" time="0.825" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P2]" time="0.439" /><testcase classname="tests.test_readability" name="test_by_criticality[Criticality.P3]" time="3.498" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.BASIC]" time="2.903" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.FEATURE]" time="0.713" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.EDGE_CASE]" time="0.184" /><testcase classname="tests.test_readability" name="test_by_test_type[TestType.REAL_WORLD]" time="14.278" /><testcase classname="tests.test_readability" name="test_all_cases" time="18.115" /><testcase classname="tests.test_utils.TestIndexOf" name="test_element_exists" time="0.000" /><testcase classname="tests.test_utils.TestIndexOf" name="test_element_not_exists" time="0.000" /><testcase classname="tests.test_utils.TestIndexOf" name="test_first_occurrence" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_multiple_spaces" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_multiple_words" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_newlines_and_tabs" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_single_word" time="0.000" /><testcase classname="tests.test_utils.TestWordCount" name="test_special_characters" time="0.000" /><testcase classname="tests.test_utils.TestCharCount" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestCharCount" name="test_simple_string" time="0.000" /><testcase classname="tests.test_utils.TestCharCount" name="test_special_characters" time="0.000" /><testcase classname="tests.test_utils.TestIsValidUrl" name="test_edge_cases" time="0.000" /><testcase classname="tests.test_utils.TestIsValidUrl" name="test_invalid_urls" time="0.000" /><testcase classname="tests.test_utils.TestIsValidUrl" name="test_valid_urls" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_absolute_path" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_absolute_url" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_data_uri" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_empty_inputs" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_exception_handling" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_hash_fragment" time="0.000" /><testcase classname="tests.test_utils.TestToAbsoluteUri" name="test_relative_path" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_all_empty" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_empty_args" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_multiple_arguments" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_non_string_values" time="0.000" /><testcase classname="tests.test_utils.TestStrOr" name="test_single_argument" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_duplicate_items" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_empty_list" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_mixed_list" time="0.000" /><testcase classname="tests.test_utils.TestListToDict" name="test_string_list" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_complex_filter" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_empty_list" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_filter_by_content" time="0.000" /><testcase classname="tests.test_utils.TestStrFilter" name="test_filter_by_length" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_internal_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_leading_trailing_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_mixed_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestTrim" name="test_no_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_empty_string" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_internal_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_leading_trailing_whitespace" time="0.000" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_mixed_whitespace" time="0.001" /><testcase classname="tests.test_utils.TestNormalizeSpaces" name="test_no_whitespace" time="0.000" /></testsuite></testsuites>

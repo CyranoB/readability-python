@@ -9,22 +9,42 @@ import subprocess
 def run_command(cmd, description):
     """Run a command and print its output"""
     print(f"Running {description}...")
-    result = subprocess.run(cmd, text=True, capture_output=True)
-    if result.returncode != 0:
-        print(f"Error running {description}:")
-        print(result.stderr)
+    try:
+        # Run the command and capture output in real-time
+        process = subprocess.Popen(
+            cmd, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1
+        )
+        
+        # Print output in real-time
+        for line in process.stdout:
+            print(line, end='')
+        
+        # Wait for the process to complete
+        process.wait()
+        
+        # Check if there was an error
+        if process.returncode != 0:
+            print(f"Error running {description} (exit code {process.returncode}):")
+            for line in process.stderr:
+                print(line, end='')
+            return False
+        
+        return True
+    except Exception as e:
+        print(f"Error running {description}: {e}")
         return False
-    
-    print(result.stdout)
-    return True
 
 def prepare_sonar():
     """Prepare all files for SonarQube analysis"""
-    # 1. Generate coverage XML
-    if not run_command(["python", "scripts/sonar_coverage.py"], "coverage generation"):
+    # Since we already have the coverage XML file, just fix it
+    if not run_command(["python", "scripts/fix_coverage.py"], "coverage XML fix"):
         return 1
     
-    # 2. Generate test results XML
+    # Generate test results XML
     if not run_command(["python", "scripts/sonar_test_results.py"], "test results generation"):
         return 1
     
