@@ -25,6 +25,7 @@ jobs:
           pip install poetry
           poetry config virtualenvs.create false
           poetry install --with dev
+          pip install pytest-cov  # Explicitly install pytest-cov
       
       # Generate coverage report
       - name: Run tests with coverage
