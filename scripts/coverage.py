@@ -11,8 +11,12 @@ Options:
     --report        Show coverage report in the terminal (default if no other options specified)
     --all           Generate all report formats (HTML, XML, and terminal)
     --min-coverage  Set minimum required coverage percentage (e.g., --min-coverage 80)
-    --parallel, -p  Run tests in parallel
+    --parallel, -p  Run tests in parallel (RECOMMENDED for faster test execution)
     --jobs, -j      Number of parallel jobs (default: auto)
+
+Note:
+    Always use the --parallel flag for faster test execution, especially on multi-core systems.
+    For example: python scripts/coverage.py --report --parallel --jobs 4
 """
 
 import os
