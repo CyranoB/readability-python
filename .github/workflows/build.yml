@@ -43,7 +43,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           mkdir -p coverage-reports test-reports
-          python scripts/run_tests.py --all --parallel --no-debug --jobs 2
+          python scripts/run_tests.py --all --parallel --no-debug --jobs 4
           pytest --cov=readability --cov=cli --cov-report=xml:coverage-reports/coverage.xml
       
       # Fix coverage paths for SonarQube

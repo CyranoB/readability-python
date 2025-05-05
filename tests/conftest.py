@@ -67,12 +67,15 @@ def load_test_case(case_dir: Path) -> Dict:
     }
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def test_cases():
-    """Fixture to provide all test cases."""
+    """Fixture to provide all test cases.
+    
+    This is a session-scoped fixture to reduce overhead when running tests in parallel.
+    """
     return [load_test_case(case_dir) for case_dir in discover_test_cases()]
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def case_dir(request):
     """Fixture to provide a test case directory.
     
@@ -93,11 +96,12 @@ def case_dir(request):
         
     return Path(__file__).parent / "test-pages" / case_name
 
-@pytest.fixture(params=list(FunctionalArea))
+@pytest.fixture(scope="session", params=list(FunctionalArea))
 def area(request):
     """Fixture to provide a functional area for testing.
     
     This is used by test_by_functional_area to test all cases in a specific area.
+    Session-scoped to reduce setup overhead when running tests in parallel.
     
     Args:
         request: The pytest request object
@@ -107,11 +111,12 @@ def area(request):
     """
     return request.param
 
-@pytest.fixture(params=list(Criticality))
+@pytest.fixture(scope="session", params=list(Criticality))
 def criticality(request):
     """Fixture to provide a criticality level for testing.
     
     This is used by test_by_criticality to test all cases at a specific criticality level.
+    Session-scoped to reduce setup overhead when running tests in parallel.
     
     Args:
         request: The pytest request object
@@ -121,11 +126,12 @@ def criticality(request):
     """
     return request.param
 
-@pytest.fixture(params=list(TestType))
+@pytest.fixture(scope="session", params=list(TestType))
 def test_type(request):
     """Fixture to provide a test type for testing.
     
     This is used by test_by_test_type to test all cases of a specific type.
+    Session-scoped to reduce setup overhead when running tests in parallel.
     
     Args:
         request: The pytest request object
