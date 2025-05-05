@@ -24,8 +24,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry config virtualenvs.create false
-          # Override docutils dependency to fix Poetry resolution issue
-          poetry add --group dev docutils@0.21.2
           poetry install --with dev
       
       # Generate coverage report

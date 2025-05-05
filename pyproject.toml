@@ -25,7 +25,7 @@ classifiers = [
 packages = [{include = "readability"}, {include = "cli"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 beautifulsoup4 = "^4.12.0"
 lxml = "^4.9.0"
 python-dateutil = "^2.8.2"
@@ -49,12 +49,12 @@ readability-python = "cli.main:main"
 # Black configuration
 [tool.black]
 line-length = 88
-target-version = ["py38"]
+target-version = ["py39"]
 include = '\.pyi?$'
 
 # Ruff configuration
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py39"
 select = ["E", "F", "W", "I"]
 ignore = []
