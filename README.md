@@ -156,6 +156,40 @@ python scripts/coverage.py --all
 python scripts/coverage.py --min-coverage 70
 ```
 
+### Running Test Subsets
+
+To improve test execution speed, you can run specific subsets of tests using the `scripts/run_tests.py` script:
+
+```bash
+# Run only fast tests (excludes real-world website tests)
+python scripts/run_tests.py --fast
+
+# Run only real-world website tests (the slower ones)
+python scripts/run_tests.py --slow
+
+# Run tests for specific functional areas
+python scripts/run_tests.py --html-parsing
+python scripts/run_tests.py --metadata-extraction
+python scripts/run_tests.py --content-identification
+python scripts/run_tests.py --content-cleaning
+python scripts/run_tests.py --url-handling
+python scripts/run_tests.py --visibility-detection
+python scripts/run_tests.py --text-normalization
+python scripts/run_tests.py --real-world
+
+# Run tests in parallel (uses pytest-xdist)
+python scripts/run_tests.py --fast --parallel
+
+# Specify number of parallel jobs
+python scripts/run_tests.py --all --parallel --jobs 4
+
+# Run tests without generating debug output (faster)
+python scripts/run_tests.py --all --no-debug
+
+# Combine options for maximum speed
+python scripts/run_tests.py --fast --parallel --no-debug
+```
+
 ## Test Coverage
 
 The library has extensive test coverage across different functional areas and criticality levels:

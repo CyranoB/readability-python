@@ -2,6 +2,7 @@
 
 import difflib
 import json
+import os
 from pathlib import Path
 
 
@@ -46,8 +47,12 @@ def save_debug_output(test_name, article, expected_html, expected_metadata):
         expected_metadata: The expected metadata
         
     Returns:
-        The debug directory path
+        The debug directory path or None if debug output is disabled
     """
+    # Skip debug output if disabled
+    if os.environ.get("DISABLE_DEBUG_OUTPUT") == "1":
+        return None
+        
     debug_dir = Path("tests/debug") / test_name
     debug_dir.mkdir(parents=True, exist_ok=True)
     

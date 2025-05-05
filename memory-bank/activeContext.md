@@ -11,6 +11,33 @@ The current focus of the Python Readability project is on implementing a compreh
 
 ## Recent Changes
 
+### Test Optimization with Functional Area Subsets and Parallel Execution
+
+We've implemented test optimization features to improve test execution speed and developer workflow:
+
+1. **Test Subsets by Functional Area**:
+   - Created a `scripts/run_tests.py` script that allows running tests by functional area
+   - Grouped functional areas into "fast" and "slow" categories
+   - Added command-line options to run specific test subsets
+   - Implemented support for disabling debug output generation
+
+2. **Parallel Test Execution**:
+   - Added pytest-xdist as a development dependency
+   - Implemented parallel test execution in the run_tests.py script
+   - Added options to control the number of parallel processes
+   - Updated GitHub Actions workflow to use parallel execution
+
+3. **Debug Output Optimization**:
+   - Modified debug_tools.py to support disabling debug output
+   - Added environment variable check to skip debug output generation
+   - This prevents file I/O bottlenecks during parallel test execution
+
+4. **Documentation Updates**:
+   - Added comprehensive documentation in README.md about the new test subsets and parallel execution features
+   - Included examples of how to use the new run_tests.py script
+
+These improvements significantly reduce test execution time, especially when running specific functional areas or using parallel execution.
+
 ### Error Handling Enhancement with Mocked Tests
 
 We've enhanced the error handling system in the CLI with better exception handling and test coverage:

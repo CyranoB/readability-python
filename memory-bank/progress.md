@@ -16,6 +16,9 @@
 2. **Test Case Execution**: The test infrastructure can execute test cases and compare the output with the expected output.
 3. **Test Case Categorization**: The test infrastructure supports categorizing test cases by functional area, criticality level, and test type.
 4. **Test Case Verification**: The test infrastructure includes a script to verify that all test cases are properly implemented and categorized.
+5. **Test Subsetting**: The test infrastructure supports running tests by functional area, criticality level, and test type.
+6. **Parallel Test Execution**: The test infrastructure supports running tests in parallel using pytest-xdist.
+7. **Debug Output Control**: The test infrastructure supports disabling debug output generation to improve test execution speed.
 
 ### Test Cases
 

@@ -237,6 +237,86 @@ The testing strategy focuses on ensuring that the Python implementation behaves 
 3. **End-to-End Tests**: Testing the entire parsing process with real-world HTML.
 4. **Comparison Tests**: Comparing the output of the Python implementation with the Go implementation for the same input.
 
+### Test Organization Patterns
+
+We've implemented a comprehensive test organization strategy to improve test execution efficiency and developer workflow:
+
+1. **Functional Area Categorization**
+
+Tests are categorized by functional area to allow targeted testing:
+
+```python
+class FunctionalArea(Enum):
+    """Functional areas for test categorization."""
+    HTML_PARSING = "HTML Parsing"
+    METADATA_EXTRACTION = "Metadata Extraction"
+    CONTENT_IDENTIFICATION = "Content Identification"
+    CONTENT_CLEANING = "Content Cleaning"
+    URL_HANDLING = "URL Handling"
+    VISIBILITY_DETECTION = "Visibility Detection"
+    TEXT_NORMALIZATION = "Text Normalization"
+    REAL_WORLD = "Real-world Websites"
+```
+
+2. **Test Subsetting**
+
+Tests are grouped into "fast" and "slow" categories to optimize execution time:
+
+```python
+# Group areas into performance categories
+FAST_AREAS = [
+    FunctionalArea.HTML_PARSING,
+    FunctionalArea.METADATA_EXTRACTION,
+    # ...other non-real-world areas
+]
+
+SLOW_AREAS = [
+    FunctionalArea.REAL_WORLD
+]
+```
+
+3. **Parallel Test Execution**
+
+Tests can be run in parallel using pytest-xdist to improve execution speed:
+
+```python
+# Run tests in parallel with auto-detected number of cores
+python scripts/run_tests.py --all --parallel
+
+# Specify number of parallel jobs
+python scripts/run_tests.py --all --parallel --jobs 4
+```
+
+4. **Debug Output Control**
+
+Debug output generation can be disabled to improve test execution speed:
+
+```python
+# Skip debug output if disabled
+if os.environ.get("DISABLE_DEBUG_OUTPUT") == "1":
+    return None
+```
+
+5. **Command-Line Interface for Test Execution**
+
+A dedicated script provides a user-friendly interface for running test subsets:
+
+```python
+def main():
+    parser = argparse.ArgumentParser(description="Run targeted test subsets")
+    
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--all", action="store_true", help="Run all tests")
+    group.add_argument("--fast", action="store_true", help="Run only fast tests")
+    group.add_argument("--slow", action="store_true", help="Run only slow tests")
+    
+    # Add arguments for each functional area
+    for area in FunctionalArea:
+        flag = f"--{area.name.lower().replace('_', '-')}"
+        group.add_argument(flag, action="store_true", 
+                          help=f"Run only {area.value} tests")
+```
+
 ### Dependency Mocking Patterns
 
 To ensure reliable tests that don't depend on external systems, we use dependency mocking:

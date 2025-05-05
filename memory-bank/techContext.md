@@ -14,10 +14,12 @@
 
 1. **Poetry**: Used for dependency management and packaging. Poetry is the primary tool for managing dependencies, building, and publishing the package.
 2. **pytest**: Used for testing.
-3. **Black**: Used for code formatting.
-4. **Ruff/Flake8**: Used for linting.
-5. **mypy**: Used for static type checking.
-6. **tox**: Used for testing across multiple Python versions.
+3. **pytest-xdist**: Used for parallel test execution to improve test performance.
+4. **pytest-mock**: Used for mocking dependencies in tests.
+5. **Black**: Used for code formatting.
+6. **Ruff/Flake8**: Used for linting.
+7. **mypy**: Used for static type checking.
+8. **tox**: Used for testing across multiple Python versions.
 
 ## Development Setup
 
@@ -88,7 +90,17 @@ python-readability/
 
 1. **Run tests**:
    ```bash
+   # Run all tests
    poetry run pytest
+   
+   # Run tests by functional area
+   poetry run python scripts/run_tests.py --html-parsing
+   
+   # Run fast tests in parallel
+   poetry run python scripts/run_tests.py --fast --parallel
+   
+   # Run tests without debug output
+   poetry run python scripts/run_tests.py --all --no-debug
    ```
 
 2. **Format code**:

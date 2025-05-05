@@ -34,6 +34,7 @@ requests = "^2.28.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
 pytest-mock = "^3.10.0"  # For mocking in tests
+pytest-xdist = "^3.5.0"  # For parallel test execution
 black = "^23.3.0"
 ruff = "^0.0.262"
 build = "^0.10.0"
