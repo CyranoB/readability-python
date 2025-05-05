@@ -3,7 +3,7 @@
 Script to run code coverage reports for the readability-python project.
 
 Usage:
-    python scripts/coverage.py [--html] [--xml] [--report] [--all] [--min-coverage PERCENTAGE]
+    python scripts/coverage.py [--html] [--xml] [--report] [--all] [--min-coverage PERCENTAGE] [--parallel] [--jobs JOBS]
 
 Options:
     --html          Generate HTML coverage report in the coverage_html directory
@@ -11,6 +11,8 @@ Options:
     --report        Show coverage report in the terminal (default if no other options specified)
     --all           Generate all report formats (HTML, XML, and terminal)
     --min-coverage  Set minimum required coverage percentage (e.g., --min-coverage 80)
+    --parallel, -p  Run tests in parallel
+    --jobs, -j      Number of parallel jobs (default: auto)
 """
 
 import os
@@ -19,9 +21,16 @@ import subprocess
 import argparse
 
 
-def run_coverage(html=False, xml=False, report=True, min_coverage=None):
+def run_coverage(html=False, xml=False, report=True, min_coverage=None, parallel=False, jobs=None):
     """Run pytest with coverage options."""
     cmd = ["python", "-m", "pytest", "--cov=readability", "--cov=cli"]
+    
+    # Add parallel execution options
+    if parallel:
+        if jobs:
+            cmd.extend(["-n", str(jobs)])
+        else:
+            cmd.extend(["-n", "auto"])
     
     # Ensure the coverage-reports directory exists
     if xml:
@@ -58,6 +67,8 @@ def main():
     parser.add_argument("--report", action="store_true", help="Show terminal report")
     parser.add_argument("--all", action="store_true", help="Generate all report formats (HTML, XML, and terminal)")
     parser.add_argument("--min-coverage", type=float, help="Minimum coverage percentage")
+    parser.add_argument("--parallel", "-p", action="store_true", help="Run tests in parallel")
+    parser.add_argument("--jobs", "-j", type=int, help="Number of parallel jobs (default: auto)")
     
     args = parser.parse_args()
     
@@ -74,7 +85,9 @@ def main():
         html=args.html,
         xml=args.xml,
         report=args.report,
-        min_coverage=args.min_coverage
+        min_coverage=args.min_coverage,
+        parallel=args.parallel,
+        jobs=args.jobs
     )
 
 
