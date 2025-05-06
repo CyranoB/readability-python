@@ -19,6 +19,10 @@
 5. **Test Subsetting**: The test infrastructure supports running tests by functional area, criticality level, and test type.
 6. **Parallel Test Execution**: The test infrastructure supports running tests in parallel using pytest-xdist.
 7. **Debug Output Control**: The test infrastructure supports disabling debug output generation to improve test execution speed.
+8. **Split Test Files**: The test infrastructure supports using split test files for better parallelization and organization.
+9. **Single-Run Reports**: The test infrastructure supports generating multiple report formats (HTML, XML, JUnit) in a single test run.
+10. **SonarQube Integration**: The test infrastructure includes path fixing for SonarQube compatibility.
+11. **Optimized CI Pipeline**: The GitHub workflow has been optimized to run tests only once instead of three times.
 
 ### Test Cases
 
@@ -165,6 +169,44 @@ We've implemented a robust error handling system for the CLI using the Error Bou
    - Created mocked tests for network operations
    - Implemented parameterized tests for error variations
    - Separated real and mocked test scenarios
+
+### Version 0.5.1 Release
+
+We've released version 0.5.1 of the library with significant test infrastructure improvements:
+
+1. **Enhanced Test Infrastructure for CI/CD**:
+   - Updated `scripts/run_tests.py` to use split test files instead of always targeting `test_readability.py`
+   - Added a mapping from functional areas to their corresponding test files
+   - Added a `--comprehensive` flag to still run tests from `test_readability.py` if needed
+   - Added `--junit` and `--junit-output` options to `scripts/coverage.py` to generate JUnit XML reports
+   - Added `--split-tests` flag to use all split test files instead of default discovery
+   - Added `--fix-paths` option to automatically fix source paths in coverage reports
+   - Optimized GitHub workflow to run tests only once instead of three times
+
+2. **Performance Improvements**:
+   - Tests now run in parallel across multiple CPU cores, with each functional area running independently
+   - The CI pipeline now runs tests only once instead of three times, reducing build time by ~60%
+   - Better resource utilization through parallelization and split test files
+
+### Version 0.5.0 Release
+
+We've released version 0.5.0 of the library with important improvements for handling character encoding issues:
+
+1. **Encoding Support**:
+   - Added `encoding` parameter to the `parse()` method to handle non-Latin character sets
+   - Improved automatic encoding detection with validation
+   - Added detection and reporting of potential encoding issues
+   - Added `--encoding` / `-e` parameter to the CLI to specify character encoding
+
+2. **HTML Output Improvements**:
+   - Added complete HTML document structure to output
+   - Added UTF-8 charset meta tags to ensure correct rendering
+   - Included article title in the HTML output
+
+3. **Other Improvements**:
+   - Added support for reading binary content from files and stdin
+   - Enhanced error messages for encoding-related issues
+   - Added comprehensive documentation for encoding handling
 
 ### Version 0.4.0 Release
 

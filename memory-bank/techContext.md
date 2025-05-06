@@ -16,10 +16,12 @@
 2. **pytest**: Used for testing.
 3. **pytest-xdist**: Used for parallel test execution to improve test performance.
 4. **pytest-mock**: Used for mocking dependencies in tests.
-5. **Black**: Used for code formatting.
-6. **Ruff/Flake8**: Used for linting.
-7. **mypy**: Used for static type checking.
-8. **tox**: Used for testing across multiple Python versions.
+5. **pytest-cov**: Used for code coverage reporting.
+6. **Black**: Used for code formatting.
+7. **Ruff/Flake8**: Used for linting.
+8. **mypy**: Used for static type checking.
+9. **tox**: Used for testing across multiple Python versions.
+10. **SonarQube/SonarCloud**: Used for code quality analysis and continuous inspection.
 
 ## Development Setup
 
@@ -58,13 +60,29 @@ python-readability/
 │   └── utils.py
 ├── cli/
 │   ├── __init__.py
+│   ├── errors.py
 │   └── main.py
 ├── scripts/
-│   └── publish.py
+│   ├── publish.py
+│   ├── coverage.py
+│   └── run_tests.py
 ├── tests/
 │   ├── conftest.py
+│   ├── helpers.py
 │   ├── test_readability.py
 │   ├── test_categories.py
+│   ├── test_html_parsing.py
+│   ├── test_metadata_extraction.py
+│   ├── test_content_identification.py
+│   ├── test_content_cleaning.py
+│   ├── test_url_handling.py
+│   ├── test_visibility_detection.py
+│   ├── test_text_normalization.py
+│   ├── test_real_world.py
+│   ├── test_utils.py
+│   ├── test_errors.py
+│   ├── test_cli.py
+│   ├── test_regexps.py
 │   ├── debug_tools.py
 │   ├── scripts/
 │   │   ├── verify_test_cases.py
@@ -79,7 +97,14 @@ python-readability/
 │       │   ├── expected.html
 │       │   └── expected-metadata.json
 │       └── ...
+├── coverage-reports/
+│   └── coverage.xml
+├── test-reports/
+│   └── test-results.xml
 ├── pyproject.toml
+├── pytest.ini
+├── .coveragerc
+├── sonar-project.properties
 ├── README.md
 ├── CONTRIBUTING.md
 ├── PACKAGING.md
@@ -96,11 +121,29 @@ python-readability/
    # Run tests by functional area
    poetry run python scripts/run_tests.py --html-parsing
    
+   # Run tests using the comprehensive test file
+   poetry run python scripts/run_tests.py --comprehensive
+   
    # Run fast tests in parallel
    poetry run python scripts/run_tests.py --fast --parallel
    
    # Run tests without debug output
    poetry run python scripts/run_tests.py --all --no-debug
+   
+   # Run tests with coverage report
+   poetry run python scripts/coverage.py
+   
+   # Generate HTML coverage report
+   poetry run python scripts/coverage.py --html
+   
+   # Generate XML coverage report for SonarQube
+   poetry run python scripts/coverage.py --xml --fix-paths
+   
+   # Generate JUnit XML test results
+   poetry run python scripts/coverage.py --junit
+   
+   # Run tests with all reports in a single run
+   poetry run python scripts/coverage.py --all --parallel --jobs 4 --split-tests --fix-paths
    ```
 
 2. **Format code**:
@@ -167,6 +210,9 @@ The library is designed to be memory-efficient:
 | Dependency | Version | Purpose |
 |------------|---------|---------|
 | pytest | >=6.0.0 | Testing |
+| pytest-xdist | >=2.5.0 | Parallel test execution |
+| pytest-cov | >=2.12.0 | Code coverage reporting |
+| pytest-mock | >=3.6.0 | Mocking dependencies in tests |
 | black | >=20.8b1 | Code formatting |
 | ruff | >=0.0.1 | Linting |
 | mypy | >=0.800 | Static type checking |
@@ -234,10 +280,61 @@ The behavior of the Python implementation should match the Go implementation as 
 2. **Metadata extraction**: The same metadata should be extracted from the same HTML.
 3. **Error handling**: The same errors should be returned in the same situations.
 
-### Test Compatibility
+### Test Infrastructure
+
+### Test Organization
+
+The test suite is organized by functional area to improve maintainability and execution speed:
+
+1. **Split Test Files**: Tests are split into separate files by functional area:
+   - `test_html_parsing.py`: Tests for HTML parsing functionality
+   - `test_metadata_extraction.py`: Tests for metadata extraction
+   - `test_content_identification.py`: Tests for content identification
+   - `test_content_cleaning.py`: Tests for content cleaning
+   - `test_url_handling.py`: Tests for URL handling
+   - `test_visibility_detection.py`: Tests for visibility detection
+   - `test_text_normalization.py`: Tests for text normalization
+   - `test_real_world.py`: Tests using real-world websites
+   - `test_utils.py`: Tests for utility functions
+   - `test_errors.py`: Tests for error handling
+   - `test_cli.py`: Tests for the CLI
+   - `test_regexps.py`: Tests for regular expressions
+
+2. **Comprehensive Test File**: The `test_readability.py` file serves as a comprehensive test runner that includes all tests.
+
+3. **Test Categorization**: Tests are categorized by functional area, criticality level, and test type using pytest marks.
+
+### Test Execution
+
+The test suite can be executed in various ways:
+
+1. **Parallel Execution**: Tests can be run in parallel using pytest-xdist to improve execution speed.
+2. **Test Subsetting**: Tests can be run by functional area, criticality level, or test type.
+3. **Debug Output Control**: Debug output generation can be disabled to improve test execution speed.
+
+### Test Reporting
+
+The test suite supports various reporting formats:
+
+1. **Terminal Report**: Basic test results are displayed in the terminal.
+2. **HTML Report**: A detailed HTML report can be generated for human-readable analysis.
+3. **XML Report**: An XML report can be generated for integration with CI/CD tools.
+4. **JUnit XML Report**: A JUnit XML report can be generated for integration with CI/CD tools.
+
+### CI/CD Integration
+
+The test suite is integrated with CI/CD tools:
+
+1. **GitHub Actions**: The test suite is run on GitHub Actions for continuous integration.
+2. **SonarQube/SonarCloud**: Code quality analysis is performed using SonarQube/SonarCloud.
+3. **Coverage Reports**: Coverage reports are generated and uploaded to SonarQube/SonarCloud.
+4. **Test Results**: Test results are generated and uploaded to GitHub Actions.
+
+## Test Compatibility
 
 The test suite is designed to ensure compatibility with the Go implementation:
 
-1. **Test cases**: We use the same test cases as the Go implementation.
-2. **Expected output**: We compare the output of the Python implementation with the expected output from the Go implementation.
-3. **Edge cases**: We test the same edge cases as the Go implementation.
+1. **Test Cases**: We use the same test cases as the Go implementation.
+2. **Expected Output**: We compare the output of the Python implementation with the expected output from the Go implementation.
+3. **Edge Cases**: We test the same edge cases as the Go implementation.
+4. **Real-world Websites**: We test the library with real-world websites to ensure it works in practice.

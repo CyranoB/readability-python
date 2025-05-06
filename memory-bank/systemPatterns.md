@@ -258,7 +258,28 @@ class FunctionalArea(Enum):
     REAL_WORLD = "Real-world Websites"
 ```
 
-2. **Test Subsetting**
+2. **Split Test Files**
+
+Tests are split into separate files by functional area for better organization and parallelization:
+
+```python
+# Map functional areas to their corresponding test files
+AREA_TO_TEST_FILE = {
+    FunctionalArea.HTML_PARSING: "tests/test_html_parsing.py",
+    FunctionalArea.METADATA_EXTRACTION: "tests/test_metadata_extraction.py",
+    FunctionalArea.CONTENT_IDENTIFICATION: "tests/test_content_identification.py",
+    FunctionalArea.CONTENT_CLEANING: "tests/test_content_cleaning.py",
+    FunctionalArea.URL_HANDLING: "tests/test_url_handling.py",
+    FunctionalArea.VISIBILITY_DETECTION: "tests/test_visibility_detection.py",
+    FunctionalArea.TEXT_NORMALIZATION: "tests/test_text_normalization.py",
+    FunctionalArea.REAL_WORLD: "tests/test_real_world.py",
+}
+
+# Comprehensive test file that contains all tests
+COMPREHENSIVE_TEST_FILE = "tests/test_readability.py"
+```
+
+3. **Test Subsetting**
 
 Tests are grouped into "fast" and "slow" categories to optimize execution time:
 
@@ -273,9 +294,14 @@ FAST_AREAS = [
 SLOW_AREAS = [
     FunctionalArea.REAL_WORLD
 ]
+
+# Get test files for a list of areas
+def get_test_files_for_areas(areas):
+    """Get test files for a list of functional areas."""
+    return [AREA_TO_TEST_FILE[area] for area in areas]
 ```
 
-3. **Parallel Test Execution**
+4. **Parallel Test Execution**
 
 Tests can be run in parallel using pytest-xdist to improve execution speed:
 
@@ -287,7 +313,7 @@ python scripts/run_tests.py --all --parallel
 python scripts/run_tests.py --all --parallel --jobs 4
 ```
 
-4. **Debug Output Control**
+5. **Debug Output Control**
 
 Debug output generation can be disabled to improve test execution speed:
 
@@ -297,7 +323,7 @@ if os.environ.get("DISABLE_DEBUG_OUTPUT") == "1":
     return None
 ```
 
-5. **Command-Line Interface for Test Execution**
+6. **Command-Line Interface for Test Execution**
 
 A dedicated script provides a user-friendly interface for running test subsets:
 
@@ -306,15 +332,58 @@ def main():
     parser = argparse.ArgumentParser(description="Run targeted test subsets")
     
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--all", action="store_true", help="Run all tests")
+    group.add_argument("--all", action="store_true", help="Run all tests using split test files")
     group.add_argument("--fast", action="store_true", help="Run only fast tests")
     group.add_argument("--slow", action="store_true", help="Run only slow tests")
+    group.add_argument("--comprehensive", action="store_true", 
+                      help="Run all tests using the comprehensive test file")
     
     # Add arguments for each functional area
     for area in FunctionalArea:
         flag = f"--{area.name.lower().replace('_', '-')}"
         group.add_argument(flag, action="store_true", 
                           help=f"Run only {area.value} tests")
+```
+
+7. **Single-Run Reports**
+
+The coverage script supports generating multiple report formats in a single run:
+
+```python
+def run_coverage(html=False, xml=False, report=True, junit=False, junit_output=None,
+                min_coverage=None, parallel=False, jobs=None, split_tests=False, fix_paths=False):
+    """Run pytest with coverage options."""
+    cmd = ["python", "-m", "pytest", "--cov=readability", "--cov=cli"]
+    
+    # Add report formats to command
+    for fmt in report_formats:
+        cmd.append(f"--cov-report={fmt}")
+    
+    # Add JUnit XML output
+    if junit:
+        cmd.append(f"--junitxml={junit_output or 'test-reports/test-results.xml'}")
+    
+    # Add split test files if requested
+    if split_tests:
+        cmd.extend(SPLIT_TEST_FILES)
+```
+
+8. **SonarQube Integration**
+
+The coverage script includes path fixing for SonarQube compatibility:
+
+```python
+def fix_coverage_paths(coverage_file):
+    """Fix paths in coverage report for SonarQube."""
+    # Replace all absolute paths in source tags with relative path
+    content = re.sub(r'<sources>.*?</sources>', '<sources><source>.</source></sources>', 
+                    content, flags=re.DOTALL)
+    
+    # Add module prefixes to filenames
+    content = re.sub(r'<class name="(errors|main)\.py" filename="\1\.py"', 
+                    r'<class name="\1.py" filename="cli/\1.py"', content)
+    content = re.sub(r'<class name="(models|parser|regexps|utils)\.py" filename="\1\.py"', 
+                    r'<class name="\1.py" filename="readability/\1.py"', content)
 ```
 
 ### Dependency Mocking Patterns

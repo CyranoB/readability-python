@@ -108,6 +108,35 @@ We've migrated test cases from the Go implementation to the Python implementatio
    - **blogger**: Tests extraction from Blogger post.
    - **breitbart**: Tests extraction from Breitbart article.
 
+## Recent Changes
+
+### Test Infrastructure Optimization for CI/CD
+
+We've implemented significant improvements to the test infrastructure to optimize CI/CD performance:
+
+1. **Enhanced `scripts/run_tests.py` to Use Split Test Files**:
+   - Modified the script to use functional area-specific test files instead of always targeting `test_readability.py`
+   - Added a mapping from functional areas to their corresponding test files
+   - Added a `--comprehensive` flag to still run tests from `test_readability.py` if needed
+   - Updated the test file selection logic to use the appropriate test files based on the selected options
+
+2. **Improved `scripts/coverage.py` for Single-Run Reports**:
+   - Added `--junit` and `--junit-output` options to generate JUnit XML reports in the same run
+   - Added `--split-tests` flag to use all split test files instead of default discovery
+   - Added `--fix-paths` option to automatically fix source paths in coverage reports
+   - Implemented path fixing for SonarQube compatibility
+
+3. **Optimized GitHub Workflow**:
+   - Replaced multiple test runs with a single command that uses our enhanced scripts
+   - Removed redundant pytest commands
+   - Added path fixing directly in the coverage script
+
+These improvements provide significant benefits:
+- **Faster Test Execution**: Tests now run in parallel across multiple CPU cores, with each functional area running independently
+- **More Efficient CI Pipeline**: The GitHub workflow now runs tests only once instead of three times
+- **Better Resource Utilization**: More efficient use of system resources through parallelization
+- **Improved Maintainability**: Clearer organization of tests by functional area
+
 ## Next Steps
 
 ### 1. Project Reorganization
