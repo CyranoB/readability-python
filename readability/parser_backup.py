@@ -298,24 +298,6 @@ class Readability:
         # Release document reference
         self.doc = None
         
-    def _track_cache_stats(self, label: str) -> None:
-        """Track cache statistics at a specific point."""
-        if not self.debug:
-            return
-            
-        logger.debug(f"Cache stats at {label}: {len(self._cache)} entries")
-        
-        # Categorize cache entries
-        categories = {}
-        for key in self._cache:
-            if ":" in key:
-                category = key.split(":", 1)[1].split(":")[0]
-                categories[category] = categories.get(category, 0) + 1
-        
-        # Log top categories
-        for category, count in sorted(categories.items(), key=lambda x: x[1], reverse=True)[:5]:
-            logger.debug(f"  - {category}: {count} entries")
-    
     def _track_memory_usage(self, label: str) -> None:
         """Track memory usage at a specific point (thread-safe)."""
         if not self.debug:
@@ -1963,22 +1945,16 @@ class Readability:
         
         while current:
             if max_depth > 0 and depth >= max_depth:
-                result = False
-                self._cache[cache_key] = result
-                return result
+                return False
                 
             if current.name == tag:
-                result = True
-                self._cache[cache_key] = result
-                return result
+                return True
                 
             current = current.parent
             depth += 1
             
         # Cache the negative result as well
-        result = False
-        self._cache[cache_key] = result
-        return result
+        return False
         
     def _has_ancestor_tag_no_cache(self, node: Tag, tag: str, max_depth: int = 3, filter_fn: Optional[Callable[[Tag], bool]] = None) -> bool:
         """Original ancestor tag check logic without caching, for use with filter functions.
@@ -2045,10 +2021,7 @@ class Readability:
         Returns:
             Content score value
         """
-        # Check cache first
-        cache_key = self._get_cache_key(node, "content_score_calc")
-        if cache_key in self._cache:
-            return self._cache[cache_key]
+        
             
         text = self._get_inner_text(node)
         
@@ -2062,8 +2035,7 @@ class Readability:
         # Score: 1 point for the element itself + points for commas + points for length
         score = 1.0 + comma_count + min(math.floor(len(text) / 100), 3)
         
-        # Cache the result
-        self._cache[cache_key] = score
+        
         return score
 
     def _get_class_weight(self, node: Tag) -> int:
@@ -2098,10 +2070,7 @@ class Readability:
         if not node or not node.name:
             return False
         
-        # Check cache first
-        cache_key = self._get_cache_key(node, "visibility")
-        if cache_key in self._cache:
-            return self._cache[cache_key]
+        
         
         # Check style attribute for display:none or visibility:hidden
         style = node.get('style', '')
@@ -2109,15 +2078,11 @@ class Readability:
             style = " ".join(style)
             
         if RX_DISPLAY_NONE.search(style) or RX_VISIBILITY_HIDDEN.search(style):
-            result = False
-            self._cache[cache_key] = result
-            return result
+            return False
         
         # Check hidden attribute
         if node.has_attr('hidden'):
-            result = False
-            self._cache[cache_key] = result
-            return result
+            return False
         
         # Check aria-hidden attribute
         aria_hidden = node.get('aria-hidden', '')
@@ -2129,21 +2094,13 @@ class Readability:
             class_value = node.get('class', [])
             if isinstance(class_value, list):
                 if 'fallback-image' in class_value:
-                    result = True
-                    self._cache[cache_key] = result
-                    return result
+                    return True
             elif class_value == 'fallback-image':
-                result = True
-                self._cache[cache_key] = result
-                return result
-            result = False
-            self._cache[cache_key] = result
-            return result
+                return True
+            return False
         
         # Cache and return result
-        result = True
-        self._cache[cache_key] = result
-        return result
+        return True
 
     def _get_link_density(self, node: Tag) -> float:
         """Get the link density for a node.

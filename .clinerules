@@ -27,6 +27,7 @@
 - Use parameterized tests for running the same test logic against multiple test cases
 - Reuse test cases from the original Go implementation
 - Test both success and error cases
+- Run test in parallel with eight workers
 
 ## Critical Implementation Paths
 - Scoring algorithm is the heart of the readability algorithm
