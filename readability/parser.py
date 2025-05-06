@@ -106,6 +106,34 @@ class ScoreTracker:
     def clear(self) -> None:
         """Clear all scores."""
         self._scores.clear()
+        
+    def clear_unused_scores(self, nodes_to_keep: Optional[List[Tag]] = None) -> int:
+        """Clear scores for all nodes except those in nodes_to_keep.
+        
+        Args:
+            nodes_to_keep: List of nodes to keep scores for (optional)
+            
+        Returns:
+            Number of nodes cleared from memory
+        """
+        if nodes_to_keep is None:
+            count = len(self._scores)
+            self._scores.clear()
+            return count
+            
+        nodes_set = set(nodes_to_keep)
+        keys_to_delete = []
+        
+        # Identify keys to delete
+        for node in list(self._scores.keys()):
+            if node not in nodes_set:
+                keys_to_delete.append(node)
+        
+        # Delete keys
+        for node in keys_to_delete:
+            del self._scores[node]
+            
+        return len(keys_to_delete)
 
 
 class Readability:
@@ -237,6 +265,57 @@ class Readability:
         # Use the node's id as a key
         node_id = id(node)
         return f"{node_id}:{operation}"
+        
+    def _clear_cache_section(self, operation_prefix: str) -> int:
+        """Clear all cache entries for a specific operation.
+        
+        Args:
+            operation_prefix: Operation prefix to match for clearing
+            
+        Returns:
+            Number of entries cleared from cache
+        """
+        keys_to_delete = [k for k in list(self._cache.keys()) 
+                         if ":" in k and k.split(":", 1)[1].startswith(operation_prefix)]
+        
+        count = len(keys_to_delete)
+        for key in keys_to_delete:
+            del self._cache[key]
+        
+        return count
+
+    def _release_resources(self) -> None:
+        """Release resources to prevent memory leaks."""
+        if self.debug:
+            logger.debug(f"Releasing resources - cache size: {len(self._cache)}")
+        
+        # Clear all caches
+        self._cache.clear()
+        
+        # Clear score tracker
+        self.score_tracker.clear()
+        
+        # Release document reference
+        self.doc = None
+        
+    def _track_memory_usage(self, label: str) -> None:
+        """Track memory usage at a specific point (thread-safe)."""
+        if not self.debug:
+            return
+            
+        try:
+            import psutil
+            import os
+            import threading
+            
+            process = psutil.Process()
+            memory = process.memory_info().rss / 1024 / 1024  # MB
+            thread_id = threading.get_native_id()
+            pid = os.getpid()
+            
+            logger.debug(f"Memory usage at {label} [PID:{pid}, Thread:{thread_id}]: {memory:.2f}MB")
+        except ImportError:
+            logger.debug(f"Memory tracking requires psutil package")
     
     def parse(
         self, html_content: Union[str, bytes], url: Optional[str] = None,
@@ -313,6 +392,9 @@ class Readability:
         """
         # Clear cache at the start of parsing
         self._cache = {}
+        
+        if self.debug:
+            self._track_memory_usage("parse_start")
         try:
             # Handle encoding based on input type
             if isinstance(html_content, bytes):
@@ -386,6 +468,12 @@ class Readability:
             # Get article metadata
             metadata = self._get_metadata(json_ld)
             
+            # Clear cache after metadata extraction
+            self._clear_cache_section("inner_text")
+            
+            if self.debug:
+                self._track_memory_usage("before_grab_article")
+            
             # Grab article content
             article_content = self._grab_article()
             if article_content is None:
@@ -441,10 +529,16 @@ class Readability:
                 modified_time=modified_time,
             )
             
+            if self.debug:
+                self._track_memory_usage("parse_end")
+                
             return article, None
         
         except Exception as e:
             return None, e
+        finally:
+            # Always release resources regardless of success or failure
+            self._release_resources()
 
     def _text_similarity(self, text_a: str, text_b: str) -> float:
         """Compare second text to first one.
@@ -1225,6 +1319,11 @@ class Readability:
             # Update flags for this attempt
             self.flags = flags
             
+            # Clear caches from previous attempt
+            if len(self.attempts) > 0:
+                self._clear_cache_section("inner_text")
+                self._clear_cache_section("link_density")
+            
             # Phase 1: Clean and prepare the document
             self._remove_unlikely_candidates()
             self._transform_misused_divs_into_paragraphs()
@@ -1235,8 +1334,30 @@ class Readability:
             # Phase 3: Select the best candidate
             top_candidate = self._select_best_candidate(candidates)
             
+            # Clear scores for nodes that aren't needed anymore
+            if top_candidate:
+                # Keep top candidate, its ancestors, AND all its siblings that will be included
+                keep_nodes = [top_candidate] + self._get_node_ancestors(top_candidate)
+                
+                # Add siblings that will be included in the article
+                parent = top_candidate.parent
+                if parent:
+                    threshold = max(10, self.score_tracker.get_score(top_candidate) * 0.2)
+                    for sibling in parent.children:
+                        if isinstance(sibling, Tag) and self._is_probably_visible(sibling):
+                            if sibling is top_candidate or (
+                                self.score_tracker.has_score(sibling) and 
+                                self.score_tracker.get_score(sibling) >= threshold
+                            ):
+                                keep_nodes.append(sibling)
+                                
+                self.score_tracker.clear_unused_scores(keep_nodes)
+            
             # Phase 4: Construct the article content
             article_content = self._construct_article_content(top_candidate)
+            
+            # Clear more caches after content is constructed
+            self._clear_cache_section("inner_text")
             
             # Track this attempt
             if article_content:
@@ -1561,6 +1682,11 @@ class Readability:
         if not self.keep_classes:
             self._clean_classes(article_content)
         
+        # Explicitly remove elements we don't want
+        for elem_to_remove in article_content.find_all(['iframe', 'embed', 'object']):
+            if elem_to_remove.name != 'iframe' or not self.allowed_video_regex or not re.search(self.allowed_video_regex, elem_to_remove.get('src', '')):
+                elem_to_remove.decompose()
+        
         # Clean conditionally
         if self.flags["clean_conditionally"]:
             self._clean_conditionally(article_content, "form")
@@ -1609,7 +1735,20 @@ class Readability:
         if node is None:
             return ""
         
-        # Check cache first
+        # For small nodes, don't cache the result
+        is_small_node = node.name not in ["div", "article", "section", "body"] or \
+                        len(list(node.descendants)) < 10
+        
+        if is_small_node:
+            text = node.get_text().strip()
+            
+            if normalize_spaces:
+                from readability.utils import normalize_spaces
+                text = normalize_spaces(text)
+                
+            return text
+        
+        # Check cache for larger nodes
         cache_key = self._get_cache_key(node, f"inner_text:{normalize_spaces}")
         if cache_key in self._cache:
             return self._cache[cache_key]

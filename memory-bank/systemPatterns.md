@@ -153,6 +153,203 @@ The scoring algorithm assigns scores to different parts of the HTML based on var
 
 The postprocessing steps clean up the extracted content, removing any remaining unnecessary elements and formatting the content for output. The output generation component then creates the final HTML and plain text versions of the content.
 
+## Memory Management Patterns
+
+The library implements several memory management patterns to ensure efficient use of resources, especially when processing large documents or multiple documents in sequence:
+
+### 1. Weak References for Node Scoring
+
+The `ScoreTracker` class uses a `WeakKeyDictionary` to store scores for nodes without creating strong references that would prevent garbage collection:
+
+```python
+class ScoreTracker:
+    def __init__(self):
+        """Initialize an empty score tracker."""
+        self._scores = weakref.WeakKeyDictionary()
+```
+
+This allows nodes to be garbage collected when they are no longer referenced elsewhere in the code, even if they have scores assigned.
+
+### 2. Selective Cache Management
+
+The library implements a selective cache management system that allows clearing specific sections of the cache at strategic points in the parsing process:
+
+```python
+def _clear_cache_section(self, operation_prefix: str) -> int:
+    """Clear all cache entries for a specific operation.
+    
+    Args:
+        operation_prefix: Operation prefix to match for clearing
+        
+    Returns:
+        Number of entries cleared from cache
+    """
+    keys_to_delete = [k for k in list(self._cache.keys()) 
+                     if ":" in k and k.split(":", 1)[1].startswith(operation_prefix)]
+    
+    count = len(keys_to_delete)
+    for key in keys_to_delete:
+        del self._cache[key]
+    
+    return count
+```
+
+This allows the library to clear only the cache entries that are no longer needed, while keeping others that might still be useful.
+
+### 3. Selective Node Retention
+
+The library implements a selective node retention system that preserves important nodes (like the top candidate and its ancestors) while allowing other nodes to be garbage collected:
+
+```python
+def clear_unused_scores(self, nodes_to_keep: Optional[List[Tag]] = None) -> int:
+    """Clear scores for all nodes except those in nodes_to_keep.
+    
+    Args:
+        nodes_to_keep: List of nodes to keep scores for (optional)
+        
+    Returns:
+        Number of nodes cleared from memory
+    """
+    if nodes_to_keep is None:
+        count = len(self._scores)
+        self._scores.clear()
+        return count
+        
+    nodes_set = set(nodes_to_keep)
+    keys_to_delete = []
+    
+    # Identify keys to delete
+    for node in list(self._scores.keys()):
+        if node not in nodes_set:
+            keys_to_delete.append(node)
+    
+    # Delete keys
+    for node in keys_to_delete:
+        del self._scores[node]
+        
+    return len(keys_to_delete)
+```
+
+This allows the library to keep scores only for nodes that are still needed, while allowing other nodes to be garbage collected.
+
+### 4. Resource Release
+
+The library implements a resource release system that ensures all resources are properly released after parsing, even if an error occurs:
+
+```python
+def parse(self, html_content: Union[str, bytes], url: Optional[str] = None,
+        encoding: Optional[str] = None) -> Tuple[Optional[Article], Optional[Exception]]:
+    """Parse HTML content and extract the main article."""
+    # Clear cache at the start of parsing
+    self._cache = {}
+    
+    try:
+        # Parsing logic...
+        return article, None
+    
+    except Exception as e:
+        return None, e
+    finally:
+        # Always release resources regardless of success or failure
+        self._release_resources()
+```
+
+The `_release_resources` method ensures that all resources are properly released:
+
+```python
+def _release_resources(self) -> None:
+    """Release resources to prevent memory leaks."""
+    if self.debug:
+        logger.debug(f"Releasing resources - cache size: {len(self._cache)}")
+    
+    # Clear all caches
+    self._cache.clear()
+    
+    # Clear score tracker
+    self.score_tracker.clear()
+    
+    # Release document reference
+    self.doc = None
+```
+
+### 5. Optimized Caching for Large Nodes
+
+The library optimizes caching for large nodes by only caching results for nodes with many descendants:
+
+```python
+def _get_inner_text(self, node: Tag, normalize_spaces: bool = True) -> str:
+    """Get the inner text of a node.
+    
+    Args:
+        node: The node to get text from
+        normalize_spaces: Whether to normalize whitespace
+        
+    Returns:
+        The inner text of the node
+    """
+    if node is None:
+        return ""
+    
+    # For small nodes, don't cache the result
+    is_small_node = node.name not in ["div", "article", "section", "body"] or \
+                    len(list(node.descendants)) < 10
+    
+    if is_small_node:
+        text = node.get_text().strip()
+        
+        if normalize_spaces:
+            from readability.utils import normalize_spaces
+            text = normalize_spaces(text)
+            
+        return text
+    
+    # Check cache for larger nodes
+    cache_key = self._get_cache_key(node, f"inner_text:{normalize_spaces}")
+    if cache_key in self._cache:
+        return self._cache[cache_key]
+    
+    # Not in cache, compute the value
+    text = node.get_text().strip()
+    
+    if normalize_spaces:
+        from readability.utils import normalize_spaces
+        text = normalize_spaces(text)
+    
+    # Store in cache
+    self._cache[cache_key] = text
+    
+    return text
+```
+
+This avoids caching results for small nodes that are unlikely to be reused, while still caching results for larger nodes that are more expensive to compute.
+
+### 6. Memory Usage Monitoring
+
+The library includes optional memory usage monitoring for debugging purposes:
+
+```python
+def _track_memory_usage(self, label: str) -> None:
+    """Track memory usage at a specific point (thread-safe)."""
+    if not self.debug:
+        return
+        
+    try:
+        import psutil
+        import os
+        import threading
+        
+        process = psutil.Process()
+        memory = process.memory_info().rss / 1024 / 1024  # MB
+        thread_id = threading.get_native_id()
+        pid = os.getpid()
+        
+        logger.debug(f"Memory usage at {label} [PID:{pid}, Thread:{thread_id}]: {memory:.2f}MB")
+    except ImportError:
+        logger.debug(f"Memory tracking requires psutil package")
+```
+
+This allows developers to track memory usage at key points in the parsing process when debugging memory issues.
+
 ## Error Handling System
 
 The error handling system follows a robust design pattern inspired by React's error boundaries:
